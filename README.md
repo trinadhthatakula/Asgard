@@ -28,6 +28,10 @@ dependencies {
 compileOnly("com.trinadhthatakula:asgard:1.0.0")
 ```
 
+> Asgard shares the `com.trinadhthatakula` namespace with the Thor extension contract,
+> [`com.trinadhthatakula:thor-extension-api`](https://github.com/trinadhthatakula/Thor-extension-api)
+> — both are provided by the Thor host at runtime, so extensions depend on them as `compileOnly`.
+
 ## What's inside (v1)
 
 | Component | What it is |
