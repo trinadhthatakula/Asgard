@@ -1,0 +1,149 @@
+name: Publish to Maven Central
+
+# Auto-publishes the :asgard artifact to Maven Central whenever VERSION_NAME in
+# gradle.properties is bumped to a new, non-SNAPSHOT value on `main`.
+#
+# Flow:
+#   push to main -> diff VERSION_NAME against the pre-push commit
+#     - unchanged / SNAPSHOT / tag already exists -> skip
+#     - changed to a fresh release version         -> publish, then tag + GitHub Release
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   MAVEN_CENTRAL_USERNAME        Central Portal user token name
+#   MAVEN_CENTRAL_PASSWORD        Central Portal user token password
+#   SIGNING_KEY                   ASCII-armored GPG private key (full block, incl. header/footer)
+#   SIGNING_KEY_PASSWORD          passphrase for that GPG key
+# The vanniktech plugin reads these via the ORG_GRADLE_PROJECT_* env mapping below.
+
+on:
+  push:
+    branches: [main]
+    paths: ['gradle.properties']
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Publish the current VERSION_NAME even if it looks unchanged'
+        type: boolean
+        default: false
+
+# Never run two publishes at once; let an in-flight release finish.
+concurrency:
+  group: publish-maven-central
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  detect:
+    name: Detect version bump
+    runs-on: ubuntu-latest
+    outputs:
+      should_publish: ${{ steps.check.outputs.should_publish }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Compare VERSION_NAME against previous commit
+        id: check
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          FORCE: ${{ github.event.inputs.force }}
+        run: |
+          set -euo pipefail
+
+          read_version() { grep -E '^VERSION_NAME=' "$1" | head -n1 | cut -d= -f2 | tr -d '[:space:]'; }
+
+          current="$(read_version gradle.properties)"
+          echo "version=$current" >> "$GITHUB_OUTPUT"
+          echo "Current VERSION_NAME: $current"
+
+          if [ -z "$current" ]; then
+            echo "::error::VERSION_NAME not found in gradle.properties"
+            exit 1
+          fi
+
+          # SNAPSHOTs are never published by this workflow.
+          if [[ "$current" == *SNAPSHOT* ]]; then
+            echo "SNAPSHOT version -> skip."
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Already released? A matching tag means we've published this version before.
+          if git rev-parse -q --verify "refs/tags/v$current" >/dev/null; then
+            echo "Tag v$current already exists -> skip."
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "${FORCE:-false}" = "true" ]; then
+            echo "force=true -> publish."
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Read the version as it was before this push. github.event.before is the
+          # tip prior to the push (handles multi-commit pushes correctly); fall back
+          # to HEAD~1 for branch-creation / missing-ref edge cases.
+          previous=""
+          if [ -n "${BEFORE_SHA:-}" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ] \
+             && git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
+            previous="$(git show "${BEFORE_SHA}:gradle.properties" 2>/dev/null | read_version /dev/stdin || true)"
+          elif git cat-file -e 'HEAD~1^{commit}' 2>/dev/null; then
+            previous="$(git show 'HEAD~1:gradle.properties' 2>/dev/null | read_version /dev/stdin || true)"
+          fi
+          echo "Previous VERSION_NAME: ${previous:-<none>}"
+
+          if [ "$current" != "$previous" ]; then
+            echo "Version changed $previous -> $current -> publish."
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Version unchanged -> skip."
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  publish:
+    name: Publish & release
+    needs: detect
+    if: needs.detect.outputs.should_publish == 'true'
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.detect.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Publish to Maven Central
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        # Signing + the maven-publish plugin don't play well with the config cache,
+        # which is enabled project-wide in gradle.properties — disable it for this run.
+        run: ./gradlew publishToMavenCentral --no-configuration-cache --stacktrace
+
+      - name: Tag release and create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "v$VERSION" -m "Release v$VERSION"
+          git push origin "v$VERSION"
+          gh release create "v$VERSION" \
+            --title "v$VERSION" \
+            --generate-notes
