@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -14,18 +13,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
 
 /**
- * A single-select Connected Button Group built on top of [ButtonGroup] + [ToggleButton].
+ * A single-select Connected Button Group built on a weighted [Row] of [ToggleButton]s.
  *
- * Shape logic, press animation, and overflow menu wiring are handled internally.
- * Callers only describe *what* each button shows via [ConnectedButtonGroupItem] and
- * respond to selection changes.
- *
- * The expressive press animation (buttons physically expand and compress their
- * neighbours) is activated automatically via [Modifier.animateWidth].
+ * Each button occupies an equal, tightly-bounded slot (`Modifier.weight(1f)`), so a button
+ * can never be measured wider than its slot. This keeps the group crash-safe at any system
+ * font/display scale (labels truncate with an ellipsis instead of overflowing). Shape logic
+ * and single-select behaviour are handled internally; callers only describe *what* each button
+ * shows via [ConnectedButtonGroupItem] and respond to selection changes.
  *
  * ---
  *
@@ -64,55 +61,20 @@ fun ConnectedButtonGroup(
 
     val lastIndex = items.lastIndex
 
-    androidx.compose.material3.ButtonGroup(
-        overflowIndicator = {},
-        modifier = modifier.layout { measurable, constraints ->
-            // Material 3 ButtonGroupMeasurePolicy crashes during transitions (e.g. exit/enter animation in AnimatedContent)
-            // if constraints.maxWidth is smaller than the minimum calculated width of the buttons inside it.
-            // We coerce the constraints' maxWidth to be at least a safe minimum width (e.g., 360.dp in pixels)
-            // to prevent the internal IllegalArgumentException (maxWidth must be >= than minWidth).
-            // Once measured, we report a coerced width to the parent so it fits the layout/animation bounds.
-            val minSafeWidth = 360.dp.roundToPx()
-            val coercedConstraints = constraints.copy(
-                maxWidth = constraints.maxWidth.coerceAtLeast(constraints.minWidth).coerceAtLeast(minSafeWidth)
-            )
-            val placeable = measurable.measure(coercedConstraints)
-            layout(
-                width = placeable.width.coerceIn(constraints.minWidth, constraints.maxWidth),
-                height = placeable.height.coerceIn(constraints.minHeight, constraints.maxHeight)
-            ) {
-                placeable.placeRelative(0, 0)
-            }
-        },
+    Row(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         items.forEachIndexed { index, item ->
-            customItem(
-                buttonGroupContent = {
-                    ToggleButton(
-                        checked = index == selectedIndex,
-                        onCheckedChange = { checked -> if (checked) onItemSelected(index) },
-                        modifier = Modifier,
-                        shapes = connectedShapesFor(index, lastIndex),
-                    ) {
-                        ItemContent(item)
-                    }
-                },
-                menuContent = { menuState ->
-                    // Overflow fallback — never visible for fixed-count groups,
-                    // but required by the ButtonGroup API contract.
-                    DropdownMenuItem(
-                        text = { Text(item.menuLabel) },
-                        leadingIcon = item.menuIcon?.let { vector ->
-                            { Icon(imageVector = vector, contentDescription = null) }
-                        },
-                        onClick = {
-                            onItemSelected(index)
-                            menuState.dismiss()
-                        }
-                    )
-                }
-            )
+            ToggleButton(
+                checked = index == selectedIndex,
+                onCheckedChange = { checked -> if (checked) onItemSelected(index) },
+                modifier = Modifier.weight(1f),
+                shapes = connectedShapesFor(index, lastIndex),
+            ) {
+                ItemContent(item)
+            }
         }
     }
 }
@@ -125,10 +87,10 @@ fun ConnectedButtonGroup(
  */
 sealed interface ConnectedButtonGroupItem {
 
-    /** Label shown in the overflow [DropdownMenuItem]. */
+    /** Legacy accessibility/menu label. Retained for API compatibility (unused for rendering). */
     val menuLabel: String
 
-    /** Optional icon shown in the overflow [DropdownMenuItem]. */
+    /** Legacy optional menu icon. Retained for API compatibility (unused for rendering). */
     val menuIcon: ImageVector? get() = null
 
     // ── Concrete variants ─────────────────────────────────────────────────────
@@ -171,7 +133,11 @@ private fun ItemContent(item: ConnectedButtonGroupItem) {
             )
 
         is ConnectedButtonGroupItem.Label ->
-            Text(item.text, maxLines = 1)
+            Text(
+                item.text,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
 
         is ConnectedButtonGroupItem.IconWithLabel ->
             Row(
@@ -182,7 +148,12 @@ private fun ItemContent(item: ConnectedButtonGroupItem) {
                     imageVector = item.icon,
                     contentDescription = item.contentDescription
                 )
-                Text(item.text, maxLines = 1)
+                Text(
+                    item.text,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
             }
     }
 }
