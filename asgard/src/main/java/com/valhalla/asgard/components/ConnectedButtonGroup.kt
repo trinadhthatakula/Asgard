@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.zIndex
 
 /**
  * A single-select Connected Button Group built on a weighted [Row] of [ToggleButton]s.
@@ -70,7 +71,11 @@ fun ConnectedButtonGroup(
             ToggleButton(
                 checked = index == selectedIndex,
                 onCheckedChange = { checked -> if (checked) onItemSelected(index) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    // Draw the selected button on top so its borders aren't clipped by
+                    // the overlapping neighbours produced by the negative connected spacing.
+                    .zIndex(if (index == selectedIndex) 1f else 0f),
                 shapes = connectedShapesFor(index, lastIndex),
             ) {
                 ItemContent(item)
