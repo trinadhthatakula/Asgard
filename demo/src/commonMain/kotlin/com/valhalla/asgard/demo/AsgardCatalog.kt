@@ -2,6 +2,7 @@ package com.valhalla.asgard.demo
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -27,6 +28,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.valhalla.asgard.components.AsgardActionItem
+import com.valhalla.asgard.components.AsgardHeader
+import com.valhalla.asgard.components.ConnectedButtonGroup
+import com.valhalla.asgard.components.ConnectedButtonGroupItem
+import com.valhalla.asgard.navigation.AsgardNavItem
+import com.valhalla.asgard.navigation.AsgardNavigationBar
+import com.valhalla.asgard.navigation.AsgardNavigationRail
 import com.valhalla.asgard.components.AsgardAnimatedNumeral
 import com.valhalla.asgard.components.AsgardBadge
 import com.valhalla.asgard.components.AsgardBanner
@@ -51,8 +58,63 @@ import com.valhalla.asgard.components.AsgardTonalIconButton
 import com.valhalla.asgard.components.AsgardUpgradeCard
 import com.valhalla.asgard.components.StatusChip
 
+private val demoNavItems = listOf(
+    AsgardNavItem(Icons.Rounded.Star, "Home"),
+    AsgardNavItem(Icons.Rounded.Search, "Search"),
+    AsgardNavItem(Icons.Rounded.Settings, "Settings"),
+)
+
 /** Single source of truth for the gallery — one entry per public Asgard component. */
 val asgardCatalog: List<ComponentEntry> = listOf(
+    ComponentEntry(
+        "AsgardHeader", "Structure",
+        "The signature screen header: a bold primary-tinted title, optional leading icon, trailing actions.",
+        "AsgardHeader(title = \"Clusters\", icon = Icons.Rounded.Star)",
+    ) { AsgardHeader(title = "Clusters", icon = Icons.Rounded.Star, modifier = Modifier.fillMaxWidth()) },
+
+    ComponentEntry(
+        "AsgardNavigationBar", "Navigation",
+        "An expressive bottom navigation bar — the selected item expands to reveal its label.",
+        "AsgardNavigationBar(items, selectedIndex, onSelect = { … })",
+    ) {
+        var sel by remember { mutableStateOf(0) }
+        AsgardNavigationBar(
+            items = demoNavItems,
+            selectedIndex = sel,
+            onSelect = { sel = it },
+            modifier = Modifier.fillMaxWidth(),
+        )
+    },
+
+    ComponentEntry(
+        "AsgardNavigationRail", "Navigation",
+        "An expressive vertical navigation rail (the side-nav counterpart to the bar).",
+        "AsgardNavigationRail(items, selectedIndex, onSelect = { … })",
+    ) {
+        var sel by remember { mutableStateOf(0) }
+        Box(Modifier.height(300.dp)) {
+            AsgardNavigationRail(items = demoNavItems, selectedIndex = sel, onSelect = { sel = it })
+        }
+    },
+
+    ComponentEntry(
+        "ConnectedButtonGroup", "Input",
+        "A single-select connected toggle-button group; crash-safe at any system font scale.",
+        "ConnectedButtonGroup(items = listOf(Label(\"Day\"), Label(\"Week\")), selectedIndex, onItemSelected)",
+    ) {
+        var sel by remember { mutableStateOf(0) }
+        ConnectedButtonGroup(
+            items = listOf(
+                ConnectedButtonGroupItem.Label("Day"),
+                ConnectedButtonGroupItem.Label("Week"),
+                ConnectedButtonGroupItem.Label("Month"),
+            ),
+            selectedIndex = sel,
+            onItemSelected = { sel = it },
+            modifier = Modifier.fillMaxWidth(),
+        )
+    },
+
     ComponentEntry(
         "StatusChip", "Chips & badges",
         "A compact, pill-shaped status label that inherits the theme.",
