@@ -1,6 +1,8 @@
 package com.valhalla.asgard.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -92,8 +95,8 @@ fun AsgardUpgradeCard(
  * Gates [content]: when [locked] is `true`, the content is blurred and an [overlay] (e.g. an
  * [AsgardUpgradeCard]) is centered on top; when unlocked, [content] renders normally.
  *
- * Note: the caller is responsible for making [content] non-interactive while locked (the blur is
- * visual only). Blur is a no-op below Android 12.
+ * While locked, the scrim intercepts input so the gated [content] can't be interacted with. Blur
+ * is a no-op on platforms without a blur effect (e.g. Android < 12).
  *
  * @param locked whether the gate is active.
  * @param overlay the composable shown centered while locked.
@@ -119,7 +122,13 @@ fun AsgardLockedOverlay(
             Box(
                 modifier = Modifier
                     .matchParentSize()
-                    .background(scrimColor),
+                    .background(scrimColor)
+                    // Swallow input so the blurred content underneath can't be interacted with.
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = {},
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 overlay()

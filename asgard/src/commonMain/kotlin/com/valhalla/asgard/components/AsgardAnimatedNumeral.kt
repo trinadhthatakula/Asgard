@@ -39,8 +39,16 @@ fun AsgardAnimatedNumeral(
         targetState = value,
         modifier = modifier,
         transitionSpec = {
-            val goingUp = targetState.length > initialState.length ||
-                (targetState.length == initialState.length && targetState > initialState)
+            // Prefer a numeric comparison (correct for decimals / negatives); fall back to a
+            // length-then-lexicographic heuristic for non-numeric text.
+            val targetNum = targetState.toDoubleOrNull()
+            val initialNum = initialState.toDoubleOrNull()
+            val goingUp = if (targetNum != null && initialNum != null) {
+                targetNum > initialNum
+            } else {
+                targetState.length > initialState.length ||
+                    (targetState.length == initialState.length && targetState > initialState)
+            }
             slideInVertically(tween(durationMillis)) { h -> if (goingUp) h else -h }
                 .togetherWith(slideOutVertically(tween(durationMillis)) { h -> if (goingUp) -h else h })
                 .using(SizeTransform(clip = false))

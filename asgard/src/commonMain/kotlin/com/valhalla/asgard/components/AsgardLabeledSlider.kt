@@ -28,13 +28,13 @@ fun AsgardLabeledSlider(
     label: String,
     value: Float,
     onValueChange: (Float) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxWidth(),
     valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
     steps: Int = 0,
     valueLabel: String? = null,
     onValueChangeFinished: (() -> Unit)? = null,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier) {
         Row {
             Text(
                 text = label,

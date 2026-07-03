@@ -19,7 +19,7 @@ import androidx.compose.ui.text.input.ImeAction
  *
  * @param query the current search text.
  * @param onQueryChange invoked as the text changes.
- * @param modifier the [Modifier] applied to the field.
+ * @param modifier the [Modifier] applied to the field; defaults to full width (override to size it).
  * @param placeholder the hint shown when [query] is empty.
  * @param leadingIcon optional leading (search) icon.
  * @param clearIcon optional trailing clear icon; shown only when [query] is non-empty.
@@ -29,7 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 fun AsgardSearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxWidth(),
     placeholder: String = "Search",
     leadingIcon: ImageVector? = null,
     clearIcon: ImageVector? = null,
@@ -38,7 +38,7 @@ fun AsgardSearchBar(
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         placeholder = { Text(placeholder) },
         singleLine = true,
         leadingIcon = leadingIcon?.let { vector ->

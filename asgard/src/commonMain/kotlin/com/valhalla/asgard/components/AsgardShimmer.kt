@@ -5,7 +5,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -39,23 +39,30 @@ fun AsgardShimmer(
     durationMillis: Int = 1200,
 ) {
     val transition = rememberInfiniteTransition(label = "AsgardShimmer")
-    val x by transition.animateFloat(
-        initialValue = -400f,
-        targetValue = 400f,
+    val progress by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis),
             repeatMode = RepeatMode.Restart,
         ),
-        label = "shimmerX",
-    )
-    val brush = Brush.linearGradient(
-        colors = listOf(baseColor, highlightColor, baseColor),
-        start = Offset(x, 0f),
-        end = Offset(x + 400f, 0f),
+        label = "shimmerProgress",
     )
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(cornerRadius))
-            .background(brush),
+            .drawBehind {
+                // Sweep the highlight band across the actual measured width, so the animation is
+                // resolution- and width-independent (covers full-width cards on any display).
+                val width = size.width
+                val sweepX = progress * (width * 2f) - width
+                drawRect(
+                    brush = Brush.linearGradient(
+                        colors = listOf(baseColor, highlightColor, baseColor),
+                        start = Offset(sweepX, 0f),
+                        end = Offset(sweepX + width, 0f),
+                    ),
+                )
+            },
     )
 }
