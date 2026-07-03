@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Inbox
@@ -341,7 +342,7 @@ val asgardCatalog: List<ComponentEntry> = listOf(
             query = q,
             onQueryChange = { q = it },
             leadingIcon = Icons.Rounded.Search,
-            clearIcon = Icons.Rounded.Add,
+            clearIcon = Icons.Rounded.Close,
             placeholder = "Search apps",
         )
     },

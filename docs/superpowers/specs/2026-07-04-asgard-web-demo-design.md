@@ -97,8 +97,9 @@ vectors supplied by the demo (not by the library).
 
 GitHub Actions workflow: on push to the default branch, run
 `./gradlew :demo:wasmJsBrowserDistribution`, then publish the
-`demo/build/dist/wasmJs/productionExecutable` output to the `gh-pages` branch (GitHub Pages). The
-demo is a static bundle (`.wasm` + `.js` + `index.html`), so Pages serves it directly.
+`demo/build/dist/wasmJs/productionExecutable` output via the GitHub Pages **Actions** flow
+(`actions/upload-pages-artifact` + `actions/deploy-pages` — no `gh-pages` branch). The demo is a
+static bundle (`.wasm` + `.js` + `index.html`), so Pages serves it directly.
 
 ## Data flow
 

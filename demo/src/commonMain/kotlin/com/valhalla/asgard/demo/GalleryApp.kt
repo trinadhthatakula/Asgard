@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -110,7 +111,9 @@ private fun DetailPane(entry: ComponentEntry) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 8.dp),
         )
-        Box(Modifier.padding(vertical = 32.dp)) { entry.content() }
+        // key() by name so each preview's own remember { } state is isolated and reset when
+        // switching entries (previews hold state of different types — Boolean/Int/Float/String).
+        Box(Modifier.padding(vertical = 32.dp)) { key(entry.name) { entry.content() } }
         Surface(
             color = MaterialTheme.colorScheme.surfaceContainerHighest,
             shape = RoundedCornerShape(12.dp),

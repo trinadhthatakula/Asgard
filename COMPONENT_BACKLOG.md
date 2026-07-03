@@ -7,7 +7,7 @@ _A survey of reusable, theme-independent Compose UI across the developer's apps 
 **Audit date:** 2026-07-04
 **Coverage:** 23 of the developer's own Compose apps (third-party forks `Seal`/`com.junkfood`
 and `Android-Native-Root-Detector`/`com.reveny`, plus games, excluded).
-**Status:** proposal only — nothing extracted yet, pending review.
+**Status:** Tier-1 + Tier-2 components extracted into the library (PR #2); app migration still pending.
 
 ---
 
@@ -240,8 +240,9 @@ the pattern the existing `StatusChip` and `AsgardActionItem` already use.
 ## Next steps (pending review)
 
 1. **Review this backlog** and confirm the Tier-1 set.
-2. Extract Tier-1 into `com.valhalla.asgard.components`, each with `@param` KDoc, `MaterialTheme`
-   defaults, and a `@Preview` — matching the existing `StatusChip` convention.
+2. ✅ Extracted Tier-1 + Tier-2 into `com.valhalla.asgard.components` with `@param` KDoc and
+   `MaterialTheme` defaults, matching the existing `StatusChip` convention. Previews live in the
+   `demo` module, not the library (the library stays preview-free / tooling-dependency-free).
 3. Migrate the source apps to the Asgard versions (starting with the `com.valhalla.*` core), deleting
    the local copies (`Supporter.kt`/`AnimateLottieRaw`, `ConnectedButtonGroup` in Valy, per-app
    stat tiles and settings rows).
