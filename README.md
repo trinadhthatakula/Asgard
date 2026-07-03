@@ -11,28 +11,39 @@ library never imposes a palette or font.
 > Born from the [Thor](https://github.com/trinadhthatakula/Thor) app's design system, extracted so
 > every Valhalla app — and anyone else — can share one component layer.
 
+## ▶ Live gallery
+
+**[trinadhthatakula.github.io/Asgard](https://trinadhthatakula.github.io/Asgard/)** — browse every
+component live and flip **light/dark** and the **seed color** to watch each one inherit the theme.
+The gallery itself is built from the same components, running in the browser via Compose
+Multiplatform (wasm).
+
 ## Install
 
 ```kotlin
 // settings.gradle.kts has mavenCentral() in dependencyResolutionManagement
 
 dependencies {
-    implementation("com.trinadhthatakula:asgard:1.0.0")
+    implementation("com.trinadhthatakula:asgard:1.1.0")
 }
 ```
+
+As of **1.1.0**, Asgard is a **Kotlin Multiplatform** library (Android + wasmJs). Gradle resolves the
+right variant automatically — an Android project gets the `asgard-android` artifact from the same
+`com.trinadhthatakula:asgard` coordinate, so nothing changes for pure-Android consumers.
 
 **Building a Thor extension?** If the host app (Thor) already bundles Asgard, depend on it as
 `compileOnly` so it isn't duplicated in your extension APK — Thor provides it at runtime:
 
 ```kotlin
-compileOnly("com.trinadhthatakula:asgard:1.0.0")
+compileOnly("com.trinadhthatakula:asgard:1.1.0")
 ```
 
 > Asgard shares the `com.trinadhthatakula` namespace with the Thor extension contract,
 > [`com.trinadhthatakula:thor-extension-api`](https://github.com/trinadhthatakula/Thor-extension-api)
 > — both are provided by the Thor host at runtime, so extensions depend on them as `compileOnly`.
 
-## What's inside (v1)
+## What's inside
 
 | Component | What it is |
 |---|---|
@@ -44,6 +55,11 @@ compileOnly("com.trinadhthatakula:asgard:1.0.0")
 | `AsgardActionItem` | An icon-chip + label action cell for action rows / toolbars. |
 
 All icons are passed as `ImageVector` — Asgard bundles no icon pack.
+
+**1.1.0 adds 22 more** theme-agnostic components — stat tiles, banners, badges, list/settings rows,
+a pro-gate kit, a progress ring, empty/loading states, onboarding, a dialog scaffold, stepper,
+search bar, labeled slider, shimmer, and more. **Browse them all in the
+[live gallery](https://trinadhthatakula.github.io/Asgard/).**
 
 ## Usage
 
@@ -84,8 +100,9 @@ you provide. The Expressive theme gives the richest motion.
 
 ## Requirements
 
-- `minSdk` 28, JDK 21
-- Jetpack Compose with **Material 3 `1.5.0-alpha22`+** (Expressive APIs)
+- Kotlin Multiplatform — Android (`minSdk` 28) + wasmJs, JDK 21
+- Compose Multiplatform with **Expressive Material 3** (Asgard reads colors, type, shape, and motion
+  from the host `MaterialTheme`)
 
 ## Publishing (maintainer)
 
