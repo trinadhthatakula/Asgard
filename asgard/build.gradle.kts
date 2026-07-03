@@ -1,61 +1,62 @@
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidKmpLibrary)
+    alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.vanniktech.maven.publish)
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
-    }
-}
-
-android {
-    namespace = "com.valhalla.asgard"
-    compileSdk = libs.versions.compileSdk.get().toInt()
-    defaultConfig {
+    // AGP 9 KMP: Android config nests inside kotlin { androidLibrary { } } via the
+    // com.android.kotlin.multiplatform.library plugin — NOT a top-level android { } block.
+    androidLibrary {
+        namespace = "com.valhalla.asgard"
+        compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_21
+        }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-    buildFeatures {
-        compose = true
-    }
-}
 
-dependencies {
-    // api: Compose types appear in every public component signature, and consumers
-    // build their UIs against them — they must be exposed transitively.
-    api(platform(libs.androidx.compose.bom))
-    api(libs.androidx.ui)
-    api(libs.androidx.ui.graphics)
-    api(libs.androidx.foundation)
-    api(libs.androidx.animation)
-    // Explicit alpha for Expressive Material 3 (ButtonGroup, ToggleButton, MotionScheme).
-    api(libs.androidx.material3)
-    // Only for AsgardHeader's default back-arrow icon; consumers pass their own ImageVectors.
-    implementation(libs.androidx.material.icons.core)
+    wasmJs {
+        browser()
+    }
+
+    sourceSets {
+        all {
+            // Asgard leans on Expressive Material 3 (MotionScheme, ButtonGroup) — opt in once.
+            languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
+            languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+        }
+        commonMain.dependencies {
+            // api: Compose types appear in every public component signature; consumers build
+            // their UIs against them, so they must be exposed transitively.
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            api(libs.compose.material3)
+            implementation(libs.compose.ui)
+            // material-icons-extended supplies AsgardHeader's default back-arrow; consumers
+            // otherwise pass their own ImageVectors. (Trimmed to core in a later pass.)
+            implementation(compose.materialIconsExtended)
+        }
+    }
 }
 
 // Vanniktech's signAllPublications() requires a GPG key for non-SNAPSHOT versions, including
 // publishToMavenLocal. To verify publishing locally WITHOUT a key, append -PVERSION_NAME=1.0.0-SNAPSHOT
 // (SNAPSHOT versions are exempt from signing). Real releases sign via the key in ~/.gradle/gradle.properties.
 mavenPublishing {
-    coordinates(
-        groupId = providers.gradleProperty("GROUP").get(),
-        artifactId = "asgard",
-        version = providers.gradleProperty("VERSION_NAME").get()
-    )
+    // group + version come from GROUP / VERSION_NAME in gradle.properties (auto-read by
+    // vanniktech); artifactId defaults to the module name ("asgard"). Setting coordinates()
+    // again here is rejected as "final" under the KMP plugin, so it is intentionally omitted.
     configure(
-        AndroidSingleVariantLibrary(
-            variant = "release",
-            sourcesJar = true,
-            publishJavadocJar = true
+        KotlinMultiplatform(
+            javadocJar = JavadocJar.Empty(),
+            sourcesJar = true
         )
     )
     publishToMavenCentral(automaticRelease = true)
