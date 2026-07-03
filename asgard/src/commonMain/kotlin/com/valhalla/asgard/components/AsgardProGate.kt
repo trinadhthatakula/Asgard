@@ -105,11 +105,11 @@ fun AsgardUpgradeCard(
 @Composable
 fun AsgardLockedOverlay(
     locked: Boolean,
-    overlay: @Composable () -> Unit,
-    content: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     blurRadius: Dp = 12.dp,
     scrimColor: Color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.4f),
+    overlay: @Composable () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     Box(modifier = modifier) {
         Box(modifier = if (locked) Modifier.blur(blurRadius) else Modifier) {
