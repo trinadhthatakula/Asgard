@@ -53,6 +53,7 @@ import com.valhalla.asgard.components.AsgardSectionCard
 import com.valhalla.asgard.components.AsgardSettingRow
 import com.valhalla.asgard.components.AsgardSettingToggleRow
 import com.valhalla.asgard.components.AsgardShimmer
+import com.valhalla.asgard.components.AsgardStatCard
 import com.valhalla.asgard.components.AsgardStatTile
 import com.valhalla.asgard.components.AsgardStepperRow
 import com.valhalla.asgard.components.AsgardTonalIconButton
@@ -139,6 +140,20 @@ val asgardCatalog: List<ComponentEntry> = listOf(
         "Compact metric tile: a label over an emphasized value, optional icon.",
         "AsgardStatTile(label = \"Uptime\", value = \"12h 30m\", icon = Icons.Rounded.Bolt)",
     ) { AsgardStatTile(label = "Uptime", value = "12h 30m", icon = Icons.Rounded.Bolt) },
+
+    ComponentEntry(
+        "AsgardStatCard", "Data display",
+        "Vertical metric card: an icon + label header over a large value with an optional unit suffix.",
+        "AsgardStatCard(label = \"Voltage\", value = \"5.00\", unit = \"V\",\n    icon = Icons.Rounded.Bolt)",
+    ) {
+        AsgardStatCard(
+            label = "Voltage",
+            value = "5.00",
+            unit = "V",
+            icon = Icons.Rounded.Bolt,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    },
 
     ComponentEntry(
         "AsgardBanner", "Feedback",
