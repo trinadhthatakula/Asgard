@@ -57,7 +57,8 @@ import androidx.compose.ui.unit.dp
  * @param labelStyle the [label] text style; defaults to `labelMedium`.
  * @param valueColor the [value] text color.
  * @param valueStyle the [value] text style.
- * @param valueFontWeight the [value] font weight.
+ * @param valueFontWeight overrides the [value] font weight; when null the weight from [valueStyle]
+ *   is used (falling back to bold). Resolved identically for the animated and static value.
  * @param secondaryValueColor the [secondaryValue] text color.
  * @param secondaryValueStyle the [secondaryValue] text style.
  */
@@ -81,16 +82,18 @@ fun AsgardStatTile(
     labelColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     labelStyle: TextStyle? = null,
     valueColor: Color = MaterialTheme.colorScheme.onSurface,
-    valueStyle: TextStyle = MaterialTheme.typography.headlineSmall,
-    valueFontWeight: FontWeight = FontWeight.Bold,
+    valueStyle: TextStyle = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+    valueFontWeight: FontWeight? = null,
     secondaryValueColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     secondaryValueStyle: TextStyle = MaterialTheme.typography.bodyMedium,
 ) {
     Row(
         modifier = modifier
+            // Border before clip: Modifier.border strokes on the shape boundary (half outside),
+            // so clipping first would shave off its outer half and render it half-width.
+            .then(if (border != null) Modifier.border(border, shape) else Modifier)
             .clip(shape)
             .background(containerColor)
-            .then(if (border != null) Modifier.border(border, shape) else Modifier)
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically,
@@ -143,20 +146,23 @@ fun AsgardStatTile(
                     )
                 }
             }
+            // One resolution for both paths: explicit override wins, else the style's weight,
+            // else bold. Keeps the animated and static value visually identical.
+            val resolvedValueWeight = valueFontWeight ?: valueStyle.fontWeight ?: FontWeight.Bold
             val valueText: @Composable () -> Unit = {
                 if (animateValue) {
                     AsgardAnimatedNumeral(
                         value = value,
                         style = valueStyle,
                         color = valueColor,
-                        fontWeight = valueStyle.fontWeight ?: valueFontWeight,
+                        fontWeight = resolvedValueWeight,
                         countUp = true,
                     )
                 } else {
                     Text(
                         text = value,
                         style = valueStyle,
-                        fontWeight = valueFontWeight,
+                        fontWeight = resolvedValueWeight,
                         color = valueColor,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
