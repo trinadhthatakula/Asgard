@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
@@ -30,13 +31,15 @@ import androidx.compose.ui.unit.dp
  *
  * Defaults to an "error" palette from the ambient [MaterialTheme]; pass a different
  * [containerColor] (e.g. `MaterialTheme.colorScheme.tertiaryContainer`) for tip/info/success
- * variants. [contentColor] derives from [containerColor] by default so it stays legible.
+ * variants, or a [containerBrush] for a gradient background. [contentColor] derives from
+ * [containerColor] by default so it stays legible.
  *
  * @param title the bold headline.
  * @param modifier the [Modifier] applied to the banner.
  * @param description optional supporting body text.
  * @param icon optional leading icon.
- * @param containerColor the banner background color.
+ * @param containerColor the banner background color (used when [containerBrush] is null).
+ * @param containerBrush optional gradient/brush background; overrides [containerColor] when set.
  * @param contentColor the icon/text color.
  * @param titleStyle the [title] text style.
  * @param descriptionStyle the [description] text style.
@@ -49,6 +52,7 @@ fun AsgardBanner(
     description: String? = null,
     icon: ImageVector? = null,
     containerColor: Color = MaterialTheme.colorScheme.errorContainer,
+    containerBrush: Brush? = null,
     contentColor: Color = contentColorFor(containerColor),
     titleStyle: TextStyle = MaterialTheme.typography.titleSmall,
     descriptionStyle: TextStyle = MaterialTheme.typography.bodyMedium,
@@ -57,7 +61,13 @@ fun AsgardBanner(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(containerColor)
+            .then(
+                if (containerBrush != null) {
+                    Modifier.background(containerBrush)
+                } else {
+                    Modifier.background(containerColor)
+                },
+            )
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

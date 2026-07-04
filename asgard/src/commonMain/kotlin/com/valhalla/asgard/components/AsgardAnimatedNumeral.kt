@@ -2,6 +2,7 @@ package com.valhalla.asgard.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -9,22 +10,25 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 
 /**
- * Numeric (or short) text that animates on change: the outgoing value slides out while the
- * incoming value slides in, giving an "odometer"-style transition. Styling comes from the
- * ambient [MaterialTheme] by default.
+ * Numeric (or short) text that animates on change. By default the outgoing value slides out while
+ * the incoming value slides in, giving an "odometer"-style transition. When [countUp] is true and
+ * [value] parses as an integer, the number instead animates by counting up/down to the target.
+ * Styling comes from the ambient [MaterialTheme] by default.
  *
  * @param value the current text to display (drives the transition when it changes).
  * @param modifier the [Modifier] applied to the text.
  * @param style the text style.
  * @param color the text color.
  * @param fontWeight optional font weight.
- * @param durationMillis the slide duration.
+ * @param durationMillis the slide (or count) duration.
+ * @param countUp when true and [value] parses as an integer, animate by counting instead of sliding.
  */
 @Composable
 fun AsgardAnimatedNumeral(
@@ -34,7 +38,25 @@ fun AsgardAnimatedNumeral(
     color: Color = MaterialTheme.colorScheme.onSurface,
     fontWeight: FontWeight? = FontWeight.Bold,
     durationMillis: Int = 300,
+    countUp: Boolean = false,
 ) {
+    val targetInt = if (countUp) value.toIntOrNull() else null
+    if (targetInt != null) {
+        val animated by animateIntAsState(
+            targetValue = targetInt,
+            animationSpec = tween(durationMillis),
+            label = "AsgardAnimatedNumeral.count",
+        )
+        Text(
+            text = animated.toString(),
+            modifier = modifier,
+            style = style,
+            color = color,
+            fontWeight = fontWeight,
+            maxLines = 1,
+        )
+        return
+    }
     AnimatedContent(
         targetState = value,
         modifier = modifier,

@@ -1,8 +1,10 @@
 package com.valhalla.asgard.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -24,17 +27,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 /**
- * A compact metric tile: a small [label] over a large, emphasized [value] on a rounded tonal
- * surface, with an optional leading [icon] and an optional [statusDotColor] indicator.
+ * A compact metric tile: a small [label] paired with a large, emphasized [value] on a rounded
+ * tonal surface, with an optional leading [icon] and an optional [statusDotColor] indicator.
  *
  * All colors and the value text style default to the ambient [MaterialTheme] so the tile stays
  * theme-agnostic.
  *
- * @param label the caption above the value (single line).
+ * @param label the caption paired with the value (single line).
  * @param value the emphasized value text (single line).
  * @param modifier the [Modifier] applied to the tile.
  * @param icon optional leading icon shown before the text stack.
  * @param statusDotColor when non-null, draws a small filled dot next to the label.
+ * @param onClick optional click handler; when non-null the whole tile becomes clickable.
+ * @param animateValue when true, [value] is rendered via [AsgardAnimatedNumeral] with a count-up
+ *   animation (for numeric values).
+ * @param valueFirst when true, [value] is placed above [label] (large-number-first layout).
  * @param containerColor the tile background color.
  * @param labelColor the [label] text color.
  * @param valueColor the [value] text color.
@@ -47,6 +54,11 @@ fun AsgardStatTile(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     statusDotColor: Color? = null,
+    onClick: (() -> Unit)? = null,
+    animateValue: Boolean = false,
+    valueFirst: Boolean = false,
+    shape: Shape = RoundedCornerShape(20.dp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
     labelColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     valueColor: Color = MaterialTheme.colorScheme.onSurface,
@@ -54,9 +66,10 @@ fun AsgardStatTile(
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(20.dp))
+            .clip(shape)
             .background(containerColor)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
@@ -69,32 +82,53 @@ fun AsgardStatTile(
             Spacer(Modifier.width(12.dp))
         }
         Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (statusDotColor != null) {
-                    Spacer(
-                        Modifier
-                            .size(8.dp)
-                            .clip(CircleShape)
-                            .background(statusDotColor),
+            val labelContent: @Composable () -> Unit = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (statusDotColor != null) {
+                        Spacer(
+                            Modifier
+                                .size(8.dp)
+                                .clip(CircleShape)
+                                .background(statusDotColor),
+                        )
+                        Spacer(Modifier.width(6.dp))
+                    }
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = labelColor,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
-                    Spacer(Modifier.width(6.dp))
                 }
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = labelColor,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
             }
-            Text(
-                text = value,
-                style = valueStyle,
-                fontWeight = FontWeight.Bold,
-                color = valueColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            val valueContent: @Composable () -> Unit = {
+                if (animateValue) {
+                    AsgardAnimatedNumeral(
+                        value = value,
+                        style = valueStyle,
+                        color = valueColor,
+                        fontWeight = valueStyle.fontWeight ?: FontWeight.Bold,
+                        countUp = true,
+                    )
+                } else {
+                    Text(
+                        text = value,
+                        style = valueStyle,
+                        fontWeight = FontWeight.Bold,
+                        color = valueColor,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            if (valueFirst) {
+                valueContent()
+                labelContent()
+            } else {
+                labelContent()
+                valueContent()
+            }
         }
     }
 }

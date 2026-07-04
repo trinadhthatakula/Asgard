@@ -10,6 +10,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -62,6 +63,8 @@ fun AsgardSectionCard(
  * @param value optional trailing value text (ignored when [trailing] is supplied).
  * @param icon optional leading icon.
  * @param iconTint tint for [icon].
+ * @param enabled whether the row is interactive; when false the row is dimmed and clicks are
+ *   ignored.
  * @param onClick optional click handler.
  * @param trailing optional custom trailing content.
  */
@@ -73,16 +76,17 @@ fun AsgardSettingRow(
     value: String? = null,
     icon: ImageVector? = null,
     iconTint: Color = MaterialTheme.colorScheme.primary,
+    enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
 ) {
     AsgardListRow(
         title = title,
-        modifier = modifier,
+        modifier = if (enabled) modifier else modifier.alpha(0.5f),
         subtitle = subtitle,
         icon = icon,
         iconTint = iconTint,
-        onClick = onClick,
+        onClick = if (enabled) onClick else null,
         trailing = trailing ?: value?.let { v ->
             {
                 Text(
@@ -104,6 +108,8 @@ fun AsgardSettingRow(
  * @param modifier the [Modifier] applied to the row.
  * @param subtitle optional description under the title.
  * @param enabled whether the row/switch is interactive.
+ * @param subtitleMarquee when true, the [subtitle] is a single line that toggles a scrolling
+ *   marquee on tap.
  * @param icon optional leading icon.
  * @param iconTint tint for [icon].
  */
@@ -115,6 +121,7 @@ fun AsgardSettingToggleRow(
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     enabled: Boolean = true,
+    subtitleMarquee: Boolean = false,
     icon: ImageVector? = null,
     iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
@@ -129,6 +136,7 @@ fun AsgardSettingToggleRow(
         } else {
             null
         },
+        subtitleMarquee = subtitleMarquee,
         trailing = {
             Switch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
         },

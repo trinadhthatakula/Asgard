@@ -1,5 +1,6 @@
 package com.valhalla.asgard.components
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +39,8 @@ import androidx.compose.ui.unit.dp
  * @param icon optional leading icon (ignored when [leading] is supplied).
  * @param iconTint tint for [icon].
  * @param onClick optional row click handler.
+ * @param subtitleMarquee when true, the [subtitle] is a single line that toggles a scrolling
+ *   marquee on tap (useful for long values that would otherwise be ellipsized).
  * @param leading optional custom leading content (avatar, checkbox, …).
  * @param trailing optional trailing content (value text, action, chevron, …).
  */
@@ -46,6 +53,7 @@ fun AsgardListRow(
     icon: ImageVector? = null,
     iconTint: Color = MaterialTheme.colorScheme.primary,
     onClick: (() -> Unit)? = null,
+    subtitleMarquee: Boolean = false,
     leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
 ) {
@@ -76,13 +84,26 @@ fun AsgardListRow(
                 overflow = TextOverflow.Ellipsis,
             )
             if (subtitle != null) {
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                if (subtitleMarquee) {
+                    var marqueeOn by remember { mutableStateOf(false) }
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = if (marqueeOn) TextOverflow.Clip else TextOverflow.Ellipsis,
+                        modifier = (if (marqueeOn) Modifier.basicMarquee() else Modifier)
+                            .clickable { marqueeOn = !marqueeOn },
+                    )
+                } else {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
             if (caption != null) {
                 Text(
