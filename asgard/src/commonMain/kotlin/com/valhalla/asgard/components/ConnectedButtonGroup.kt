@@ -6,6 +6,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonColors
@@ -62,8 +63,9 @@ import androidx.compose.ui.zIndex
  * @param modifier applied to the root [Row].
  * @param enabled group-wide enabled flag. When `false`, every button is disabled regardless of
  *   the per-item [ConnectedButtonGroupItem.enabled] flag.
- * @param colors optional [ToggleButtonColors] applied to every button. When `null`, the
- *   Material default ([ToggleButtonDefaults.toggleButtonColors]) is used.
+ * @param colors optional [ToggleButtonColors] applied to every button. When `null`, the Material
+ *   default is used but the **selected** button is emphasized with `primary` container / `onPrimary`
+ *   content so its label and icon stay legible in both light and dark themes.
  * @param spacing horizontal spacing between buttons. Defaults to the connected-group overlap
  *   ([ButtonGroupDefaults.ConnectedSpaceBetween]).
  * @param contentDescription optional accessibility description applied to the whole group.
@@ -86,7 +88,12 @@ fun ConnectedButtonGroup(
     require(items.isNotEmpty()) { "ConnectedButtonGroup requires at least one item" }
 
     val lastIndex = items.lastIndex
-    val resolvedColors = colors ?: ToggleButtonDefaults.toggleButtonColors()
+    // The selected button is emphasized with primary/onPrimary so its label + icon stay
+    // high-contrast in both light and dark themes (the bare M3 default is low-contrast on dark).
+    val resolvedColors = colors ?: ToggleButtonDefaults.toggleButtonColors(
+        checkedContainerColor = MaterialTheme.colorScheme.primary,
+        checkedContentColor = MaterialTheme.colorScheme.onPrimary,
+    )
     val groupDescription = contentDescription
 
     Row(
