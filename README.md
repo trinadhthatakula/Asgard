@@ -54,6 +54,16 @@ dependencies {
 }
 ```
 
+**Artifacts.** Asgard is a Kotlin Multiplatform library published as **three** Maven Central
+coordinates. Depend on the umbrella `asgard` and Gradle resolves the right one per target — or depend
+on a single platform artifact directly if you only want one:
+
+| Coordinate | Platform | Format |
+|---|---|---|
+| `com.trinadhthatakula:asgard` | **all** — auto-resolves the variant *(recommended)* | Gradle Module Metadata |
+| `com.trinadhthatakula:asgard-android` | Android only | `.aar` |
+| `com.trinadhthatakula:asgard-wasm-js` | wasmJs only | `.klib` |
+
 <details>
 <summary><b>Kotlin Multiplatform</b> (shared module)</summary>
 
