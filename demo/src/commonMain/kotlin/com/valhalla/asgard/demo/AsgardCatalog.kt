@@ -64,6 +64,26 @@ import com.valhalla.asgard.components.AsgardStepperRow
 import com.valhalla.asgard.components.AsgardTonalIconButton
 import com.valhalla.asgard.components.AsgardUpgradeCard
 import com.valhalla.asgard.components.StatusChip
+import com.valhalla.asgard.charts.AsgardBarStack
+import com.valhalla.asgard.charts.AsgardChartLegend
+import com.valhalla.asgard.charts.AsgardChartPoint
+import com.valhalla.asgard.charts.AsgardLegendEntry
+import com.valhalla.asgard.charts.AsgardLegendSwatch
+import com.valhalla.asgard.charts.AsgardLineChart
+import com.valhalla.asgard.charts.AsgardLineSeries
+import com.valhalla.asgard.charts.AsgardLineSmoothing
+import com.valhalla.asgard.charts.AsgardPulseRing
+import com.valhalla.asgard.charts.AsgardStackedBarChart
+import com.valhalla.asgard.charts.AsgardTimelineBar
+import com.valhalla.asgard.charts.AsgardTimelineSegment
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 private val demoNavItems = listOf(
     AsgardNavItem(Icons.Rounded.Star, "Home"),
@@ -525,4 +545,159 @@ val asgardCatalog: List<ComponentEntry> = listOf(
             onClick = {},
         )
     },
+
+    // ─── Charts (interactive — drag the knobs to see live changes) ───────────────
+
+    ComponentEntry(
+        "AsgardLineChart", "Charts",
+        "A multi-series smoothed line + area chart. Adjust the knobs below to see it react live.",
+        "AsgardLineChart(\n    series = listOf(AsgardLineSeries(points, color = colorScheme.primary)),\n    yValueFormatter = { it.roundToInt().toString() },\n    modifier = Modifier.fillMaxWidth().height(200.dp),\n)",
+    ) {
+        var count by remember { mutableStateOf(9f) }
+        var amp by remember { mutableStateOf(0.6f) }
+        var smooth by remember { mutableStateOf(true) }
+        var fill by remember { mutableStateOf(true) }
+        var twoSeries by remember { mutableStateOf(true) }
+        val n = count.roundToInt()
+        val mode = if (smooth) AsgardLineSmoothing.Cubic else AsgardLineSmoothing.None
+        val primary = MaterialTheme.colorScheme.primary
+        val secondary = MaterialTheme.colorScheme.secondary
+        val series = buildList {
+            add(
+                AsgardLineSeries(
+                    points = (0 until n).map { i -> AsgardChartPoint(i.toFloat(), 0.5f + amp * sin(i * 0.8f), "D${i + 1}") },
+                    color = primary, smoothing = mode, fillArea = fill,
+                ),
+            )
+            if (twoSeries) add(
+                AsgardLineSeries(
+                    points = (0 until n).map { i -> AsgardChartPoint(i.toFloat(), 0.5f + amp * 0.6f * cos(i * 0.7f)) },
+                    color = secondary, smoothing = mode, fillArea = fill,
+                ),
+            )
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            AsgardLineChart(
+                series = series,
+                modifier = Modifier.fillMaxWidth().height(200.dp),
+                yValueFormatter = { (it * 100).roundToInt().toString() },
+            )
+            AsgardChartLegend(
+                entries = buildList {
+                    add(AsgardLegendEntry("Series A", primary))
+                    if (twoSeries) add(AsgardLegendEntry("Series B", secondary))
+                },
+            )
+            AsgardLabeledSlider("Points", count, { count = it }, valueRange = 3f..16f, steps = 12, valueLabel = "$n")
+            AsgardLabeledSlider("Amplitude", amp, { amp = it }, valueRange = 0.1f..0.9f, valueLabel = "${(amp * 100).roundToInt()}%")
+            ControlToggle("Smooth (cubic)", smooth) { smooth = it }
+            ControlToggle("Area fill", fill) { fill = it }
+            ControlToggle("Second series", twoSeries) { twoSeries = it }
+        }
+    },
+
+    ComponentEntry(
+        "AsgardStackedBarChart", "Charts",
+        "N-segment stacked bars with a shared scale. Change the bar count and dim the last (partial) bar.",
+        "AsgardStackedBarChart(\n    bars = days.map { AsgardBarStack(listOf(it.active, it.idle), dimmed = it.partial) },\n    segmentColors = listOf(colorScheme.primary, colorScheme.tertiary),\n)",
+    ) {
+        var barCount by remember { mutableStateOf(7f) }
+        var dimLast by remember { mutableStateOf(true) }
+        val n = barCount.roundToInt()
+        val c1 = MaterialTheme.colorScheme.primary
+        val c2 = MaterialTheme.colorScheme.tertiary
+        val bars = (0 until n).map { i ->
+            AsgardBarStack(
+                values = listOf(1f + (i % 4), 1f + ((i + 2) % 3)),
+                dimmed = dimLast && i == n - 1,
+            )
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            AsgardStackedBarChart(
+                bars = bars,
+                segmentColors = listOf(c1, c2),
+                modifier = Modifier.fillMaxWidth().height(160.dp),
+            )
+            AsgardChartLegend(entries = listOf(AsgardLegendEntry("Active", c1), AsgardLegendEntry("Idle", c2)))
+            AsgardLabeledSlider("Bars", barCount, { barCount = it }, valueRange = 3f..12f, steps = 8, valueLabel = "$n")
+            ControlToggle("Dim last bar (partial)", dimLast) { dimLast = it }
+        }
+    },
+
+    ComponentEntry(
+        "AsgardTimelineBar", "Charts",
+        "Colored interval spans across a time window (screen states, sessions, schedules). Drag to move the split.",
+        "AsgardTimelineBar(segments, windowStartMillis = 0, windowEndMillis = 100)",
+    ) {
+        var split by remember { mutableStateOf(50f) }
+        val on = MaterialTheme.colorScheme.primary
+        val doze = MaterialTheme.colorScheme.tertiary
+        val s = split.roundToInt().toLong()
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            AsgardTimelineBar(
+                segments = listOf(
+                    AsgardTimelineSegment(0, s, on),
+                    AsgardTimelineSegment(s + 5, 100, doze),
+                ),
+                windowStartMillis = 0, windowEndMillis = 100,
+                modifier = Modifier.fillMaxWidth(),
+                height = 14.dp,
+            )
+            AsgardChartLegend(
+                entries = listOf(AsgardLegendEntry("On", on), AsgardLegendEntry("Doze", doze)),
+                swatch = AsgardLegendSwatch.Dot,
+            )
+            AsgardLabeledSlider("Split", split, { split = it }, valueRange = 10f..80f, valueLabel = "$s")
+        }
+    },
+
+    ComponentEntry(
+        "AsgardChartLegend", "Charts",
+        "The wrapping swatch + label key shared by every Asgard chart. Toggle square/dot swatches.",
+        "AsgardChartLegend(entries = listOf(AsgardLegendEntry(\"Petrol\", primary), AsgardLegendEntry(\"Diesel\", secondary)))",
+    ) {
+        var dot by remember { mutableStateOf(false) }
+        val cs = MaterialTheme.colorScheme
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            AsgardChartLegend(
+                entries = listOf(
+                    AsgardLegendEntry("Petrol", cs.primary),
+                    AsgardLegendEntry("Diesel", cs.secondary),
+                    AsgardLegendEntry("CNG", cs.tertiary),
+                ),
+                swatch = if (dot) AsgardLegendSwatch.Dot else AsgardLegendSwatch.Square,
+            )
+            ControlToggle("Dot swatches", dot) { dot = it }
+        }
+    },
+
+    ComponentEntry(
+        "AsgardPulseRing", "Charts",
+        "A decorative attention pulse behind any content. Change the speed or stop it.",
+        "AsgardPulseRing(color = colorScheme.tertiary) { Icon(Icons.Rounded.Star, null) }",
+    ) {
+        var speed by remember { mutableStateOf(1200f) }
+        var pulsing by remember { mutableStateOf(true) }
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            AsgardPulseRing(
+                color = MaterialTheme.colorScheme.tertiary,
+                ringSize = 40.dp,
+                durationMillis = speed.roundToInt(),
+                pulsing = pulsing,
+            ) {
+                Icon(Icons.Rounded.Star, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary)
+            }
+            AsgardLabeledSlider("Speed (ms)", speed, { speed = it }, valueRange = 400f..2400f, valueLabel = "${speed.roundToInt()}")
+            ControlToggle("Pulsing", pulsing) { pulsing = it }
+        }
+    },
 )
+
+/** A label + trailing Switch row used by the interactive chart demos. */
+@Composable
+private fun ControlToggle(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
+}
