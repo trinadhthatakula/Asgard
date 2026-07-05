@@ -1,7 +1,6 @@
 package com.valhalla.asgard
 
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Shape
@@ -11,15 +10,16 @@ import androidx.compose.ui.unit.dp
 /**
  * Central design tokens shared across Asgard components.
  *
- * Each token's default value equals the radius/size the corresponding component was previously
- * hard-coding, so routing a component through [AsgardDefaults] changes no pixels — it only
- * centralises the values and makes them overridable per call site. A fuller migration that sources
- * these from the host [MaterialTheme] (which would intentionally shift some radii) is planned for a
- * later, non-1.2.0 release.
+ * The shape tokens are **sourced from the host [MaterialTheme.shapes]**, so Asgard's surfaces follow
+ * the app's own shape scheme — override `MaterialTheme.shapes` (large / medium / …) and every Asgard
+ * card, tile, banner and action item reshapes with it. Any component still accepts an explicit
+ * `shape` param to override per call site.
+ *
+ * Spacing/sizing tokens are plain [Dp] constants (Material 3 has no theme spacing scale).
  */
 object AsgardDefaults {
 
-    // ---- Shapes -----------------------------------------------------------------------------
+    // ---- Shapes (theme-driven) ---------------------------------------------------------------
 
     /** Shape for large metric cards (e.g. [com.valhalla.asgard.components.AsgardStatCard]). */
     val cardShape: Shape
@@ -27,29 +27,29 @@ object AsgardDefaults {
 
     /** Shape for compact metric tiles (e.g. [com.valhalla.asgard.components.AsgardStatTile]). */
     val tileShape: Shape
-        @Composable get() = RoundedCornerShape(20.dp)
+        @Composable get() = MaterialTheme.shapes.large
 
     /** Shape for titled section cards (e.g. AsgardSectionCard). */
     val sectionCardShape: Shape
-        @Composable get() = RoundedCornerShape(20.dp)
+        @Composable get() = MaterialTheme.shapes.large
 
     /** Shape for full-width callout banners (e.g. [com.valhalla.asgard.components.AsgardBanner]). */
     val bannerShape: Shape
-        @Composable get() = RoundedCornerShape(16.dp)
+        @Composable get() = MaterialTheme.shapes.medium
 
     /** Shape for vertical action tiles (e.g. [com.valhalla.asgard.components.AsgardActionItem]). */
     val actionItemShape: Shape
-        @Composable get() = RoundedCornerShape(24.dp)
+        @Composable get() = MaterialTheme.shapes.large
 
     /** Shape for promotional upgrade cards (e.g. AsgardUpgradeCard). */
     val upgradeCardShape: Shape
-        @Composable get() = RoundedCornerShape(24.dp)
+        @Composable get() = MaterialTheme.shapes.large
 
     /** Pill shape for badges and status chips. */
     val pillShape: Shape
         get() = CircleShape
 
-    // ---- Spacing / sizing -------------------------------------------------------------------
+    // ---- Spacing / sizing --------------------------------------------------------------------
 
     /** Default internal content padding for card-like surfaces. */
     val contentPadding: Dp = 16.dp

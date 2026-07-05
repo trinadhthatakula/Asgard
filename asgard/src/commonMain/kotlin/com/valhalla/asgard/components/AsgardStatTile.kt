@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.valhalla.asgard.AsgardDefaults
 import com.valhalla.asgard.expressivePress
 
 /**
@@ -89,7 +89,7 @@ fun AsgardStatTile(
     animateValue: Boolean = false,
     valueFirst: Boolean = false,
     secondaryValue: String? = null,
-    shape: Shape = RoundedCornerShape(20.dp),
+    shape: Shape = AsgardDefaults.tileShape,
     border: BorderStroke? = null,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
