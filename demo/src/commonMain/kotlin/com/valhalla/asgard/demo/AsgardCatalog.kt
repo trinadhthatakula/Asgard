@@ -181,8 +181,14 @@ val asgardCatalog: List<ComponentEntry> = listOf(
     ComponentEntry(
         "AsgardBadge", "Chips & badges",
         "A neutral label pill with an optional icon; filled or outlined.",
-        "AsgardBadge(text = \"NEW\", icon = Icons.Rounded.Star)",
-    ) { AsgardBadge(text = "NEW", icon = Icons.Rounded.Star) },
+        "AsgardBadge(text = \"NEW\", icon = Icons.Rounded.Star, outlined = false)",
+    ) {
+        var outlined by remember { mutableStateOf(false) }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            AsgardBadge(text = "NEW", icon = Icons.Rounded.Star, outlined = outlined)
+            ControlToggle("Outlined", outlined) { outlined = it }
+        }
+    },
 
     ComponentEntry(
         "AsgardProBadge", "Monetization",
@@ -279,12 +285,25 @@ val asgardCatalog: List<ComponentEntry> = listOf(
         "A tonal callout card: icon + title + description + optional action.",
         "AsgardBanner(title = \"No connection\", description = \"Check your network.\",\n    icon = Icons.Rounded.Warning) { TextButton(onClick = {}) { Text(\"Retry\") } }",
     ) {
-        AsgardBanner(
-            title = "No connection",
-            description = "Check your network and try again.",
-            icon = Icons.Rounded.Warning,
-            modifier = Modifier.fillMaxWidth(),
-        ) { TextButton(onClick = {}) { Text("Retry") } }
+        var showIcon by remember { mutableStateOf(true) }
+        var showDescription by remember { mutableStateOf(true) }
+        var showAction by remember { mutableStateOf(true) }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            AsgardBanner(
+                title = "No connection",
+                description = if (showDescription) "Check your network and try again." else null,
+                icon = if (showIcon) Icons.Rounded.Warning else null,
+                modifier = Modifier.fillMaxWidth(),
+                action = if (showAction) {
+                    { TextButton(onClick = {}) { Text("Retry") } }
+                } else {
+                    null
+                },
+            )
+            ControlToggle("Show icon", showIcon) { showIcon = it }
+            ControlToggle("Show description", showDescription) { showDescription = it }
+            ControlToggle("Show action", showAction) { showAction = it }
+        }
     },
 
     ComponentEntry(
@@ -385,10 +404,17 @@ val asgardCatalog: List<ComponentEntry> = listOf(
     ComponentEntry(
         "AsgardProgressRing", "Progress",
         "A circular progress/gauge ring with a centered content slot.",
-        "AsgardProgressRing(progress = 0.66f) { Text(\"66%\") }",
+        "AsgardProgressRing(progress = progress, animate = true) { Text(\"66%\") }",
     ) {
-        AsgardProgressRing(progress = 0.66f, size = 140.dp) {
-            Text("66%", style = MaterialTheme.typography.titleLarge)
+        var progress by remember { mutableStateOf(0.66f) }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            AsgardProgressRing(progress = progress, size = 140.dp, animate = true) {
+                Text("${(progress * 100).roundToInt()}%", style = MaterialTheme.typography.titleLarge)
+            }
+            AsgardLabeledSlider("Progress", progress, { progress = it }, valueLabel = "${(progress * 100).roundToInt()}%")
         }
     },
 
