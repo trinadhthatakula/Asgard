@@ -123,11 +123,9 @@ fun AsgardLineChart(
         yMin = yRange.start
         yMax = yRange.endInclusive
     } else {
-        val dataMin = allPoints.minOf { it.y }
-        val dataMax = allPoints.maxOf { it.y }
-        val span = (dataMax - dataMin).let { if (it == 0f) 1f else it }
-        yMin = dataMin - span * yPaddingFraction
-        yMax = dataMax + span * yPaddingFraction
+        val (lo, hi) = asgardLineChartYBounds(allPoints.minOf { it.y }, allPoints.maxOf { it.y }, yPaddingFraction)
+        yMin = lo
+        yMax = hi
     }
 
     Canvas(modifier) {
@@ -171,7 +169,7 @@ fun AsgardLineChart(
         // X-axis labels (sampled evenly, using the first series' points).
         val labelPoints = nonEmpty.first().points
         if (maxXLabels > 0 && labelPoints.isNotEmpty()) {
-            val step = max(1, (labelPoints.size + maxXLabels - 1) / maxXLabels)
+            val step = asgardLabelSampleStep(labelPoints.size, maxXLabels)
             labelPoints.forEachIndexed { idx, p ->
                 if (idx % step == 0) {
                     val text = xLabelFormatter(p)
@@ -247,3 +245,19 @@ fun AsgardLineChart(
         }
     }
 }
+
+/**
+ * Computes the padded `[min, max]` Y bounds for auto-scaling: adds [paddingFraction] of the data
+ * span above and below, treating a zero span as `1f`. Extracted for unit testing.
+ */
+internal fun asgardLineChartYBounds(dataMin: Float, dataMax: Float, paddingFraction: Float): Pair<Float, Float> {
+    val span = (dataMax - dataMin).let { if (it == 0f) 1f else it }
+    return (dataMin - span * paddingFraction) to (dataMax + span * paddingFraction)
+}
+
+/**
+ * The stride used to sample at most [maxLabels] evenly-spaced X labels from [count] points
+ * (`>= 1`, never zero). Extracted for unit testing.
+ */
+internal fun asgardLabelSampleStep(count: Int, maxLabels: Int): Int =
+    if (count <= 0 || maxLabels <= 0) 1 else max(1, (count + maxLabels - 1) / maxLabels)

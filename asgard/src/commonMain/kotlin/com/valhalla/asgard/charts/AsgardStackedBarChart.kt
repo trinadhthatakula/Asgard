@@ -54,7 +54,7 @@ fun AsgardStackedBarChart(
         Canvas(modifier) {}
         return
     }
-    val resolvedMax = (maxTotal ?: bars.maxOf { it.values.sum() }).let { if (it <= 0f) 1f else it }
+    val resolvedMax = asgardResolveMaxTotal(bars.map { it.values.sum() }, maxTotal)
 
     Canvas(modifier) {
         val w = size.width
@@ -99,4 +99,14 @@ fun AsgardStackedBarChart(
             }
         }
     }
+}
+
+/**
+ * Resolves the value that maps to full bar height: the [explicit] max when given, else the tallest
+ * bar total from [barSums]; a non-positive result is floored to `1f` to avoid divide-by-zero.
+ * Extracted for unit testing.
+ */
+internal fun asgardResolveMaxTotal(barSums: List<Float>, explicit: Float?): Float {
+    val max = explicit ?: (barSums.maxOrNull() ?: 0f)
+    return if (max <= 0f) 1f else max
 }

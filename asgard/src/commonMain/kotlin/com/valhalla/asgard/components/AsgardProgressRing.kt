@@ -63,7 +63,7 @@ fun AsgardProgressRing(
     contentDescription: String? = null,
     content: @Composable () -> Unit = {},
 ) {
-    val target = (if (progress.isFinite()) progress else 0f).coerceIn(0f, 1f)
+    val target = asgardClampProgress(progress)
     val p = if (animate) {
         animateFloatAsState(targetValue = target, animationSpec = animationSpec).value
     } else {
@@ -122,3 +122,10 @@ fun AsgardProgressRing(
         content()
     }
 }
+
+/**
+ * Clamps a raw progress value into `0f..1f`, mapping non-finite input (`NaN`/±∞) to `0f`.
+ * Extracted so the guard can be unit-tested without a rendering harness.
+ */
+internal fun asgardClampProgress(progress: Float): Float =
+    (if (progress.isFinite()) progress else 0f).coerceIn(0f, 1f)

@@ -20,6 +20,8 @@ kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_21
         }
+        // Enable JVM-hosted unit tests (androidHostTest) so commonTest runs without an emulator.
+        withHostTest {}
     }
 
     wasmJs {
@@ -44,6 +46,12 @@ kotlin {
             // NOTE: material-icons-extended intentionally dropped in 1.2.0 — AsgardHeader's only
             // icon (Icons.AutoMirrored.Filled.ArrowBack) lives in material-icons-core (pulled in
             // transitively by material3). Consumers pass their own ImageVectors for everything else.
+        }
+        commonTest.dependencies {
+            // Pure-logic unit tests for the extracted chart/progress domain math. They run on the
+            // Android host JVM (androidHostTest) without an emulator, and on wasmJs via the browser
+            // test task. UI/rendering behaviour is verified visually via the demo gallery.
+            implementation(kotlin("test"))
         }
     }
 }
