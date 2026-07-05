@@ -24,7 +24,7 @@ Multiplatform (wasm).
 // settings.gradle.kts has mavenCentral() in dependencyResolutionManagement
 
 dependencies {
-    implementation("com.trinadhthatakula:asgard:1.1.0")
+    implementation("com.trinadhthatakula:asgard:1.2.0")
 }
 ```
 
@@ -36,7 +36,7 @@ right variant automatically — an Android project gets the `asgard-android` art
 `compileOnly` so it isn't duplicated in your extension APK — Thor provides it at runtime:
 
 ```kotlin
-compileOnly("com.trinadhthatakula:asgard:1.1.0")
+compileOnly("com.trinadhthatakula:asgard:1.2.0")
 ```
 
 > Asgard shares the `com.trinadhthatakula` namespace with the Thor extension contract,
@@ -54,7 +54,15 @@ compileOnly("com.trinadhthatakula:asgard:1.1.0")
 | `StatusChip` | A pill status label (`labelSmall`, on a `CircleShape` background). |
 | `AsgardActionItem` | An icon-chip + label action cell for action rows / toolbars. |
 
-All icons are passed as `ImageVector` — Asgard bundles no icon pack.
+All icons are passed as `ImageVector` — Asgard bundles no icon pack. As of **1.2.0** the library
+depends on **no** `material-icons` artifact at all (its one built-in glyph, the `AsgardHeader` back
+arrow, is a self-contained vector), so nothing is forced onto your app's footprint.
+
+**1.2.0** is an additive, non-breaking release: every component gains customization params —
+`maxLines`/`overflow`/`softWrap`, `TextStyle`/color/`Shape` overrides (routed through the new
+`AsgardDefaults` tokens), and accessibility hooks (`Role.Button`, overridable `contentDescription`) —
+plus a batch of rendering-bug fixes (non-finite progress guard, marquee state keying, legible banner
+content color, locked-overlay semantics). Existing call sites compile unchanged.
 
 **1.1.0 adds 22 more** theme-agnostic components — stat tiles, banners, badges, list/settings rows,
 a pro-gate kit, a progress ring, empty/loading states, onboarding, a dialog scaffold, stepper,
