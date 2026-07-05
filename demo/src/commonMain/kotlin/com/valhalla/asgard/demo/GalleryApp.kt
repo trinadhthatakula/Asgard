@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 
 /** The demo shell: a theming toolbar, a component nav list, and a live detail pane. */
 @Composable
@@ -131,6 +133,12 @@ private fun DetailPane(entry: ComponentEntry) {
         // switching entries (previews hold state of different types — Boolean/Int/Float/String).
         Box(Modifier.padding(vertical = 32.dp)) { key(entry.name) { entry.content() } }
         var copied by remember(entry.name) { mutableStateOf(false) }
+        LaunchedEffect(copied) {
+            if (copied) {
+                delay(1500)
+                copied = false
+            }
+        }
         Surface(
             color = MaterialTheme.colorScheme.surfaceContainerHighest,
             shape = RoundedCornerShape(12.dp),

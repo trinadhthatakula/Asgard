@@ -14,14 +14,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -112,37 +111,34 @@ fun AsgardActionItem(
             }
             .padding(vertical = 8.dp),
     ) {
-        CompositionLocalProvider(
-            LocalContentColor provides LocalContentColor.current.copy(
-                alpha = if (enabled) 1f else disabledAlpha,
-            ),
+        // Dim the whole icon chip (background + glyph) when disabled, matching the label — the
+        // Icon uses an explicit tint so it would otherwise ignore any content-color dimming.
+        Box(
+            modifier = Modifier
+                .size(iconChipSize)
+                .alpha(if (enabled) 1f else disabledAlpha)
+                .clip(RoundedCornerShape(16.dp))
+                .background(containerColor),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(iconChipSize)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(containerColor),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = iconContentDescription,
-                    tint = iconTint,
-                    modifier = Modifier.size(iconSize),
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = label,
-                color = labelColor.copy(
-                    alpha = if (enabled) labelColor.alpha else disabledAlpha,
-                ),
-                style = labelStyle,
-                fontWeight = FontWeight.Bold,
-                maxLines = labelMaxLines,
-                overflow = labelOverflow,
-                textAlign = TextAlign.Center,
+            Icon(
+                imageVector = icon,
+                contentDescription = iconContentDescription,
+                tint = iconTint,
+                modifier = Modifier.size(iconSize),
             )
         }
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = label,
+            color = labelColor.copy(
+                alpha = if (enabled) labelColor.alpha else disabledAlpha,
+            ),
+            style = labelStyle,
+            fontWeight = FontWeight.Bold,
+            maxLines = labelMaxLines,
+            overflow = labelOverflow,
+            textAlign = TextAlign.Center,
+        )
     }
 }

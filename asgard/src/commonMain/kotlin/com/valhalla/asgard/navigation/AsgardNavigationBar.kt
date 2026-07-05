@@ -80,15 +80,12 @@ fun AsgardNavigationBar(
     labelStyle: TextStyle? = null
 ) {
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(
-                shape ?: RoundedCornerShape(
-                    topStart = AsgardDefaults.navContainerRadius,
-                    topEnd = AsgardDefaults.navContainerRadius
-                )
-            ),
+        modifier = modifier.fillMaxWidth(),
         color = containerColor,
+        shape = shape ?: RoundedCornerShape(
+            topStart = AsgardDefaults.navContainerRadius,
+            topEnd = AsgardDefaults.navContainerRadius,
+        ),
     ) {
         Row(
             modifier = Modifier

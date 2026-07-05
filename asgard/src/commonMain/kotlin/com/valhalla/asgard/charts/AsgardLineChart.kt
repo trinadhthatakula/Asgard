@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -128,6 +129,25 @@ fun AsgardLineChart(
         yMax = hi
     }
 
+    // Pre-measure axis labels in composition — measuring inside the DrawScope would re-run every frame.
+    val divisions = gridLineCount.coerceAtLeast(1)
+    val yLabelResults = (0..divisions).map { i ->
+        val value = yMax - (i.toFloat() / divisions) * (yMax - yMin)
+        textMeasurer.measure(yValueFormatter(value), resolvedAxisStyle)
+    }
+    val labelPoints = nonEmpty.first().points
+    val xLabelResults: List<Pair<AsgardChartPoint, TextLayoutResult>> =
+        if (maxXLabels > 0 && labelPoints.isNotEmpty()) {
+            val step = asgardLabelSampleStep(labelPoints.size, maxXLabels)
+            labelPoints.filterIndexed { idx, _ -> idx % step == 0 }
+                .mapNotNull { p ->
+                    val t = xLabelFormatter(p)
+                    if (t.isNullOrEmpty()) null else p to textMeasurer.measure(t, resolvedAxisStyle)
+                }
+        } else {
+            emptyList()
+        }
+
     Canvas(modifier) {
         val startPad = contentPadding.calculateStartPadding(layoutDirection).toPx()
         val endPad = contentPadding.calculateEndPadding(layoutDirection).toPx()
@@ -149,14 +169,11 @@ fun AsgardLineChart(
             return plotBottom - t * plotHeight
         }
 
-        // Grid + Y-axis value labels.
-        val divisions = gridLineCount.coerceAtLeast(1)
+        // Grid + pre-measured Y-axis value labels.
         for (i in 0..divisions) {
-            val frac = i.toFloat() / divisions
-            val yPx = plotTop + frac * plotHeight
+            val yPx = plotTop + (i.toFloat() / divisions) * plotHeight
             drawLine(gridColor, Offset(plotLeft, yPx), Offset(plotLeft + plotWidth, yPx), strokeWidth = 1f)
-            val value = yMax - frac * (yMax - yMin)
-            val measured = textMeasurer.measure(yValueFormatter(value), resolvedAxisStyle)
+            val measured = yLabelResults[i]
             drawText(
                 measured,
                 topLeft = Offset(
@@ -166,27 +183,17 @@ fun AsgardLineChart(
             )
         }
 
-        // X-axis labels (sampled evenly, using the first series' points).
-        val labelPoints = nonEmpty.first().points
-        if (maxXLabels > 0 && labelPoints.isNotEmpty()) {
-            val step = asgardLabelSampleStep(labelPoints.size, maxXLabels)
-            labelPoints.forEachIndexed { idx, p ->
-                if (idx % step == 0) {
-                    val text = xLabelFormatter(p)
-                    if (!text.isNullOrEmpty()) {
-                        val measured = textMeasurer.measure(text, resolvedAxisStyle)
-                        val cx = xToPx(p.x)
-                        drawText(
-                            measured,
-                            topLeft = Offset(
-                                x = (cx - measured.size.width / 2f)
-                                    .coerceIn(plotLeft, (plotLeft + plotWidth - measured.size.width).coerceAtLeast(plotLeft)),
-                                y = plotBottom + 4f,
-                            ),
-                        )
-                    }
-                }
-            }
+        // Pre-measured X-axis labels.
+        xLabelResults.forEach { (p, measured) ->
+            val cx = xToPx(p.x)
+            drawText(
+                measured,
+                topLeft = Offset(
+                    x = (cx - measured.size.width / 2f)
+                        .coerceIn(plotLeft, (plotLeft + plotWidth - measured.size.width).coerceAtLeast(plotLeft)),
+                    y = plotBottom + 4f,
+                ),
+            )
         }
 
         // Series.

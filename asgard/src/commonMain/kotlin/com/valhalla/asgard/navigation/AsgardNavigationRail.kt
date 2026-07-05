@@ -89,10 +89,9 @@ fun AsgardNavigationRail(
     val hasValidSelection = selectedIndex in items.indices
 
     Surface(
-        modifier = modifier
-            .fillMaxHeight()
-            .clip(resolvedShape),
+        modifier = modifier.fillMaxHeight(),
         color = containerColor,
+        shape = resolvedShape,
     ) {
         Column(
             modifier = Modifier
