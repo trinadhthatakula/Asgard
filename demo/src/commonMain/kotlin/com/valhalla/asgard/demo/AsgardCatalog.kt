@@ -1,6 +1,9 @@
 package com.valhalla.asgard.demo
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -27,6 +30,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.valhalla.asgard.components.AsgardActionItem
 import com.valhalla.asgard.components.AsgardHeader
@@ -118,6 +123,36 @@ val asgardCatalog: List<ComponentEntry> = listOf(
     },
 
     ComponentEntry(
+        "ConnectedButtonGroup · icons", "Input",
+        "The same group using the Icon (icon-only) and IconWithLabel item variants instead of plain labels.",
+        "ConnectedButtonGroup(items = listOf(\n    ConnectedButtonGroupItem.Icon(Icons.Rounded.Star, \"Home\"),\n    ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Bolt, \"Recent\", \"Recent\"),\n), selectedIndex, onItemSelected)",
+    ) {
+        var iconSel by remember { mutableStateOf(0) }
+        var labelSel by remember { mutableStateOf(1) }
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ConnectedButtonGroup(
+                items = listOf(
+                    ConnectedButtonGroupItem.Icon(Icons.Rounded.Star, "Home"),
+                    ConnectedButtonGroupItem.Icon(Icons.Rounded.Search, "Search"),
+                    ConnectedButtonGroupItem.Icon(Icons.Rounded.Settings, "Settings"),
+                ),
+                selectedIndex = iconSel,
+                onItemSelected = { iconSel = it },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            ConnectedButtonGroup(
+                items = listOf(
+                    ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Star, "Starred", "Starred"),
+                    ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Bolt, "Recent", "Recent"),
+                ),
+                selectedIndex = labelSel,
+                onItemSelected = { labelSel = it },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    },
+
+    ComponentEntry(
         "StatusChip", "Chips & badges",
         "A compact, pill-shaped status label that inherits the theme.",
         "StatusChip(text = \"Frozen\")",
@@ -142,6 +177,52 @@ val asgardCatalog: List<ComponentEntry> = listOf(
     ) { AsgardStatTile(label = "Uptime", value = "12h 30m", icon = Icons.Rounded.Bolt) },
 
     ComponentEntry(
+        "AsgardStatTile · status dot", "Data display",
+        "A stat tile with a colored status dot beside the label — for live health/state read-outs.",
+        "AsgardStatTile(label = \"Server\", value = \"Online\",\n    statusDotColor = Color(0xFF22C55E))",
+    ) {
+        AsgardStatTile(
+            label = "Server",
+            value = "Online",
+            statusDotColor = Color(0xFF22C55E),
+            modifier = Modifier.fillMaxWidth(),
+        )
+    },
+
+    ComponentEntry(
+        "AsgardStatTile · icon badge", "Data display",
+        "A stat tile whose icon sits inside a filled circular badge instead of a bare glyph.",
+        "AsgardStatTile(label = \"Downloads\", value = \"1,204\",\n    icon = Icons.Rounded.Bolt, iconTint = Color.White,\n    iconContainerColor = Color(0xFF6750A4))",
+    ) {
+        AsgardStatTile(
+            label = "Downloads",
+            value = "1,204",
+            icon = Icons.Rounded.Bolt,
+            iconTint = Color.White,
+            iconContainerColor = Color(0xFF6750A4),
+            modifier = Modifier.fillMaxWidth(),
+        )
+    },
+
+    ComponentEntry(
+        "AsgardStatTile · animated", "Data display",
+        "A value-first tile that counts up on change, with an inline secondary label and a border; tap to add.",
+        "var n by remember { mutableStateOf(0) }\nAsgardStatTile(label = \"Steps today\", value = n.toString(),\n    secondaryValue = \"steps\", animateValue = true, valueFirst = true,\n    onClick = { n += 250 },\n    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))",
+    ) {
+        var n by remember { mutableStateOf(0) }
+        AsgardStatTile(
+            label = "Steps today",
+            value = n.toString(),
+            secondaryValue = "steps",
+            animateValue = true,
+            valueFirst = true,
+            onClick = { n += 250 },
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            modifier = Modifier.fillMaxWidth(),
+        )
+    },
+
+    ComponentEntry(
         "AsgardStatCard", "Data display",
         "Vertical metric card: an icon + label header over a large value with an optional unit suffix.",
         "AsgardStatCard(label = \"Voltage\", value = \"5.00\", unit = \"V\",\n    icon = Icons.Rounded.Bolt)",
@@ -151,6 +232,24 @@ val asgardCatalog: List<ComponentEntry> = listOf(
             value = "5.00",
             unit = "V",
             icon = Icons.Rounded.Bolt,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    },
+
+    ComponentEntry(
+        "AsgardStatCard · bento", "Data display",
+        "A compact bento cell: the icon sits inline with the label, a tight unit suffix, clickable with a border.",
+        "AsgardStatCard(label = \"Battery\", value = \"95\", unit = \"%\",\n    unitSeparator = \"\", icon = Icons.Rounded.Bolt,\n    iconInlineWithLabel = true, onClick = {},\n    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))",
+    ) {
+        AsgardStatCard(
+            label = "Battery",
+            value = "95",
+            unit = "%",
+            unitSeparator = "",
+            icon = Icons.Rounded.Bolt,
+            iconInlineWithLabel = true,
+            onClick = {},
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             modifier = Modifier.fillMaxWidth(),
         )
     },
@@ -166,6 +265,24 @@ val asgardCatalog: List<ComponentEntry> = listOf(
             icon = Icons.Rounded.Warning,
             modifier = Modifier.fillMaxWidth(),
         ) { TextButton(onClick = {}) { Text("Retry") } }
+    },
+
+    ComponentEntry(
+        "AsgardBanner · gradient", "Feedback",
+        "A banner with a horizontal-gradient background and a description clamped to two lines.",
+        "AsgardBanner(title = \"You're on Pro\", description = \"…\",\n    descriptionMaxLines = 2, icon = Icons.Rounded.Star,\n    containerBrush = Brush.horizontalGradient(\n        listOf(Color(0xFF6750A4), Color(0xFF9A82DB))))",
+    ) {
+        AsgardBanner(
+            title = "You're on Pro",
+            description = "Enjoy unlimited exports, priority sync, and every premium theme — " +
+                "all included with your plan for as long as your subscription stays active.",
+            descriptionMaxLines = 2,
+            icon = Icons.Rounded.Star,
+            containerBrush = Brush.horizontalGradient(
+                listOf(Color(0xFF6750A4), Color(0xFF9A82DB)),
+            ),
+            modifier = Modifier.fillMaxWidth(),
+        )
     },
 
     ComponentEntry(
@@ -381,7 +498,7 @@ val asgardCatalog: List<ComponentEntry> = listOf(
         "A skeleton/shimmer placeholder shown while content loads.",
         "AsgardShimmer(Modifier.fillMaxWidth().height(24.dp))",
     ) {
-        AsgardShimmer(Modifier.fillMaxWidth().size(width = 320.dp, height = 24.dp))
+        AsgardShimmer(Modifier.fillMaxWidth().height(24.dp))
     },
 
     ComponentEntry(
@@ -395,4 +512,17 @@ val asgardCatalog: List<ComponentEntry> = listOf(
         "A vertical tappable action tile: icon chip over a caption.",
         "AsgardActionItem(icon = Icons.Rounded.Info, label = \"Info\", onClick = {})",
     ) { AsgardActionItem(icon = Icons.Rounded.Info, label = "Info", onClick = {}) },
+
+    ComponentEntry(
+        "AsgardActionItem · one line", "Actions",
+        "An action tile capped at a single label line (labelMaxLines = 1) so long captions truncate cleanly.",
+        "AsgardActionItem(icon = Icons.Rounded.Notifications,\n    label = \"Notification settings\", labelMaxLines = 1, onClick = {})",
+    ) {
+        AsgardActionItem(
+            icon = Icons.Rounded.Notifications,
+            label = "Notification settings",
+            labelMaxLines = 1,
+            onClick = {},
+        )
+    },
 )

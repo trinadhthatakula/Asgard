@@ -41,6 +41,8 @@ fun GalleryApp() {
     var dark by remember { mutableStateOf(false) }
     var seed by remember { mutableStateOf(demoSeeds.first().second) }
     var selected by remember { mutableStateOf(asgardCatalog.first()) }
+    // Group the sidebar by category (preserves first-seen category + entry order).
+    val grouped = remember { asgardCatalog.groupBy { it.category } }
 
     DemoTheme(dark = dark, seed = seed) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
@@ -70,20 +72,33 @@ fun GalleryApp() {
                 HorizontalDivider()
                 Row(Modifier.fillMaxSize()) {
                     LazyColumn(Modifier.width(240.dp).fillMaxHeight()) {
-                        items(asgardCatalog) { entry ->
-                            val isSel = entry == selected
-                            Text(
-                                entry.name,
-                                Modifier.fillMaxWidth()
-                                    .clickable { selected = entry }
-                                    .background(
-                                        if (isSel) MaterialTheme.colorScheme.secondaryContainer
-                                        else MaterialTheme.colorScheme.surface,
-                                    )
-                                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                                color = if (isSel) MaterialTheme.colorScheme.onSecondaryContainer
-                                else MaterialTheme.colorScheme.onSurface,
-                            )
+                        grouped.forEach { (category, entries) ->
+                            item(key = category) {
+                                Text(
+                                    category,
+                                    Modifier.fillMaxWidth()
+                                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                            items(entries, key = { it.name }) { entry ->
+                                val isSel = entry == selected
+                                Text(
+                                    entry.name,
+                                    Modifier.fillMaxWidth()
+                                        .clickable { selected = entry }
+                                        .background(
+                                            if (isSel) MaterialTheme.colorScheme.secondaryContainer
+                                            else MaterialTheme.colorScheme.surface,
+                                        )
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    color = if (isSel) MaterialTheme.colorScheme.onSecondaryContainer
+                                    else MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
                         }
                     }
                     VerticalDivider()
