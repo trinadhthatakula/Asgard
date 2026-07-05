@@ -22,8 +22,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 
 /** The demo shell: a theming toolbar, a component nav list, and a live detail pane. */
 @Composable
@@ -41,6 +44,8 @@ fun GalleryApp() {
     var dark by remember { mutableStateOf(false) }
     var seed by remember { mutableStateOf(demoSeeds.first().second) }
     var selected by remember { mutableStateOf(asgardCatalog.first()) }
+    // Group the sidebar by category (preserves first-seen category + entry order).
+    val grouped = remember { asgardCatalog.groupBy { it.category } }
 
     DemoTheme(dark = dark, seed = seed) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
@@ -70,20 +75,33 @@ fun GalleryApp() {
                 HorizontalDivider()
                 Row(Modifier.fillMaxSize()) {
                     LazyColumn(Modifier.width(240.dp).fillMaxHeight()) {
-                        items(asgardCatalog) { entry ->
-                            val isSel = entry == selected
-                            Text(
-                                entry.name,
-                                Modifier.fillMaxWidth()
-                                    .clickable { selected = entry }
-                                    .background(
-                                        if (isSel) MaterialTheme.colorScheme.secondaryContainer
-                                        else MaterialTheme.colorScheme.surface,
-                                    )
-                                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                                color = if (isSel) MaterialTheme.colorScheme.onSecondaryContainer
-                                else MaterialTheme.colorScheme.onSurface,
-                            )
+                        grouped.forEach { (category, entries) ->
+                            item(key = category) {
+                                Text(
+                                    category,
+                                    Modifier.fillMaxWidth()
+                                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                            items(entries, key = { it.name }) { entry ->
+                                val isSel = entry == selected
+                                Text(
+                                    entry.name,
+                                    Modifier.fillMaxWidth()
+                                        .clickable { selected = entry }
+                                        .background(
+                                            if (isSel) MaterialTheme.colorScheme.secondaryContainer
+                                            else MaterialTheme.colorScheme.surface,
+                                        )
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    color = if (isSel) MaterialTheme.colorScheme.onSecondaryContainer
+                                    else MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
                         }
                     }
                     VerticalDivider()
@@ -114,16 +132,38 @@ private fun DetailPane(entry: ComponentEntry) {
         // key() by name so each preview's own remember { } state is isolated and reset when
         // switching entries (previews hold state of different types — Boolean/Int/Float/String).
         Box(Modifier.padding(vertical = 32.dp)) { key(entry.name) { entry.content() } }
+        var copied by remember(entry.name) { mutableStateOf(false) }
+        LaunchedEffect(copied) {
+            if (copied) {
+                delay(1500)
+                copied = false
+            }
+        }
         Surface(
             color = MaterialTheme.colorScheme.surfaceContainerHighest,
             shape = RoundedCornerShape(12.dp),
         ) {
-            Text(
-                entry.code,
-                fontFamily = FontFamily.Monospace,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(16.dp),
-            )
+            Column(Modifier.padding(start = 16.dp, top = 4.dp, end = 4.dp, bottom = 12.dp)) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        "Usage",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    TextButton(onClick = { copyToClipboard(entry.code); copied = true }) {
+                        Text(if (copied) "Copied!" else "Copy")
+                    }
+                }
+                Text(
+                    entry.code,
+                    fontFamily = FontFamily.Monospace,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
         }
     }
 }

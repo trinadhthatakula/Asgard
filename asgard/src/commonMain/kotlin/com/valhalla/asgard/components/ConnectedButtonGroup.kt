@@ -6,14 +6,20 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonColors
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.ToggleButtonShapes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.zIndex
 
 /**
@@ -49,6 +55,22 @@ import androidx.compose.ui.zIndex
  *     onItemSelected = { viewModel.setThemeMode(ThemeMode.entries[it]) }
  * )
  * ```
+ *
+ * @param items list of [ConnectedButtonGroupItem] descriptors — one per button (must be non-empty).
+ * @param selectedIndex index of the currently-selected button. Values outside `items.indices`
+ *   are ignored (rendered as "nothing selected") and never crash.
+ * @param onItemSelected invoked with the tapped button's index when a new button is selected.
+ * @param modifier applied to the root [Row].
+ * @param enabled group-wide enabled flag. When `false`, every button is disabled regardless of
+ *   the per-item [ConnectedButtonGroupItem.enabled] flag.
+ * @param colors optional [ToggleButtonColors] applied to every button. When `null`, the Material
+ *   default is used but the **selected** button is emphasized with `primary` container / `onPrimary`
+ *   content so its label and icon stay legible in both light and dark themes.
+ * @param spacing horizontal spacing between buttons. Defaults to the connected-group overlap
+ *   ([ButtonGroupDefaults.ConnectedSpaceBetween]).
+ * @param contentDescription optional accessibility description applied to the whole group.
+ * @param labelMaxLines maximum number of lines for text labels rendered inside buttons
+ *   ([ConnectedButtonGroupItem.Label] / [ConnectedButtonGroupItem.IconWithLabel]). Defaults to `1`.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -57,14 +79,32 @@ fun ConnectedButtonGroup(
     selectedIndex: Int,
     onItemSelected: (index: Int) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: ToggleButtonColors? = null,
+    spacing: Dp = ButtonGroupDefaults.ConnectedSpaceBetween,
+    contentDescription: String? = null,
+    labelMaxLines: Int = 1,
 ) {
     require(items.isNotEmpty()) { "ConnectedButtonGroup requires at least one item" }
 
     val lastIndex = items.lastIndex
+    // The selected button is emphasized with primary/onPrimary so its label + icon stay
+    // high-contrast in both light and dark themes (the bare M3 default is low-contrast on dark).
+    val resolvedColors = colors ?: ToggleButtonDefaults.toggleButtonColors(
+        checkedContainerColor = MaterialTheme.colorScheme.primary,
+        checkedContentColor = MaterialTheme.colorScheme.onPrimary,
+    )
+    val groupDescription = contentDescription
 
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+        modifier = modifier.then(
+            if (groupDescription != null) {
+                Modifier.semantics { this.contentDescription = groupDescription }
+            } else {
+                Modifier
+            }
+        ),
+        horizontalArrangement = Arrangement.spacedBy(spacing),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         items.forEachIndexed { index, item ->
@@ -76,9 +116,11 @@ fun ConnectedButtonGroup(
                     // Draw the selected button on top so its borders aren't clipped by
                     // the overlapping neighbours produced by the negative connected spacing.
                     .zIndex(if (index == selectedIndex) 1f else 0f),
+                enabled = enabled && item.enabled,
+                colors = resolvedColors,
                 shapes = connectedShapesFor(index, lastIndex),
             ) {
-                ItemContent(item)
+                ItemContent(item, labelMaxLines)
             }
         }
     }
@@ -92,11 +134,12 @@ fun ConnectedButtonGroup(
  */
 sealed interface ConnectedButtonGroupItem {
 
-    /** Legacy accessibility/menu label. Retained for API compatibility (unused for rendering). */
-    val menuLabel: String
-
-    /** Legacy optional menu icon. Retained for API compatibility (unused for rendering). */
-    val menuIcon: ImageVector? get() = null
+    /**
+     * Whether this individual button is interactive. Combined with the group-wide
+     * `enabled` flag on [ConnectedButtonGroup]; a button is enabled only when both are `true`.
+     * Defaults to `true`.
+     */
+    val enabled: Boolean get() = true
 
     // ── Concrete variants ─────────────────────────────────────────────────────
 
@@ -104,32 +147,29 @@ sealed interface ConnectedButtonGroupItem {
     data class Icon(
         val icon: ImageVector,
         val contentDescription: String,
-    ) : ConnectedButtonGroupItem {
-        override val menuLabel: String get() = contentDescription
-        override val menuIcon: ImageVector get() = icon
-    }
+        override val enabled: Boolean = true,
+    ) : ConnectedButtonGroupItem
 
     /** Button shows only a text label (e.g. ThemeMode picker, tab switcher). */
-    data class Label(val text: String) : ConnectedButtonGroupItem {
-        override val menuLabel: String get() = text
-    }
+    data class Label(
+        val text: String,
+        override val enabled: Boolean = true,
+    ) : ConnectedButtonGroupItem
 
     /** Button shows an icon followed by a text label. */
     data class IconWithLabel(
         val icon: ImageVector,
         val contentDescription: String,
         val text: String,
-    ) : ConnectedButtonGroupItem {
-        override val menuLabel: String get() = text
-        override val menuIcon: ImageVector get() = icon
-    }
+        override val enabled: Boolean = true,
+    ) : ConnectedButtonGroupItem
 }
 
 // ─── Private helpers ──────────────────────────────────────────────────────────
 
 /** Renders the correct inner content for each [ConnectedButtonGroupItem] variant. */
 @Composable
-private fun ItemContent(item: ConnectedButtonGroupItem) {
+private fun ItemContent(item: ConnectedButtonGroupItem, labelMaxLines: Int = 1) {
     when (item) {
         is ConnectedButtonGroupItem.Icon ->
             Icon(
@@ -140,7 +180,7 @@ private fun ItemContent(item: ConnectedButtonGroupItem) {
         is ConnectedButtonGroupItem.Label ->
             Text(
                 item.text,
-                maxLines = 1,
+                maxLines = labelMaxLines,
                 overflow = TextOverflow.Ellipsis
             )
 
@@ -155,7 +195,7 @@ private fun ItemContent(item: ConnectedButtonGroupItem) {
                 )
                 Text(
                     item.text,
-                    maxLines = 1,
+                    maxLines = labelMaxLines,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false)
                 )

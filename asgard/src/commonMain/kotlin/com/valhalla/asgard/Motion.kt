@@ -2,6 +2,7 @@ package com.valhalla.asgard
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.material3.MaterialTheme
@@ -36,28 +37,38 @@ fun Modifier.animateExpressiveResize(): Modifier {
  *
  * @param interactionSource the press source to observe (share it with `clickable`).
  * @param scaleOnPress the scale to animate to while pressed (default `0.95`).
+ * @param pressSpec animation spec used when animating down to [scaleOnPress] on press.
+ *   When `null` (the default) the ambient [MaterialTheme.motionScheme]'s
+ *   `fastSpatialSpec` is used, matching the previous behavior.
+ * @param releaseSpec animation spec used when animating back to `1f` on release/cancel.
+ *   When `null` (the default) the ambient [MaterialTheme.motionScheme]'s
+ *   `defaultSpatialSpec` is used, matching the previous behavior.
  */
 fun Modifier.expressivePress(
     interactionSource: InteractionSource,
-    scaleOnPress: Float = 0.95f
+    scaleOnPress: Float = 0.95f,
+    pressSpec: AnimationSpec<Float>? = null,
+    releaseSpec: AnimationSpec<Float>? = null
 ): Modifier = composed {
     val animatable = remember { Animatable(1f) }
     val motionScheme = MaterialTheme.motionScheme
+    val resolvedPressSpec = pressSpec ?: motionScheme.fastSpatialSpec()
+    val resolvedReleaseSpec = releaseSpec ?: motionScheme.defaultSpatialSpec()
 
-    LaunchedEffect(interactionSource, motionScheme) {
+    LaunchedEffect(interactionSource, resolvedPressSpec, resolvedReleaseSpec) {
         interactionSource.interactions.collect { interaction ->
             when (interaction) {
                 is PressInteraction.Press -> launch {
                     animatable.animateTo(
                         targetValue = scaleOnPress,
-                        animationSpec = motionScheme.fastSpatialSpec()
+                        animationSpec = resolvedPressSpec
                     )
                 }
 
                 is PressInteraction.Release, is PressInteraction.Cancel -> launch {
                     animatable.animateTo(
                         targetValue = 1f,
-                        animationSpec = motionScheme.defaultSpatialSpec()
+                        animationSpec = resolvedReleaseSpec
                     )
                 }
             }

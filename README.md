@@ -24,7 +24,7 @@ Multiplatform (wasm).
 // settings.gradle.kts has mavenCentral() in dependencyResolutionManagement
 
 dependencies {
-    implementation("com.trinadhthatakula:asgard:1.1.0")
+    implementation("com.trinadhthatakula:asgard:2.0.0")
 }
 ```
 
@@ -36,7 +36,7 @@ right variant automatically — an Android project gets the `asgard-android` art
 `compileOnly` so it isn't duplicated in your extension APK — Thor provides it at runtime:
 
 ```kotlin
-compileOnly("com.trinadhthatakula:asgard:1.1.0")
+compileOnly("com.trinadhthatakula:asgard:2.0.0")
 ```
 
 > Asgard shares the `com.trinadhthatakula` namespace with the Thor extension contract,
@@ -54,7 +54,23 @@ compileOnly("com.trinadhthatakula:asgard:1.1.0")
 | `StatusChip` | A pill status label (`labelSmall`, on a `CircleShape` background). |
 | `AsgardActionItem` | An icon-chip + label action cell for action rows / toolbars. |
 
-All icons are passed as `ImageVector` — Asgard bundles no icon pack.
+All icons are passed as `ImageVector` — Asgard bundles no icon pack. As of **2.0** the library
+depends on **no** `material-icons` artifact at all (its one built-in glyph, the `AsgardHeader` back
+arrow, is a self-contained vector), so nothing is forced onto your app's footprint.
+
+### 2.0 highlights
+
+- **Customization everywhere** — every component gains flat params for `maxLines`/`overflow`/
+  `softWrap`, `TextStyle`/color/`Shape` overrides (shapes routed through the new theme-driven
+  `AsgardDefaults` tokens), and accessibility hooks (`Role.Button`, overridable `contentDescription`).
+- **Charts** — a new `com.valhalla.asgard.charts` package: `AsgardLineChart` (multi-series smoothed
+  line + area), `AsgardStackedBarChart`, `AsgardTimelineBar`, `AsgardChartLegend`, `AsgardPulseRing`
+  — pure `Canvas`, no extra dependencies.
+- **Bug fixes** — non-finite progress guard, marquee state keying, legible banner content color,
+  locked-overlay accessibility, nav-rail animation, dark-mode selected connected button.
+- **Breaking (small):** `AsgardStatCard.iconColor` → `iconTint`; `ConnectedButtonGroupItem` drops
+  the unused `menuLabel`/`menuIcon`; `AsgardProBadge` / `AsgardLockedOverlay` params reordered to the
+  content-first convention. Most call sites are unaffected.
 
 **1.1.0 adds 22 more** theme-agnostic components — stat tiles, banners, badges, list/settings rows,
 a pro-gate kit, a progress ring, empty/loading states, onboarding, a dialog scaffold, stepper,

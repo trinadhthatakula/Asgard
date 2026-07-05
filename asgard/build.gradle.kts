@@ -20,6 +20,8 @@ kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_21
         }
+        // Enable JVM-hosted unit tests (androidHostTest) so commonTest runs without an emulator.
+        withHostTest {}
     }
 
     wasmJs {
@@ -33,15 +35,23 @@ kotlin {
             languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3Api")
         }
         commonMain.dependencies {
-            // api: Compose types appear in every public component signature; consumers build
-            // their UIs against them, so they must be exposed transitively.
+            // api: Compose types (Modifier, Color, Shape, Brush, ImageVector, TextStyle, Dp,
+            // BorderStroke, PaddingValues …) appear in every public component signature, so
+            // foundation + ui + material3 must be exposed transitively rather than relying on
+            // material3's POM to re-export them.
             implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
+            api(libs.compose.foundation)
             api(libs.compose.material3)
-            implementation(libs.compose.ui)
-            // material-icons-extended supplies AsgardHeader's default back-arrow; consumers
-            // otherwise pass their own ImageVectors. (Trimmed to core in a later pass.)
-            implementation(compose.materialIconsExtended)
+            api(libs.compose.ui)
+            // NOTE: material-icons-extended intentionally dropped in 1.2.0 — AsgardHeader's only
+            // icon (Icons.AutoMirrored.Filled.ArrowBack) lives in material-icons-core (pulled in
+            // transitively by material3). Consumers pass their own ImageVectors for everything else.
+        }
+        commonTest.dependencies {
+            // Pure-logic unit tests for the extracted chart/progress domain math. They run on the
+            // Android host JVM (androidHostTest) without an emulator, and on wasmJs via the browser
+            // test task. UI/rendering behaviour is verified visually via the demo gallery.
+            implementation(kotlin("test"))
         }
     }
 }
