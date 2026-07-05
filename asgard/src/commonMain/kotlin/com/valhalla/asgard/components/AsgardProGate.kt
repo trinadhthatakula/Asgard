@@ -35,8 +35,8 @@ import com.valhalla.asgard.AsgardDefaults
 /**
  * A small "PRO"/premium marker pill — a thin preset over [AsgardBadge] using the tertiary palette.
  *
- * @param modifier the [Modifier] applied to the badge.
  * @param text the marker label.
+ * @param modifier the [Modifier] applied to the badge.
  * @param icon optional leading icon (e.g. a lock), supplied by the consumer.
  * @param containerColor the pill background color.
  * @param contentColor the pill content color.
@@ -47,8 +47,8 @@ import com.valhalla.asgard.AsgardDefaults
  */
 @Composable
 fun AsgardProBadge(
-    modifier: Modifier = Modifier,
     text: String = "PRO",
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     contentColor: Color = MaterialTheme.colorScheme.onTertiaryContainer,
@@ -169,12 +169,12 @@ fun AsgardUpgradeCard(
 @Composable
 fun AsgardLockedOverlay(
     locked: Boolean,
+    overlay: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     blurRadius: Dp = 12.dp,
     scrimColor: Color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.4f),
     contentAlignment: Alignment = Alignment.Center,
     overlayShape: Shape? = null,
-    overlay: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
     Box(modifier = modifier) {

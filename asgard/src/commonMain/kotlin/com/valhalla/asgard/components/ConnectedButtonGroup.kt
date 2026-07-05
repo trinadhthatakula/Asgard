@@ -141,14 +141,6 @@ sealed interface ConnectedButtonGroupItem {
      */
     val enabled: Boolean get() = true
 
-    /** Legacy accessibility/menu label. Retained for API compatibility (unused for rendering). */
-    @Deprecated("Unused; scheduled for removal in 2.0")
-    val menuLabel: String
-
-    /** Legacy optional menu icon. Retained for API compatibility (unused for rendering). */
-    @Deprecated("Unused; scheduled for removal in 2.0")
-    val menuIcon: ImageVector? get() = null
-
     // ── Concrete variants ─────────────────────────────────────────────────────
 
     /** Button shows only an icon (e.g. User / System app-type switcher). */
@@ -156,21 +148,13 @@ sealed interface ConnectedButtonGroupItem {
         val icon: ImageVector,
         val contentDescription: String,
         override val enabled: Boolean = true,
-    ) : ConnectedButtonGroupItem {
-        @Deprecated("Unused; scheduled for removal in 2.0")
-        override val menuLabel: String get() = contentDescription
-        @Deprecated("Unused; scheduled for removal in 2.0")
-        override val menuIcon: ImageVector get() = icon
-    }
+    ) : ConnectedButtonGroupItem
 
     /** Button shows only a text label (e.g. ThemeMode picker, tab switcher). */
     data class Label(
         val text: String,
         override val enabled: Boolean = true,
-    ) : ConnectedButtonGroupItem {
-        @Deprecated("Unused; scheduled for removal in 2.0")
-        override val menuLabel: String get() = text
-    }
+    ) : ConnectedButtonGroupItem
 
     /** Button shows an icon followed by a text label. */
     data class IconWithLabel(
@@ -178,12 +162,7 @@ sealed interface ConnectedButtonGroupItem {
         val contentDescription: String,
         val text: String,
         override val enabled: Boolean = true,
-    ) : ConnectedButtonGroupItem {
-        @Deprecated("Unused; scheduled for removal in 2.0")
-        override val menuLabel: String get() = text
-        @Deprecated("Unused; scheduled for removal in 2.0")
-        override val menuIcon: ImageVector get() = icon
-    }
+    ) : ConnectedButtonGroupItem
 }
 
 // ─── Private helpers ──────────────────────────────────────────────────────────

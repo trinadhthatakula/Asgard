@@ -57,8 +57,7 @@ import com.valhalla.asgard.expressivePress
  * @param value the emphasized value text (single line).
  * @param modifier the [Modifier] applied to the card (size/weight/height live here).
  * @param icon optional leading icon.
- * @param iconColor tint for [icon]. Deprecated in favor of [iconTint]; retained for source
- *   compatibility. If [iconTint] is not set it defaults to this value.
+ * @param iconTint tint for [icon].
  * @param iconSize the size of [icon].
  * @param iconInlineWithLabel when true, [icon] is placed beside [label] instead of above it.
  * @param unit optional smaller suffix appended after [value] (e.g. a "mAh"/"%" superscript).
@@ -79,7 +78,6 @@ import com.valhalla.asgard.expressivePress
  * @param valueMaxLines maximum number of lines for [value]. Defaults to `1`.
  * @param valueOverflow how visual overflow of [value] is handled. Defaults to [TextOverflow.Ellipsis].
  * @param textAlign optional [TextAlign] applied to both [label] and [value]. `null` keeps the default start alignment.
- * @param iconTint tint for [icon]; defaults to [iconColor]. Preferred over the deprecated [iconColor].
  * @param unitSeparator the string placed between [value] and [unit]. Defaults to a single space; pass `""` for a tight suffix (e.g. `95%`).
  */
 @Composable
@@ -88,7 +86,7 @@ fun AsgardStatCard(
     value: String,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
-    iconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     iconSize: Dp = 20.dp,
     iconInlineWithLabel: Boolean = false,
     unit: String? = null,
@@ -109,7 +107,6 @@ fun AsgardStatCard(
     valueMaxLines: Int = 1,
     valueOverflow: TextOverflow = TextOverflow.Ellipsis,
     textAlign: TextAlign? = null,
-    iconTint: Color = iconColor,
     unitSeparator: String = " ",
 ) {
     val interactionSource = remember { MutableInteractionSource() }
