@@ -92,10 +92,12 @@ AsgardLockedOverlay(
   `primary` container / `onPrimary` content so it stays legible in dark mode. Override via the
   `colors` param if you want the previous look.
 
-- **No more `material-icons-extended`.** Asgard dropped that dependency entirely (its one built-in
-  glyph is now a self-contained vector). It was `implementation`-scoped, so it was **never** exposed
-  to your app transitively — no action needed. If your own code relied on it being on the classpath
-  by accident, add it explicitly: `implementation(compose.materialIconsExtended)`.
+- **No more `material-icons-extended` (informational — no action needed).** Asgard dropped that
+  dependency in 2.0 (its one built-in glyph is now a self-contained vector). Because it was always
+  `implementation`-scoped — in 1.x too — it was **never** exposed to your app transitively, so its
+  removal changes nothing for consumers. This only matters if your own code accidentally relied on
+  it being on the classpath *via Asgard*; if so, depend on it directly:
+  `implementation(compose.materialIconsExtended)`.
 
 ---
 

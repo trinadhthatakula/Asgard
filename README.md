@@ -9,7 +9,7 @@
 [![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?style=flat-square&logo=kotlin&logoColor=white)](https://kotlinlang.org/docs/multiplatform.html)
 ![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20wasmJs-0A7EA4?style=flat-square)
 
-**[▶ Live gallery](https://trinadhthatakula.github.io/Asgard/)** &nbsp;·&nbsp; [Quick start](#-quick-start) &nbsp;·&nbsp; [Components](#-component-catalog) &nbsp;·&nbsp; [Charts](#-charts) &nbsp;·&nbsp; [Theming](#-theming--customization) &nbsp;·&nbsp; [Migrating to 2.0](MIGRATION.md)
+**[▶ Live gallery](https://trinadhthatakula.github.io/Asgard/)** &nbsp;·&nbsp; [Migrating from 1.x → 2.0](MIGRATION.md)
 
 </div>
 
@@ -24,7 +24,7 @@ palette or font.
 > Born from the [Thor](https://github.com/trinadhthatakula/Thor) app's design system, extracted so
 > every app — yours included — can share one component layer.
 
-### Why Asgard?
+## Why Asgard?
 
 - 🎨 **Theme-agnostic by design** — every color, type, shape and motion value comes from *your*
   `MaterialTheme`. Drop it into any app and it looks like *that* app.
@@ -249,7 +249,9 @@ The **Expressive** Material 3 theme gives the richest motion; any `MaterialTheme
 ## ✅ Requirements
 
 - **Kotlin Multiplatform** — Android (`minSdk` 28) + wasmJs, JDK 21
-- **Compose Multiplatform** with **Expressive Material 3**
+- **Compose Multiplatform** with **Material 3**. Asgard uses a few Material 3 *Expressive* APIs
+  internally; wrapping your app in `MaterialExpressiveTheme` gives the richest motion, but any
+  `MaterialTheme` works.
 
 ## 🤖 For AI / agent integration
 

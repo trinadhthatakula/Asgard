@@ -134,7 +134,7 @@ data class AsgardLineSeries(val points: List<AsgardChartPoint>, val color: Color
     val smoothing: AsgardLineSmoothing = AsgardLineSmoothing.Cubic, val areaFill: Brush? = null,
     val fillArea: Boolean = true, val showEndMarker: Boolean = true)
 AsgardLineChart(series: List<AsgardLineSeries>, modifier, yRange: ClosedFloatingPointRange<Float>? = null,
-    gridLineCount: Int = 4, yValueFormatter: (Float) -> String = { … }, xLabelFormatter: (AsgardChartPoint) -> String? = { it.label },
+    gridLineCount: Int = 4, yValueFormatter: (Float) -> String = { it.toString() }, xLabelFormatter: (AsgardChartPoint) -> String? = { it.label },
     maxXLabels: Int = 5, emptyContent: @Composable () -> Unit = {})
 
 data class AsgardBarStack(val values: List<Float>, val dimmed: Boolean = false)
@@ -156,15 +156,18 @@ supply `yValueFormatter` for the y-axis. Colors come from `MaterialTheme.colorSc
 
 ## 5. Recipes
 
-**Nav scaffold** — `Scaffold(bottomBar = { AsgardNavigationBar(items, selectedIndex, onSelect) })`;
-put `AsgardHeader(title, icon, actions = { ConnectedButtonGroup(...) })` at the top of the body.
+Always call Asgard components with **named arguments** (as below) — `modifier` is the 2nd parameter,
+so positional calls easily misalign.
 
-**Metric row** — a `Row` of `AsgardStatCard(label, value, unit, icon, Modifier.weight(1f))`, or
-`AsgardStatTile(...)` for compact tiles with a `statusDotColor` / `secondaryValue`.
+**Nav scaffold** — `Scaffold(bottomBar = { AsgardNavigationBar(items = tabs, selectedIndex = i, onSelect = { i = it }) })`;
+put `AsgardHeader(title = "Apps", icon = Icons.Rounded.Dashboard, actions = { ConnectedButtonGroup(/* … */) })` at the top of the body.
 
-**Pro-gate** — `AsgardLockedOverlay(locked = !isPro, overlay = { AsgardUpgradeCard(...) }) { PremiumContent() }`.
+**Metric row** — a `Row` of `AsgardStatCard(label = "Battery", value = "82", unit = "%", icon = icon, modifier = Modifier.weight(1f))`,
+or `AsgardStatTile(label = "Uptime", value = "6h", statusDotColor = color, secondaryValue = "today")` for compact tiles.
 
-**Chart card** — an `AsgardSectionCard { AsgardLineChart(series, Modifier.fillMaxWidth().height(220.dp)); AsgardChartLegend(entries) }`.
+**Pro-gate** — `AsgardLockedOverlay(locked = !isPro, overlay = { AsgardUpgradeCard(/* … */) }) { PremiumContent() }`.
+
+**Chart card** — `AsgardSectionCard(title = "Trend") { AsgardLineChart(series = series, modifier = Modifier.fillMaxWidth().height(220.dp)); AsgardChartLegend(entries = entries) }`.
 
 ## 6. Gotchas
 
