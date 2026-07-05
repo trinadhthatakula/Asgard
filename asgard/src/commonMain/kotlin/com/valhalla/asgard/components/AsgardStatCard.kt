@@ -29,6 +29,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
@@ -56,7 +57,8 @@ import com.valhalla.asgard.expressivePress
  * @param value the emphasized value text (single line).
  * @param modifier the [Modifier] applied to the card (size/weight/height live here).
  * @param icon optional leading icon.
- * @param iconColor tint for [icon].
+ * @param iconColor tint for [icon]. Deprecated in favor of [iconTint]; retained for source
+ *   compatibility. If [iconTint] is not set it defaults to this value.
  * @param iconSize the size of [icon].
  * @param iconInlineWithLabel when true, [icon] is placed beside [label] instead of above it.
  * @param unit optional smaller suffix appended after [value] (e.g. a "mAh"/"%" superscript).
@@ -71,6 +73,14 @@ import com.valhalla.asgard.expressivePress
  * @param valueStyle the [value] text style.
  * @param valueFontWeight the [value] font weight.
  * @param unitFontSize the font size of the [unit] suffix.
+ * @param labelStyle the [label] text style.
+ * @param labelMaxLines maximum number of lines for [label]. Defaults to `1`.
+ * @param labelOverflow how visual overflow of [label] is handled. Defaults to [TextOverflow.Ellipsis].
+ * @param valueMaxLines maximum number of lines for [value]. Defaults to `1`.
+ * @param valueOverflow how visual overflow of [value] is handled. Defaults to [TextOverflow.Ellipsis].
+ * @param textAlign optional [TextAlign] applied to both [label] and [value]. `null` keeps the default start alignment.
+ * @param iconTint tint for [icon]; defaults to [iconColor]. Preferred over the deprecated [iconColor].
+ * @param unitSeparator the string placed between [value] and [unit]. Defaults to a single space; pass `""` for a tight suffix (e.g. `95%`).
  */
 @Composable
 fun AsgardStatCard(
@@ -93,6 +103,14 @@ fun AsgardStatCard(
     valueStyle: TextStyle = MaterialTheme.typography.headlineMedium,
     valueFontWeight: FontWeight = FontWeight.Medium,
     unitFontSize: TextUnit = 14.sp,
+    labelStyle: TextStyle = MaterialTheme.typography.labelSmall,
+    labelMaxLines: Int = 1,
+    labelOverflow: TextOverflow = TextOverflow.Ellipsis,
+    valueMaxLines: Int = 1,
+    valueOverflow: TextOverflow = TextOverflow.Ellipsis,
+    textAlign: TextAlign? = null,
+    iconTint: Color = iconColor,
+    unitSeparator: String = " ",
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -132,16 +150,17 @@ fun AsgardStatCard(
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
-                            tint = iconColor,
+                            tint = iconTint,
                             modifier = Modifier.size(iconSize),
                         )
                     }
                     Text(
                         text = label,
-                        style = MaterialTheme.typography.labelSmall,
+                        style = labelStyle,
                         color = labelColor,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        textAlign = textAlign,
+                        maxLines = labelMaxLines,
+                        overflow = labelOverflow,
                     )
                 }
             } else {
@@ -150,17 +169,18 @@ fun AsgardStatCard(
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
-                            tint = iconColor,
+                            tint = iconTint,
                             modifier = Modifier.size(iconSize),
                         )
                         Spacer(Modifier.height(8.dp))
                     }
                     Text(
                         text = label,
-                        style = MaterialTheme.typography.labelSmall,
+                        style = labelStyle,
                         color = labelColor,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        textAlign = textAlign,
+                        maxLines = labelMaxLines,
+                        overflow = labelOverflow,
                     )
                 }
             }
@@ -171,15 +191,16 @@ fun AsgardStatCard(
                     append(value)
                     if (!unit.isNullOrEmpty()) {
                         withStyle(SpanStyle(fontSize = unitFontSize)) {
-                            append(" $unit")
+                            append("$unitSeparator$unit")
                         }
                     }
                 },
                 style = valueStyle,
                 fontWeight = valueFontWeight,
                 color = valueColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                textAlign = textAlign,
+                maxLines = valueMaxLines,
+                overflow = valueOverflow,
             )
         }
     }

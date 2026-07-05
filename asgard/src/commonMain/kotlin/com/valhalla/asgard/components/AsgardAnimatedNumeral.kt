@@ -2,6 +2,7 @@ package com.valhalla.asgard.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
@@ -15,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 
 /**
  * Numeric (or short) text that animates on change. By default the outgoing value slides out while
@@ -29,6 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
  * @param fontWeight optional font weight.
  * @param durationMillis the slide (or count) duration.
  * @param countUp when true and [value] parses as an integer, animate by counting instead of sliding.
+ * @param maxLines the maximum number of lines for the text.
+ * @param overflow how visual overflow should be handled.
+ * @param softWrap whether the text should break at soft line breaks.
+ * @param textAlign optional horizontal alignment of the text within its container.
+ * @param animationSpec the [FiniteAnimationSpec] driving the count-up branch.
+ * @param format formats the animated integer in the count-up branch, preserving caller number formatting.
  */
 @Composable
 fun AsgardAnimatedNumeral(
@@ -39,21 +48,30 @@ fun AsgardAnimatedNumeral(
     fontWeight: FontWeight? = FontWeight.Bold,
     durationMillis: Int = 300,
     countUp: Boolean = false,
+    maxLines: Int = 1,
+    overflow: TextOverflow = TextOverflow.Clip,
+    softWrap: Boolean = false,
+    textAlign: TextAlign? = null,
+    animationSpec: FiniteAnimationSpec<Int> = tween(durationMillis),
+    format: (Int) -> String = { it.toString() },
 ) {
     val targetInt = if (countUp) value.toIntOrNull() else null
     if (targetInt != null) {
         val animated by animateIntAsState(
             targetValue = targetInt,
-            animationSpec = tween(durationMillis),
+            animationSpec = animationSpec,
             label = "AsgardAnimatedNumeral.count",
         )
         Text(
-            text = animated.toString(),
+            text = format(animated),
             modifier = modifier,
             style = style,
             color = color,
             fontWeight = fontWeight,
-            maxLines = 1,
+            maxLines = maxLines,
+            overflow = overflow,
+            softWrap = softWrap,
+            textAlign = textAlign,
         )
         return
     }
@@ -77,6 +95,15 @@ fun AsgardAnimatedNumeral(
         },
         label = "AsgardAnimatedNumeral",
     ) { target ->
-        Text(text = target, style = style, color = color, fontWeight = fontWeight, maxLines = 1)
+        Text(
+            text = target,
+            style = style,
+            color = color,
+            fontWeight = fontWeight,
+            maxLines = maxLines,
+            overflow = overflow,
+            softWrap = softWrap,
+            textAlign = textAlign,
+        )
     }
 }

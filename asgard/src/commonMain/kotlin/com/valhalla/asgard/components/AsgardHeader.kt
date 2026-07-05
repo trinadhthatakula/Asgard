@@ -1,5 +1,6 @@
 package com.valhalla.asgard.components
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -48,6 +50,18 @@ import androidx.compose.ui.unit.sp
  * @param icon optional leading icon, tinted with `primary`. Ignored when [onNavigateBack] is set.
  * @param onNavigateBack if non-null, shows a leading back button instead of [icon].
  * @param actions trailing content (e.g. a [ConnectedButtonGroup]), laid out at the end of the row.
+ * @param titleMaxLines maximum number of lines for the [title]. Defaults to `1`.
+ * @param titleOverflow how visual overflow of the [title] is handled. Defaults to [TextOverflow.Ellipsis].
+ * @param titleStyle overrides the title [TextStyle]. When `null` (default) the signature recipe is used:
+ *   `headlineMedium` with [FontWeight.Black] weight and `(-1).sp` letter-spacing. A non-null style is
+ *   applied verbatim, so any weight/letter-spacing must be baked into the supplied style.
+ * @param titleColor overrides the title color. When `null` (default) the theme `primary` color is used.
+ * @param contentPadding padding applied around the header row. Defaults to `horizontal = 24.dp, vertical = 16.dp`.
+ * @param backContentDescription content description for the back button glyph shown when [onNavigateBack]
+ *   is set. Defaults to `"Back"`.
+ * @param iconContentDescription content description for the leading [icon]. Defaults to `null`.
+ * @param leading optional custom leading slot. When non-null it takes precedence over the back button /
+ *   [icon] branch and is rendered in their place.
  */
 @Composable
 fun AsgardHeader(
@@ -55,20 +69,33 @@ fun AsgardHeader(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     onNavigateBack: (() -> Unit)? = null,
+    titleMaxLines: Int = 1,
+    titleOverflow: TextOverflow = TextOverflow.Ellipsis,
+    titleStyle: TextStyle? = null,
+    titleColor: Color? = null,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+    backContentDescription: String = "Back",
+    iconContentDescription: String? = null,
+    leading: (@Composable () -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
+            .padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         when {
+            leading != null -> {
+                leading()
+                Spacer(Modifier.width(8.dp))
+            }
+
             onNavigateBack != null -> {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         imageVector = AsgardBackArrow,
-                        contentDescription = "Back",
+                        contentDescription = backContentDescription,
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
@@ -78,7 +105,7 @@ fun AsgardHeader(
             icon != null -> {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = iconContentDescription,
                     tint = MaterialTheme.colorScheme.primary,
                 )
                 Spacer(Modifier.width(8.dp))
@@ -88,12 +115,13 @@ fun AsgardHeader(
         Text(
             text = title,
             modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Black,
-            letterSpacing = (-1).sp,
-            color = MaterialTheme.colorScheme.primary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            style = titleStyle ?: MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Black,
+                letterSpacing = (-1).sp,
+            ),
+            color = titleColor ?: MaterialTheme.colorScheme.primary,
+            maxLines = titleMaxLines,
+            overflow = titleOverflow,
         )
 
         actions()

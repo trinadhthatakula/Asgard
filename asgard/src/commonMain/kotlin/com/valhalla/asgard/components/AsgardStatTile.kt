@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,16 +19,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.valhalla.asgard.expressivePress
 
 /**
  * A compact metric tile: a small [label] paired with a large, emphasized [value] on a rounded
@@ -61,6 +66,15 @@ import androidx.compose.ui.unit.dp
  *   is used (falling back to bold). Resolved identically for the animated and static value.
  * @param secondaryValueColor the [secondaryValue] text color.
  * @param secondaryValueStyle the [secondaryValue] text style.
+ * @param labelMaxLines the maximum number of lines for [label] before truncation.
+ * @param labelOverflow how [label] is truncated when it exceeds [labelMaxLines].
+ * @param valueMaxLines the maximum number of lines for the static [value] before truncation.
+ * @param valueOverflow how the static [value] is truncated when it exceeds [valueMaxLines].
+ * @param iconContentDescription the accessibility description for [icon]; defaults to `null`
+ *   because [label]/[value] are already on-screen, readable text (avoids duplicate announcements).
+ * @param iconBadgeSize the size of the circular icon badge drawn when [iconContainerColor] is set.
+ * @param iconSize the size of [icon].
+ * @param statusDotSize the diameter of the [statusDotColor] indicator dot.
  */
 @Composable
 fun AsgardStatTile(
@@ -86,15 +100,38 @@ fun AsgardStatTile(
     valueFontWeight: FontWeight? = null,
     secondaryValueColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     secondaryValueStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    labelMaxLines: Int = 1,
+    labelOverflow: TextOverflow = TextOverflow.Ellipsis,
+    valueMaxLines: Int = 1,
+    valueOverflow: TextOverflow = TextOverflow.Ellipsis,
+    iconContentDescription: String? = null,
+    iconBadgeSize: Dp = 48.dp,
+    iconSize: Dp = 24.dp,
+    statusDotSize: Dp = 8.dp,
 ) {
+    // Shared source so the expressivePress squish reacts to the clickable's press interactions
+    // (indication = null, so the squish is the only feedback) — matching AsgardActionItem.
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
         modifier = modifier
             // Border before clip: Modifier.border strokes on the shape boundary (half outside),
             // so clipping first would shave off its outer half and render it half-width.
             .then(if (border != null) Modifier.border(border, shape) else Modifier)
+            .then(if (onClick != null) Modifier.expressivePress(interactionSource) else Modifier)
             .clip(shape)
             .background(containerColor)
-            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        role = Role.Button,
+                        onClick = onClick,
+                    )
+                } else {
+                    Modifier
+                },
+            )
             .padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -103,24 +140,25 @@ fun AsgardStatTile(
             if (iconContainerColor != null) {
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(iconBadgeSize)
                         .clip(CircleShape)
                         .background(iconContainerColor),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = icon,
-                        contentDescription = null,
+                        contentDescription = iconContentDescription,
                         tint = resolvedTint,
+                        modifier = Modifier.size(iconSize),
                     )
                 }
                 Spacer(Modifier.width(16.dp))
             } else {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
+                    contentDescription = iconContentDescription,
                     tint = resolvedTint,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(iconSize),
                 )
                 Spacer(Modifier.width(12.dp))
             }
@@ -131,7 +169,7 @@ fun AsgardStatTile(
                     if (statusDotColor != null) {
                         Spacer(
                             Modifier
-                                .size(8.dp)
+                                .size(statusDotSize)
                                 .clip(CircleShape)
                                 .background(statusDotColor),
                         )
@@ -141,8 +179,8 @@ fun AsgardStatTile(
                         text = label,
                         style = labelStyle ?: MaterialTheme.typography.labelMedium,
                         color = labelColor,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        maxLines = labelMaxLines,
+                        overflow = labelOverflow,
                     )
                 }
             }
@@ -164,8 +202,8 @@ fun AsgardStatTile(
                         style = valueStyle,
                         fontWeight = resolvedValueWeight,
                         color = valueColor,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        maxLines = valueMaxLines,
+                        overflow = valueOverflow,
                     )
                 }
             }
