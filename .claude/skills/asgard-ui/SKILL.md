@@ -30,9 +30,19 @@ dependencies { implementation("com.trinadhthatakula:asgard:2.0.0") }
 kotlin { sourceSets { commonMain.dependencies { implementation("com.trinadhthatakula:asgard:2.0.0") } } }
 ```
 
-Use the latest 2.0.x. Gradle resolves the correct platform variant automatically (`asgard-android`
-for Android). Asgard already exposes `compose.ui` / `compose.foundation` / `compose.material3` as
-`api`, so their types are available transitively.
+Use the latest 2.0.x. **Always depend on the umbrella coordinate `com.trinadhthatakula:asgard`** — in
+both Android and KMP modules. Asgard is a Kotlin Multiplatform library published as three artifacts:
+
+| Coordinate | Contents | When to use |
+|---|---|---|
+| `com.trinadhthatakula:asgard` | KMP root + Gradle Module Metadata (`.module`) | **This is the one you depend on.** Gradle reads the metadata and resolves the right platform variant automatically. |
+| `com.trinadhthatakula:asgard-android` | Android library (`.aar`) | The variant Gradle resolves for Android. Reference it directly only if a non-KMP-metadata-aware setup can't resolve the umbrella coordinate. |
+| `com.trinadhthatakula:asgard-wasm-js` | wasmJs library (`.klib`) | The variant Gradle resolves for wasmJs. Reference it directly only for a wasm-only pin. |
+
+So `implementation("com.trinadhthatakula:asgard:2.0.0")` is correct everywhere — Gradle picks
+`asgard-android` or `asgard-wasm-js` per target via Gradle Module Metadata (enabled by default).
+Asgard already exposes `compose.ui` / `compose.foundation` / `compose.material3` as `api`, so their
+types are available transitively.
 
 ## 2. Core rules
 
