@@ -22,18 +22,9 @@ def version_sort_key(v_str):
     numbers = tuple(int(x) for x in match.group(1).split('.'))
     suffix = match.group(2).strip('-._')
     
-    # Classify suffix to weight release stages
-    if not suffix:
-        weight = 3  # Stable release
-    elif any(x in suffix.lower() for x in ['rc', 'cr']):
-        weight = 2  # Release candidate
-    elif any(x in suffix.lower() for x in ['beta', 'b']):
-        weight = 1  # Beta
-    elif any(x in suffix.lower() for x in ['alpha', 'a', 'dev', 'milestone', 'm']):
-        weight = 0  # Alpha / Dev / Milestone
-    else:
-        weight = 2.5  # Other suffixes
-        
+    channel = get_channel(v_str)
+    weight = {'stable': 3, 'rc': 2, 'beta': 1, 'alpha': 0, 'dev': 0, 'other': 2.5}[channel]
+
     suffix_parts = []
     if suffix:
         # Split suffix into string parts and numeric parts for proper comparison (e.g., 'alpha02' > 'alpha01')
@@ -53,17 +44,26 @@ def get_channel(v_str):
     if not match:
         return 'stable'
     suffix = match.group(2).strip('-._').lower()
-    if not suffix:
+    if not suffix or suffix in {'stable', 'final', 'ga', 'release'}:
         return 'stable'
-    if any(x in suffix for x in ['rc', 'cr']):
-        return 'rc'
-    if any(x in suffix for x in ['beta', 'b']):
-        return 'beta'
-    if any(x in suffix for x in ['alpha', 'a']):
-        return 'alpha'
-    if any(x in suffix for x in ['dev', 'milestone', 'm']):
-        return 'dev'
+    for channel, qualifiers in (
+        ('rc', 'rc|cr'), ('beta', 'beta|b'), ('alpha', 'alpha|a'),
+        ('dev', 'dev|milestone|m'),
+    ):
+        if re.fullmatch(rf'(?:{qualifiers})(?:[-._]?\d+)?', suffix):
+            return channel
     return 'other'
+
+
+def positive_int(value):
+    try:
+        number = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError('must be a positive integer')
+    if number <= 0:
+        raise argparse.ArgumentTypeError('must be a positive integer')
+    return number
+
 
 def get_best_version(versions, current_version, allow_pre_releases_for_stable=False):
     """
@@ -158,25 +158,24 @@ def get_plugin_urls(plugin_id):
         f"https://repo1.maven.org/maven2/{id_path}/{plugin_id}.gradle.plugin/maven-metadata.xml"
     ]
 
+def consumer_versions(is_plugin, details):
+    urls = get_plugin_urls(details) if is_plugin else get_library_urls(*details)
+    return {version for url in urls for version in fetch_versions_from_url(url)}
+
+
 def check_artifact_version(item, allow_pre_releases_for_stable):
-    """
-    Queries repositories and checks for version upgrades.
-    """
+    """Select a version available to every consumer with resolvable metadata."""
     item_type, key, current, is_plugin, details = item
-    urls = get_plugin_urls(details) if is_plugin else get_library_urls(details[0], details[1])
-    
-    all_versions = []
-    for url in urls:
-        versions = fetch_versions_from_url(url)
-        if versions:
-            all_versions.extend(versions)
-            
-    if not all_versions:
+    consumers = details if item_type == 'catalog' else [(is_plugin, details)]
+    resolved = [versions for plugin, artifact in consumers
+                if (versions := consumer_versions(plugin, artifact))]
+    if not resolved:
         return item_type, key, current, current, "Not Found"
-        
-    all_versions = list(set(all_versions))
-    best = get_best_version(all_versions, current, allow_pre_releases_for_stable)
+
+    common_versions = set.intersection(*resolved)
+    best = get_best_version(common_versions, current, allow_pre_releases_for_stable)
     return item_type, key, current, best, "Success"
+
 
 def parse_toml_sections(content):
     """
@@ -228,7 +227,7 @@ def main():
     parser = argparse.ArgumentParser(description="Update Android libs.versions.toml dependencies to latest versions.")
     parser.add_argument("--file", default="gradle/libs.versions.toml", help="Path to libs.versions.toml file.")
     parser.add_argument("--dry-run", action="store_true", help="Print updates without writing changes.")
-    parser.add_argument("--max-workers", type=int, default=10, help="Max thread pool workers for concurrent requests.")
+    parser.add_argument("--max-workers", type=positive_int, default=10, help="Max thread pool workers for concurrent requests.")
     parser.add_argument("--pre-releases", action="store_true", help="Allow upgrading stable versions to pre-releases (alpha/beta/rc).")
     
     args = parser.parse_args()
@@ -245,30 +244,29 @@ def main():
     to_check = []
     version_refs_checked = set()
     
-    # Libraries using version.ref
+    # Collect every consumer before checking each shared reference once.
+    reference_consumers = {}
     for lib_name, props in libraries:
         v_ref = props.get('version.ref')
-        if v_ref and v_ref in versions and v_ref not in version_refs_checked:
-            group = props.get('group')
-            name = props.get('name')
-            if group and name:
-                to_check.append(("catalog", v_ref, versions[v_ref], False, (group, name)))
-                version_refs_checked.add(v_ref)
-            elif 'module' in props:
-                parts = props['module'].split(':')
-                if len(parts) == 2:
-                    to_check.append(("catalog", v_ref, versions[v_ref], False, (parts[0], parts[1])))
-                    version_refs_checked.add(v_ref)
-                    
-    # Plugins using version.ref
+        if v_ref and v_ref in versions:
+            group, name = props.get('group'), props.get('name')
+            if not (group and name):
+                parts = props.get('module', '').split(':')
+                if len(parts) != 2:
+                    continue
+                group, name = parts
+            reference_consumers.setdefault(v_ref, []).append((False, (group, name)))
+
     for plugin_name, props in plugins:
-        v_ref = props.get('version.ref')
-        if v_ref and v_ref in versions and v_ref not in version_refs_checked:
-            p_id = props.get('id')
-            if p_id:
-                to_check.append(("catalog", v_ref, versions[v_ref], True, p_id))
-                version_refs_checked.add(v_ref)
-                
+        v_ref, p_id = props.get('version.ref'), props.get('id')
+        if v_ref and v_ref in versions and p_id:
+            reference_consumers.setdefault(v_ref, []).append((True, p_id))
+
+    for v_ref, consumers in reference_consumers.items():
+        if v_ref not in version_refs_checked:
+            to_check.append(("catalog", v_ref, versions[v_ref], None, consumers))
+            version_refs_checked.add(v_ref)
+
     # Libraries using inline version
     for lib_name, props in libraries:
         v_val = props.get('version')
