@@ -1,5 +1,6 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -54,6 +55,12 @@ kotlin {
             implementation(kotlin("test"))
         }
     }
+}
+
+// Verify both consumers of the published Material 3 dependency before any upload starts.
+// Attach to upload tasks (not only the lifecycle task) to enforce execution order.
+tasks.withType<PublishToMavenRepository>().configureEach {
+    dependsOn("compileAndroidMain", "compileKotlinWasmJs", "testAndroidHostTest")
 }
 
 // Vanniktech's signAllPublications() requires a GPG key for non-SNAPSHOT versions, including

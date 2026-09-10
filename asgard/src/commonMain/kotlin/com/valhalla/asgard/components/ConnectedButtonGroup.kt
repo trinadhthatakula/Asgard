@@ -90,7 +90,7 @@ fun ConnectedButtonGroup(
     val lastIndex = items.lastIndex
     // The selected button is emphasized with primary/onPrimary so its label + icon stay
     // high-contrast in both light and dark themes (the bare M3 default is low-contrast on dark).
-    val resolvedColors = colors ?: ToggleButtonDefaults.toggleButtonColors(
+    val resolvedColors = colors ?: ToggleButtonDefaults.colors(
         checkedContainerColor = MaterialTheme.colorScheme.primary,
         checkedContentColor = MaterialTheme.colorScheme.onPrimary,
     )
