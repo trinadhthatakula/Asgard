@@ -17,6 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -164,8 +167,8 @@ fun AsgardSettingRow(
  * @param subtitle optional description under the title.
  * @param enabled whether the row/switch is interactive; when false the row is dimmed and clicks are
  *   ignored.
- * @param subtitleMarquee when true, the [subtitle] is a single line that toggles a scrolling
- *   marquee on tap.
+ * @param subtitleMarquee retained for source/binary compatibility. Toggle-row subtitles are
+ *   noninteractive to keep one switch target; use AsgardListRow for an interactive marquee.
  * @param icon optional leading icon.
  * @param iconTint tint for [icon].
  * @param switchColors optional [SwitchColors] for the trailing [Switch]; when null the Material
@@ -186,20 +189,19 @@ fun AsgardSettingToggleRow(
 ) {
     AsgardListRow(
         title = title,
-        modifier = if (enabled) modifier else modifier.alpha(0.5f),
+        modifier = (if (enabled) modifier else modifier.alpha(0.5f))
+            .toggleable(value = checked, enabled = enabled, role = Role.Switch, onValueChange = onCheckedChange),
         subtitle = subtitle,
         icon = icon,
         iconTint = iconTint,
-        onClick = if (enabled) {
-            { onCheckedChange(!checked) }
-        } else {
-            null
-        },
-        subtitleMarquee = subtitleMarquee,
+        onClick = null,
+        // A nested marquee click target would compete with the switch row.
+        subtitleMarquee = false,
         trailing = {
             Switch(
                 checked = checked,
-                onCheckedChange = onCheckedChange,
+                onCheckedChange = null,
+                modifier = Modifier.clearAndSetSemantics {},
                 enabled = enabled,
                 colors = switchColors ?: SwitchDefaults.colors(),
             )

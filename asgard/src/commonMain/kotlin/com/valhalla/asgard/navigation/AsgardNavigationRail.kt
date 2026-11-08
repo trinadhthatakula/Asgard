@@ -3,7 +3,12 @@ package com.valhalla.asgard.navigation
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -96,6 +101,7 @@ fun AsgardNavigationRail(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
+                .selectableGroup()
                 .safeDrawingPadding()
                 .padding(vertical = 24.dp, horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
@@ -165,7 +171,9 @@ private fun AsgardNavigationRailItem(
             .clip(RoundedCornerShape(20.dp))
             .background(containerColor)
             .expressivePress(interactionSource)
-            .clickable(
+            .semantics { contentDescription = listOfNotNull(item.contentDescription ?: item.label, item.badge?.takeIf { it.isNotEmpty() }).joinToString(", ") }
+            .selectable(
+                selected = selected, role = Role.Tab,
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick
@@ -175,14 +183,14 @@ private fun AsgardNavigationRailItem(
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.graphicsLayer { alpha = contentAlpha },
+            modifier = Modifier.clearAndSetSemantics {}.graphicsLayer { alpha = contentAlpha },
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             val icon: @Composable () -> Unit = {
                 Icon(
                     imageVector = if (selected) item.selectedIcon else item.icon,
-                    contentDescription = item.contentDescription,
+                    contentDescription = null,
                     tint = contentColor
                 )
             }

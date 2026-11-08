@@ -8,7 +8,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -90,6 +95,7 @@ fun AsgardNavigationBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .selectableGroup()
                 .navigationBarsPadding()
                 .padding(horizontal = 12.dp, vertical = 12.dp)
                 .height(64.dp),
@@ -157,7 +163,9 @@ private fun AsgardNavigationBarItem(
             .clip(RoundedCornerShape(32.dp))
             .background(containerColor)
             .expressivePress(interactionSource)
-            .clickable(
+            .semantics { contentDescription = listOfNotNull(item.contentDescription ?: item.label, item.badge?.takeIf { it.isNotEmpty() }).joinToString(", ") }
+            .selectable(
+                selected = selected, role = Role.Tab,
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick
@@ -167,7 +175,7 @@ private fun AsgardNavigationBarItem(
         contentAlignment = Alignment.Center
     ) {
         Row(
-            modifier = Modifier.graphicsLayer { alpha = contentAlpha },
+            modifier = Modifier.clearAndSetSemantics {}.graphicsLayer { alpha = contentAlpha },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -180,7 +188,7 @@ private fun AsgardNavigationBarItem(
             ) {
                 Icon(
                     imageVector = if (selected) item.selectedIcon else item.icon,
-                    contentDescription = item.contentDescription,
+                    contentDescription = null,
                     tint = contentColor
                 )
             }

@@ -88,7 +88,7 @@ fun AsgardSearchBar(
         },
         trailingIcon = if (query.isNotEmpty() && clearIcon != null) {
             {
-                IconButton(onClick = { onQueryChange("") }) {
+                IconButton(onClick = { onQueryChange("") }, enabled = enabled) {
                     Icon(imageVector = clearIcon, contentDescription = clearContentDescription)
                 }
             }
