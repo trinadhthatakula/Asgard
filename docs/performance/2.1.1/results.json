@@ -1,0 +1,1649 @@
+{
+  "measurementKind": "emulator-only",
+  "baselineComponentCommit": "7b43196",
+  "baselineComponentFiles": [
+    "asgard/src/commonMain/kotlin/com/valhalla/asgard/components/AsgardProgressRing.kt",
+    "asgard/src/commonMain/kotlin/com/valhalla/asgard/components/AsgardShimmer.kt"
+  ],
+  "sameHarnessAndDependencies": true,
+  "warmupSeconds": 4,
+  "measureSeconds": 12,
+  "recordingOrder": [
+    "baseline-a: all nine",
+    "candidate-a: all nine",
+    "baseline-b: progress/shimmer",
+    "candidate-b: progress/shimmer",
+    "baseline-c: progress/shimmer",
+    "candidate-c: progress/shimmer"
+  ],
+  "environment": {
+    "hostPlatform": "macOS-27.3-arm64-arm-64bit",
+    "hostMachine": "arm64",
+    "hostCpu": "Apple M4",
+    "adbVersion": "Android Debug Bridge version 1.0.41",
+    "ro.build.fingerprint": "google/sdk_gphone16k_arm64/emu64a16k:17/CP41.260831.015/16516427:userdebug/dev-keys",
+    "ro.product.model": "sdk_gphone16k_arm64",
+    "ro.build.version.sdk": "37",
+    "ro.hardware.egl": "emulation",
+    "ro.hardware.vulkan": "ranchu"
+  },
+  "artifactSha256": {
+    "baseline": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+    "candidate": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7"
+  },
+  "rawArtifacts": [
+    {
+      "file": "baseline-a-1-charts.csv",
+      "sha256": "2f4aa5cc31841e6a171cbc620ecf693e80f1193e82892bc2d6efee8e66eaf866",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:33:34.737632+00:00"
+    },
+    {
+      "file": "baseline-a-1-connected.csv",
+      "sha256": "3a080219e64e7a1f8c0edb1642e8cf7a39cd61bbc5a20a934074543b099a590e",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:35:00.867559+00:00"
+    },
+    {
+      "file": "baseline-a-1-navigation.csv",
+      "sha256": "3dc9e4ca1c4a5b4996f065992d890d21fbe3a51527eda092dd9e0b9136395f8b",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:33:52.283143+00:00"
+    },
+    {
+      "file": "baseline-a-1-numerals.csv",
+      "sha256": "e1e244cb8e03fc7359a9b9837f2fb38a422b7f6356238696babec97fa05cb948",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:34:26.538217+00:00"
+    },
+    {
+      "file": "baseline-a-1-press.csv",
+      "sha256": "555e5da68e1dc043368091956b7f1445b3e1d746dc705dcad9047543e38194f9",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:34:43.617085+00:00"
+    },
+    {
+      "file": "baseline-a-1-progress.csv",
+      "sha256": "1005d45d599c8b045bdd3e5169f0d49c91a564efb3a197b908f460eb65e14e24",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:33:00.486218+00:00",
+      "retainedFrameData": "baseline-a-1-progress.csv.gz",
+      "gzipSha256": "389df0235635e7106b8292864b52066d14f5c16ecb87fe1a7ad5cc017b195b03"
+    },
+    {
+      "file": "baseline-a-1-pulse.csv",
+      "sha256": "4deac44134f454dcfb5ae760a7abca2a491b9f7479c770362db48861ded27cc1",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:35:17.746854+00:00"
+    },
+    {
+      "file": "baseline-a-1-scrollbar.csv",
+      "sha256": "ce38cd818e716282455cd92fe00efd9bcb20c223a9bed36bd2abdb599fdf7011",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:34:09.425245+00:00"
+    },
+    {
+      "file": "baseline-a-1-shimmer.csv",
+      "sha256": "61c5c9b1c3c10f09043bc0ee775e0dc81507c090954bfec37c52019c99432343",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:33:17.652705+00:00",
+      "retainedFrameData": "baseline-a-1-shimmer.csv.gz",
+      "gzipSha256": "7ff20858b9a29b7ad257b358e4f8f635b6150e0f19e1b21e8d7beefd0bf9bf9d"
+    },
+    {
+      "file": "baseline-b-1-progress.csv",
+      "sha256": "7f4e21a82c919ad8b30c690c84a809eec57a46ba67920ef700eff721ad8238b3",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:42:38.956275+00:00",
+      "retainedFrameData": "baseline-b-1-progress.csv.gz",
+      "gzipSha256": "98b6d8f05edb572d86edbe65808fd454d45edbe652d0387d77d4d412b73a5967"
+    },
+    {
+      "file": "baseline-b-1-shimmer.csv",
+      "sha256": "c76cedf5f9f2c5477c691dfea3d5460a4890c3e74efe1723f608b7b9b45326c9",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:42:56.095929+00:00",
+      "retainedFrameData": "baseline-b-1-shimmer.csv.gz",
+      "gzipSha256": "fc3b14cee6ea875382098df77eda6138a45c1492d62be256c886273d0973ec0f"
+    },
+    {
+      "file": "baseline-c-1-progress.csv",
+      "sha256": "33d5af5b8388a1cb03d7a818027ba91fa18d506a5a4aadb7268ed221c34cad3f",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:43:48.772187+00:00",
+      "retainedFrameData": "baseline-c-1-progress.csv.gz",
+      "gzipSha256": "1b4fab45aca5f465fb541c23cfb9c16f33bc5a473c26ff213581e348a1db2a3c"
+    },
+    {
+      "file": "baseline-c-1-shimmer.csv",
+      "sha256": "461653d9881c27011cf72532b677138e3eb1dd2747b209252906a41767927188",
+      "apkSha256": "afd240fdef00447991e3d727c9e30c556e907826fde33f4fd04ae6883dcf2d3f",
+      "recordCompletedUtc": "2026-11-08T23:44:05.846356+00:00",
+      "retainedFrameData": "baseline-c-1-shimmer.csv.gz",
+      "gzipSha256": "1dbc12178c18af6929c49aa84cca7dcad0c68ae99193684c421b29c235de1666"
+    },
+    {
+      "file": "candidate-a-1-charts.csv",
+      "sha256": "c8adb112077fa2de0c4f89f18c6b46ecb46bd93d813428b88c9407f3fd4bbbe1",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:40:11.690398+00:00"
+    },
+    {
+      "file": "candidate-a-1-connected.csv",
+      "sha256": "8241c92e08562b80175f37de228018f239ff0b3f0b8a4005a032b90871d010a4",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:41:37.133941+00:00"
+    },
+    {
+      "file": "candidate-a-1-navigation.csv",
+      "sha256": "90397e4bfbc51185bf803d139b20412b50e24a9e51cb11ca207b0c80257c4500",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:40:28.999426+00:00"
+    },
+    {
+      "file": "candidate-a-1-numerals.csv",
+      "sha256": "13e5b245fe9a891fc2e3e329cb18e2d07e1037e3c7bda191c658a51826a0323e",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:41:03.153478+00:00"
+    },
+    {
+      "file": "candidate-a-1-press.csv",
+      "sha256": "7b7a1e20de4cdb3b1f27c6ac2560c6508f32554dcd7a783dcaca217b9b8c0975",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:41:20.098384+00:00"
+    },
+    {
+      "file": "candidate-a-1-progress.csv",
+      "sha256": "97bbc996d1c0fbdf03231c2eebd66c590041362ebb5ae9112618c6e8887fe2d8",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:39:37.117320+00:00",
+      "retainedFrameData": "candidate-a-1-progress.csv.gz",
+      "gzipSha256": "682db40d00531d1981fe88dec9a30acddca2a8f5d4b3543814e8b1ba48b25da6"
+    },
+    {
+      "file": "candidate-a-1-pulse.csv",
+      "sha256": "85bb3255c60564d5970be2d2efd6c434d7819d2059a48107ab1089ddf1a57196",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:41:54.304667+00:00"
+    },
+    {
+      "file": "candidate-a-1-scrollbar.csv",
+      "sha256": "1d1c770e6c335db48674b7af2f445662915ee8c5f081bfe4bb7a8d783c8dafbd",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:40:46.198402+00:00"
+    },
+    {
+      "file": "candidate-a-1-shimmer.csv",
+      "sha256": "e9f2a48b9f9bd31a718e4ab49ee4bec90573af2dac350286206d1883a06106ba",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:39:54.215772+00:00",
+      "retainedFrameData": "candidate-a-1-shimmer.csv.gz",
+      "gzipSha256": "d74cb559f291325caec5823a79ba25b2eea872d7224e6db3e5b7a32a02b49ac8"
+    },
+    {
+      "file": "candidate-b-1-progress.csv",
+      "sha256": "944ae38c138ebc2838aee58578c46a58a09b52e5e6504b67e58ce6200e36adf4",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:43:13.737357+00:00",
+      "retainedFrameData": "candidate-b-1-progress.csv.gz",
+      "gzipSha256": "fa82287f61489454a5b29f2d28b9da5c824eac7f8feaa4f73b7a82d353b133f4"
+    },
+    {
+      "file": "candidate-b-1-shimmer.csv",
+      "sha256": "f286e52a589c41dbb453c83e0114d07ea0af1028913fdb4a44035aa5b3dc83f3",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:43:30.931893+00:00",
+      "retainedFrameData": "candidate-b-1-shimmer.csv.gz",
+      "gzipSha256": "f2ab851c5764139b4f8bc6da067147bb901786a73edd42c235967c621f222293"
+    },
+    {
+      "file": "candidate-c-1-progress.csv",
+      "sha256": "4170b58691a90c69c253345386f06ea2a85586113a72583b7d15ab8161d413f7",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:44:23.922675+00:00",
+      "retainedFrameData": "candidate-c-1-progress.csv.gz",
+      "gzipSha256": "af88242ec1eb7714a34d40e3ccd1a4a2f954f300d6da37f42621c5d7324716fb"
+    },
+    {
+      "file": "candidate-c-1-shimmer.csv",
+      "sha256": "216292845aa027abb25b884ecd318baa1dce28857e61c63eb4530e8c0992ad98",
+      "apkSha256": "741e16fa281e65e05fc97e8db681d3d0768e607ed1f202e1f5ede618808192f7",
+      "recordCompletedUtc": "2026-11-08T23:44:40.983745+00:00",
+      "retainedFrameData": "candidate-c-1-shimmer.csv.gz",
+      "gzipSha256": "ba53d3d911f103d3d63176538a42807956c13dff6a6b9baee82cacbc771a8efb"
+    }
+  ],
+  "runs": [
+    {
+      "file": "baseline-a-1-charts.csv",
+      "scenario": "charts",
+      "run": "baseline-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 288,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 17832,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 140.532,
+        "p90": 151.603,
+        "p95": 155.036,
+        "p99": 165.682
+      },
+      "drawMs": {
+        "p50": 0.545,
+        "p90": 1.084,
+        "p95": 1.956,
+        "p99": 7.16
+      },
+      "layoutMs": {
+        "p50": 0.023,
+        "p90": 0.08,
+        "p95": 0.099,
+        "p99": 0.206
+      },
+      "gpuMs": {
+        "p50": 28.192,
+        "p90": 38.112,
+        "p95": 39.577,
+        "p99": 41.384
+      },
+      "deadlineMs": {
+        "p50": 116.667,
+        "p90": 133.333,
+        "p95": 133.333,
+        "p99": 150.0
+      },
+      "overBudgetFrames": 288,
+      "overBudgetPercent": 100.0,
+      "overrunMs": {
+        "p50": 16.871,
+        "p90": 23.865,
+        "p95": 25.017,
+        "p99": 29.564
+      },
+      "cpuMsPerFrame": 61.917,
+      "cpuMsPerSecond": 1486.0,
+      "recordedFramesPerSecond": 24.0
+    },
+    {
+      "file": "baseline-a-1-connected.csv",
+      "scenario": "connected",
+      "run": "baseline-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 555,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 3659,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 53.277,
+        "p90": 67.083,
+        "p95": 68.1,
+        "p99": 71.498
+      },
+      "drawMs": {
+        "p50": 0.068,
+        "p90": 0.195,
+        "p95": 0.26,
+        "p99": 1.109
+      },
+      "layoutMs": {
+        "p50": 0.019,
+        "p90": 0.027,
+        "p95": 0.033,
+        "p99": 0.096
+      },
+      "gpuMs": {
+        "p50": 19.377,
+        "p90": 29.621,
+        "p95": 31.674,
+        "p99": 32.795
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 66.667,
+        "p95": 66.667,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 163,
+      "overBudgetPercent": 29.369,
+      "overrunMs": {
+        "p50": -7.817,
+        "p90": 1.429,
+        "p95": 2.174,
+        "p99": 3.5
+      },
+      "cpuMsPerFrame": 6.593,
+      "cpuMsPerSecond": 304.917,
+      "recordedFramesPerSecond": 46.25
+    },
+    {
+      "file": "baseline-a-1-navigation.csv",
+      "scenario": "navigation",
+      "run": "baseline-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 486,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 8879,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 67.065,
+        "p90": 77.639,
+        "p95": 83.189,
+        "p99": 89.969
+      },
+      "drawMs": {
+        "p50": 4.325,
+        "p90": 9.007,
+        "p95": 11.323,
+        "p99": 16.911
+      },
+      "layoutMs": {
+        "p50": 0.027,
+        "p90": 0.045,
+        "p95": 0.051,
+        "p99": 0.157
+      },
+      "gpuMs": {
+        "p50": 22.127,
+        "p90": 25.008,
+        "p95": 26.02,
+        "p99": 28.497
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 83.333,
+        "p95": 83.333,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 235,
+      "overBudgetPercent": 48.354,
+      "overrunMs": {
+        "p50": -0.154,
+        "p90": 6.144,
+        "p95": 6.899,
+        "p99": 9.428
+      },
+      "cpuMsPerFrame": 18.27,
+      "cpuMsPerSecond": 739.917,
+      "recordedFramesPerSecond": 40.5
+    },
+    {
+      "file": "baseline-a-1-numerals.csv",
+      "scenario": "numerals",
+      "run": "baseline-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 356,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 2966,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 49.347,
+        "p90": 66.251,
+        "p95": 67.139,
+        "p99": 74.829
+      },
+      "drawMs": {
+        "p50": 0.37,
+        "p90": 0.78,
+        "p95": 1.032,
+        "p99": 1.623
+      },
+      "layoutMs": {
+        "p50": 0.031,
+        "p90": 0.072,
+        "p95": 0.083,
+        "p99": 0.386
+      },
+      "gpuMs": {
+        "p50": 19.541,
+        "p90": 27.586,
+        "p95": 30.59,
+        "p99": 33.362
+      },
+      "deadlineMs": {
+        "p50": 50.0,
+        "p90": 66.667,
+        "p95": 66.667,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 141,
+      "overBudgetPercent": 39.607,
+      "overrunMs": {
+        "p50": -1.061,
+        "p90": 2.652,
+        "p95": 3.619,
+        "p99": 5.696
+      },
+      "cpuMsPerFrame": 8.331,
+      "cpuMsPerSecond": 247.167,
+      "recordedFramesPerSecond": 29.667
+    },
+    {
+      "file": "baseline-a-1-press.csv",
+      "scenario": "press",
+      "run": "baseline-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 471,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 2769,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 32.139,
+        "p90": 50.32,
+        "p95": 51.951,
+        "p99": 67.369
+      },
+      "drawMs": {
+        "p50": 0.004,
+        "p90": 0.005,
+        "p95": 0.006,
+        "p99": 0.01
+      },
+      "layoutMs": {
+        "p50": 0.022,
+        "p90": 0.035,
+        "p95": 0.056,
+        "p99": 0.164
+      },
+      "gpuMs": {
+        "p50": 18.808,
+        "p90": 30.791,
+        "p95": 32.206,
+        "p99": 35.968
+      },
+      "deadlineMs": {
+        "p50": 33.333,
+        "p90": 50.0,
+        "p95": 50.0,
+        "p99": 66.667
+      },
+      "overBudgetFrames": 204,
+      "overBudgetPercent": 43.312,
+      "overrunMs": {
+        "p50": -1.122,
+        "p90": 1.784,
+        "p95": 2.558,
+        "p99": 16.441
+      },
+      "cpuMsPerFrame": 5.879,
+      "cpuMsPerSecond": 230.75,
+      "recordedFramesPerSecond": 39.25
+    },
+    {
+      "file": "baseline-a-1-progress.csv",
+      "scenario": "progress",
+      "run": "baseline-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 510,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 4233,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 54.156,
+        "p90": 67.144,
+        "p95": 69.878,
+        "p99": 72.508
+      },
+      "drawMs": {
+        "p50": 0.197,
+        "p90": 0.391,
+        "p95": 0.487,
+        "p99": 1.753
+      },
+      "layoutMs": {
+        "p50": 0.022,
+        "p90": 0.035,
+        "p95": 0.042,
+        "p99": 0.091
+      },
+      "gpuMs": {
+        "p50": 20.175,
+        "p90": 27.097,
+        "p95": 29.883,
+        "p99": 32.68
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 66.667,
+        "p95": 66.667,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 184,
+      "overBudgetPercent": 36.078,
+      "overrunMs": {
+        "p50": -1.477,
+        "p90": 2.902,
+        "p95": 3.848,
+        "p99": 6.34
+      },
+      "cpuMsPerFrame": 8.3,
+      "cpuMsPerSecond": 352.75,
+      "recordedFramesPerSecond": 42.5
+    },
+    {
+      "file": "baseline-a-1-pulse.csv",
+      "scenario": "pulse",
+      "run": "baseline-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 540,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 3538,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 52.825,
+        "p90": 68.109,
+        "p95": 73.586,
+        "p99": 94.511
+      },
+      "drawMs": {
+        "p50": 0.075,
+        "p90": 0.183,
+        "p95": 0.266,
+        "p99": 0.96
+      },
+      "layoutMs": {
+        "p50": 0.019,
+        "p90": 0.028,
+        "p95": 0.063,
+        "p99": 0.61
+      },
+      "gpuMs": {
+        "p50": 18.802,
+        "p90": 30.237,
+        "p95": 32.288,
+        "p99": 35.083
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 66.667,
+        "p95": 83.333,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 180,
+      "overBudgetPercent": 33.333,
+      "overrunMs": {
+        "p50": -2.12,
+        "p90": 1.677,
+        "p95": 2.894,
+        "p99": 8.604
+      },
+      "cpuMsPerFrame": 6.552,
+      "cpuMsPerSecond": 294.833,
+      "recordedFramesPerSecond": 45.0
+    },
+    {
+      "file": "baseline-a-1-scrollbar.csv",
+      "scenario": "scrollbar",
+      "run": "baseline-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 558,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 3317,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 52.511,
+        "p90": 66.987,
+        "p95": 68.933,
+        "p99": 83.597
+      },
+      "drawMs": {
+        "p50": 0.085,
+        "p90": 0.182,
+        "p95": 0.252,
+        "p99": 0.611
+      },
+      "layoutMs": {
+        "p50": 0.023,
+        "p90": 0.039,
+        "p95": 0.066,
+        "p99": 0.323
+      },
+      "gpuMs": {
+        "p50": 18.719,
+        "p90": 30.061,
+        "p95": 30.997,
+        "p99": 32.8
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 66.667,
+        "p95": 66.667,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 162,
+      "overBudgetPercent": 29.032,
+      "overrunMs": {
+        "p50": -3.148,
+        "p90": 1.276,
+        "p95": 1.953,
+        "p99": 4.238
+      },
+      "cpuMsPerFrame": 5.944,
+      "cpuMsPerSecond": 276.417,
+      "recordedFramesPerSecond": 46.5
+    },
+    {
+      "file": "baseline-a-1-shimmer.csv",
+      "scenario": "shimmer",
+      "run": "baseline-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 467,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 5092,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 67.099,
+        "p90": 78.68,
+        "p95": 84.258,
+        "p99": 90.662
+      },
+      "drawMs": {
+        "p50": 0.164,
+        "p90": 0.398,
+        "p95": 0.532,
+        "p99": 2.109
+      },
+      "layoutMs": {
+        "p50": 0.022,
+        "p90": 0.035,
+        "p95": 0.074,
+        "p99": 0.353
+      },
+      "gpuMs": {
+        "p50": 24.582,
+        "p90": 28.317,
+        "p95": 30.169,
+        "p99": 34.727
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 83.333,
+        "p95": 83.333,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 259,
+      "overBudgetPercent": 55.46,
+      "overrunMs": {
+        "p50": 0.439,
+        "p90": 7.878,
+        "p95": 9.308,
+        "p99": 19.113
+      },
+      "cpuMsPerFrame": 10.904,
+      "cpuMsPerSecond": 424.333,
+      "recordedFramesPerSecond": 38.917
+    },
+    {
+      "file": "baseline-b-1-progress.csv",
+      "scenario": "progress",
+      "run": "baseline-b-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 517,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 4160,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 53.532,
+        "p90": 67.101,
+        "p95": 69.566,
+        "p99": 73.457
+      },
+      "drawMs": {
+        "p50": 0.196,
+        "p90": 0.373,
+        "p95": 0.486,
+        "p99": 1.624
+      },
+      "layoutMs": {
+        "p50": 0.022,
+        "p90": 0.037,
+        "p95": 0.045,
+        "p99": 0.214
+      },
+      "gpuMs": {
+        "p50": 19.829,
+        "p90": 27.595,
+        "p95": 29.633,
+        "p99": 31.421
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 66.667,
+        "p95": 66.667,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 178,
+      "overBudgetPercent": 34.429,
+      "overrunMs": {
+        "p50": -1.75,
+        "p90": 2.496,
+        "p95": 3.712,
+        "p99": 5.728
+      },
+      "cpuMsPerFrame": 8.046,
+      "cpuMsPerSecond": 346.667,
+      "recordedFramesPerSecond": 43.083
+    },
+    {
+      "file": "baseline-b-1-shimmer.csv",
+      "scenario": "shimmer",
+      "run": "baseline-b-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 510,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 5640,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 63.714,
+        "p90": 71.498,
+        "p95": 73.63,
+        "p99": 79.732
+      },
+      "drawMs": {
+        "p50": 0.138,
+        "p90": 0.382,
+        "p95": 0.586,
+        "p99": 4.812
+      },
+      "layoutMs": {
+        "p50": 0.019,
+        "p90": 0.03,
+        "p95": 0.046,
+        "p99": 0.502
+      },
+      "gpuMs": {
+        "p50": 22.832,
+        "p90": 25.703,
+        "p95": 28.482,
+        "p99": 33.212
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 66.667,
+        "p95": 83.333,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 219,
+      "overBudgetPercent": 42.941,
+      "overrunMs": {
+        "p50": -1.445,
+        "p90": 5.366,
+        "p95": 6.522,
+        "p99": 9.952
+      },
+      "cpuMsPerFrame": 11.059,
+      "cpuMsPerSecond": 470.0,
+      "recordedFramesPerSecond": 42.5
+    },
+    {
+      "file": "baseline-c-1-progress.csv",
+      "scenario": "progress",
+      "run": "baseline-c-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 518,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 4489,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 52.597,
+        "p90": 66.846,
+        "p95": 67.754,
+        "p99": 70.993
+      },
+      "drawMs": {
+        "p50": 0.177,
+        "p90": 0.377,
+        "p95": 0.488,
+        "p99": 4.975
+      },
+      "layoutMs": {
+        "p50": 0.02,
+        "p90": 0.032,
+        "p95": 0.038,
+        "p99": 0.176
+      },
+      "gpuMs": {
+        "p50": 19.246,
+        "p90": 26.787,
+        "p95": 29.297,
+        "p99": 32.524
+      },
+      "deadlineMs": {
+        "p50": 50.0,
+        "p90": 66.667,
+        "p95": 66.667,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 174,
+      "overBudgetPercent": 33.591,
+      "overrunMs": {
+        "p50": -2.486,
+        "p90": 1.784,
+        "p95": 2.748,
+        "p99": 4.554
+      },
+      "cpuMsPerFrame": 8.666,
+      "cpuMsPerSecond": 374.083,
+      "recordedFramesPerSecond": 43.167
+    },
+    {
+      "file": "baseline-c-1-shimmer.csv",
+      "scenario": "shimmer",
+      "run": "baseline-c-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 501,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 5671,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 64.635,
+        "p90": 72.958,
+        "p95": 76.32,
+        "p99": 83.653
+      },
+      "drawMs": {
+        "p50": 0.145,
+        "p90": 0.371,
+        "p95": 0.7,
+        "p99": 4.429
+      },
+      "layoutMs": {
+        "p50": 0.019,
+        "p90": 0.027,
+        "p95": 0.033,
+        "p99": 0.214
+      },
+      "gpuMs": {
+        "p50": 23.071,
+        "p90": 25.737,
+        "p95": 27.479,
+        "p99": 33.015
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 83.333,
+        "p95": 83.333,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 234,
+      "overBudgetPercent": 46.707,
+      "overrunMs": {
+        "p50": -0.669,
+        "p90": 5.82,
+        "p95": 7.372,
+        "p99": 10.87
+      },
+      "cpuMsPerFrame": 11.319,
+      "cpuMsPerSecond": 472.583,
+      "recordedFramesPerSecond": 41.75
+    },
+    {
+      "file": "candidate-a-1-charts.csv",
+      "scenario": "charts",
+      "run": "candidate-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 290,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 18235,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 139.188,
+        "p90": 150.307,
+        "p95": 154.042,
+        "p99": 164.013
+      },
+      "drawMs": {
+        "p50": 0.5,
+        "p90": 1.27,
+        "p95": 2.687,
+        "p99": 8.806
+      },
+      "layoutMs": {
+        "p50": 0.022,
+        "p90": 0.079,
+        "p95": 0.133,
+        "p99": 1.436
+      },
+      "gpuMs": {
+        "p50": 27.42,
+        "p90": 37.056,
+        "p95": 38.179,
+        "p99": 41.031
+      },
+      "deadlineMs": {
+        "p50": 116.667,
+        "p90": 133.333,
+        "p95": 133.333,
+        "p99": 133.344
+      },
+      "overBudgetFrames": 290,
+      "overBudgetPercent": 100.0,
+      "overrunMs": {
+        "p50": 16.242,
+        "p90": 23.59,
+        "p95": 25.468,
+        "p99": 29.956
+      },
+      "cpuMsPerFrame": 62.879,
+      "cpuMsPerSecond": 1519.583,
+      "recordedFramesPerSecond": 24.167
+    },
+    {
+      "file": "candidate-a-1-connected.csv",
+      "scenario": "connected",
+      "run": "candidate-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 539,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 3294,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 53.84,
+        "p90": 68.03,
+        "p95": 69.59,
+        "p99": 71.398
+      },
+      "drawMs": {
+        "p50": 0.077,
+        "p90": 0.228,
+        "p95": 0.34,
+        "p99": 1.046
+      },
+      "layoutMs": {
+        "p50": 0.021,
+        "p90": 0.031,
+        "p95": 0.039,
+        "p99": 0.198
+      },
+      "gpuMs": {
+        "p50": 19.735,
+        "p90": 30.5,
+        "p95": 31.774,
+        "p99": 33.233
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 66.667,
+        "p95": 83.333,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 181,
+      "overBudgetPercent": 33.581,
+      "overrunMs": {
+        "p50": -2.323,
+        "p90": 1.719,
+        "p95": 2.304,
+        "p99": 3.575
+      },
+      "cpuMsPerFrame": 6.111,
+      "cpuMsPerSecond": 274.5,
+      "recordedFramesPerSecond": 44.917
+    },
+    {
+      "file": "candidate-a-1-navigation.csv",
+      "scenario": "navigation",
+      "run": "candidate-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 481,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 7063,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 66.909,
+        "p90": 75.307,
+        "p95": 79.717,
+        "p99": 86.404
+      },
+      "drawMs": {
+        "p50": 3.679,
+        "p90": 8.143,
+        "p95": 10.099,
+        "p99": 13.211
+      },
+      "layoutMs": {
+        "p50": 0.024,
+        "p90": 0.04,
+        "p95": 0.049,
+        "p99": 0.2
+      },
+      "gpuMs": {
+        "p50": 22.845,
+        "p90": 27.646,
+        "p95": 29.452,
+        "p99": 32.505
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 83.333,
+        "p95": 83.333,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 243,
+      "overBudgetPercent": 50.52,
+      "overrunMs": {
+        "p50": 0.149,
+        "p90": 5.876,
+        "p95": 7.146,
+        "p99": 12.508
+      },
+      "cpuMsPerFrame": 14.684,
+      "cpuMsPerSecond": 588.583,
+      "recordedFramesPerSecond": 40.083
+    },
+    {
+      "file": "candidate-a-1-numerals.csv",
+      "scenario": "numerals",
+      "run": "candidate-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 341,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 2613,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 50.33,
+        "p90": 68.172,
+        "p95": 69.915,
+        "p99": 82.708
+      },
+      "drawMs": {
+        "p50": 0.359,
+        "p90": 0.822,
+        "p95": 1.002,
+        "p99": 1.496
+      },
+      "layoutMs": {
+        "p50": 0.03,
+        "p90": 0.067,
+        "p95": 0.082,
+        "p99": 0.166
+      },
+      "gpuMs": {
+        "p50": 19.928,
+        "p90": 30.34,
+        "p95": 31.633,
+        "p99": 33.742
+      },
+      "deadlineMs": {
+        "p50": 50.0,
+        "p90": 66.667,
+        "p95": 66.678,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 152,
+      "overBudgetPercent": 44.575,
+      "overrunMs": {
+        "p50": -0.646,
+        "p90": 2.5,
+        "p95": 3.555,
+        "p99": 5.227
+      },
+      "cpuMsPerFrame": 7.663,
+      "cpuMsPerSecond": 217.75,
+      "recordedFramesPerSecond": 28.417
+    },
+    {
+      "file": "candidate-a-1-press.csv",
+      "scenario": "press",
+      "run": "candidate-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 466,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 3035,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 33.454,
+        "p90": 50.568,
+        "p95": 53.25,
+        "p99": 69.463
+      },
+      "drawMs": {
+        "p50": 0.004,
+        "p90": 0.006,
+        "p95": 0.007,
+        "p99": 0.011
+      },
+      "layoutMs": {
+        "p50": 0.024,
+        "p90": 0.039,
+        "p95": 0.053,
+        "p99": 0.17
+      },
+      "gpuMs": {
+        "p50": 18.782,
+        "p90": 30.668,
+        "p95": 32.807,
+        "p99": 36.611
+      },
+      "deadlineMs": {
+        "p50": 33.333,
+        "p90": 50.0,
+        "p95": 66.667,
+        "p99": 66.667
+      },
+      "overBudgetFrames": 206,
+      "overBudgetPercent": 44.206,
+      "overrunMs": {
+        "p50": -1.373,
+        "p90": 2.822,
+        "p95": 3.964,
+        "p99": 17.125
+      },
+      "cpuMsPerFrame": 6.513,
+      "cpuMsPerSecond": 252.917,
+      "recordedFramesPerSecond": 38.833
+    },
+    {
+      "file": "candidate-a-1-progress.csv",
+      "scenario": "progress",
+      "run": "candidate-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 523,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 4597,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 52.566,
+        "p90": 65.989,
+        "p95": 66.935,
+        "p99": 70.516
+      },
+      "drawMs": {
+        "p50": 0.185,
+        "p90": 0.381,
+        "p95": 0.455,
+        "p99": 1.04
+      },
+      "layoutMs": {
+        "p50": 0.02,
+        "p90": 0.028,
+        "p95": 0.034,
+        "p99": 0.153
+      },
+      "gpuMs": {
+        "p50": 19.085,
+        "p90": 26.164,
+        "p95": 27.268,
+        "p99": 30.959
+      },
+      "deadlineMs": {
+        "p50": 50.0,
+        "p90": 66.667,
+        "p95": 66.667,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 169,
+      "overBudgetPercent": 32.314,
+      "overrunMs": {
+        "p50": -1.865,
+        "p90": 1.934,
+        "p95": 2.713,
+        "p99": 5.958
+      },
+      "cpuMsPerFrame": 8.79,
+      "cpuMsPerSecond": 383.083,
+      "recordedFramesPerSecond": 43.583
+    },
+    {
+      "file": "candidate-a-1-pulse.csv",
+      "scenario": "pulse",
+      "run": "candidate-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 555,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 3240,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 52.378,
+        "p90": 66.948,
+        "p95": 68.004,
+        "p99": 70.294
+      },
+      "drawMs": {
+        "p50": 0.084,
+        "p90": 0.177,
+        "p95": 0.294,
+        "p99": 0.562
+      },
+      "layoutMs": {
+        "p50": 0.021,
+        "p90": 0.03,
+        "p95": 0.036,
+        "p99": 0.162
+      },
+      "gpuMs": {
+        "p50": 18.668,
+        "p90": 30.327,
+        "p95": 31.866,
+        "p99": 33.466
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 66.667,
+        "p95": 66.667,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 163,
+      "overBudgetPercent": 29.369,
+      "overrunMs": {
+        "p50": -8.871,
+        "p90": 1.289,
+        "p95": 1.771,
+        "p99": 2.658
+      },
+      "cpuMsPerFrame": 5.838,
+      "cpuMsPerSecond": 270.0,
+      "recordedFramesPerSecond": 46.25
+    },
+    {
+      "file": "candidate-a-1-scrollbar.csv",
+      "scenario": "scrollbar",
+      "run": "candidate-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 547,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 3564,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 52.724,
+        "p90": 67.465,
+        "p95": 69.36,
+        "p99": 83.287
+      },
+      "drawMs": {
+        "p50": 0.092,
+        "p90": 0.177,
+        "p95": 0.285,
+        "p99": 0.632
+      },
+      "layoutMs": {
+        "p50": 0.025,
+        "p90": 0.045,
+        "p95": 0.091,
+        "p99": 0.278
+      },
+      "gpuMs": {
+        "p50": 18.713,
+        "p90": 30.76,
+        "p95": 31.851,
+        "p99": 35.023
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 66.667,
+        "p95": 66.667,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 176,
+      "overBudgetPercent": 32.176,
+      "overrunMs": {
+        "p50": -9.443,
+        "p90": 1.741,
+        "p95": 2.49,
+        "p99": 4.787
+      },
+      "cpuMsPerFrame": 6.516,
+      "cpuMsPerSecond": 297.0,
+      "recordedFramesPerSecond": 45.583
+    },
+    {
+      "file": "candidate-a-1-shimmer.csv",
+      "scenario": "shimmer",
+      "run": "candidate-a-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 495,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 5278,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 65.723,
+        "p90": 73.765,
+        "p95": 75.954,
+        "p99": 81.383
+      },
+      "drawMs": {
+        "p50": 0.101,
+        "p90": 0.225,
+        "p95": 0.297,
+        "p99": 2.966
+      },
+      "layoutMs": {
+        "p50": 0.019,
+        "p90": 0.027,
+        "p95": 0.031,
+        "p99": 0.169
+      },
+      "gpuMs": {
+        "p50": 23.328,
+        "p90": 26.429,
+        "p95": 28.219,
+        "p99": 32.181
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 83.333,
+        "p95": 83.333,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 237,
+      "overBudgetPercent": 47.879,
+      "overrunMs": {
+        "p50": -0.29,
+        "p90": 5.716,
+        "p95": 7.403,
+        "p99": 11.573
+      },
+      "cpuMsPerFrame": 10.663,
+      "cpuMsPerSecond": 439.833,
+      "recordedFramesPerSecond": 41.25
+    },
+    {
+      "file": "candidate-b-1-progress.csv",
+      "scenario": "progress",
+      "run": "candidate-b-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 511,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 4118,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 54.669,
+        "p90": 67.157,
+        "p95": 71.179,
+        "p99": 75.839
+      },
+      "drawMs": {
+        "p50": 0.203,
+        "p90": 0.397,
+        "p95": 0.499,
+        "p99": 1.629
+      },
+      "layoutMs": {
+        "p50": 0.021,
+        "p90": 0.032,
+        "p95": 0.041,
+        "p99": 0.172
+      },
+      "gpuMs": {
+        "p50": 20.515,
+        "p90": 27.146,
+        "p95": 29.226,
+        "p99": 31.783
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 66.667,
+        "p95": 66.667,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 185,
+      "overBudgetPercent": 36.204,
+      "overrunMs": {
+        "p50": -1.179,
+        "p90": 3.308,
+        "p95": 4.507,
+        "p99": 5.821
+      },
+      "cpuMsPerFrame": 8.059,
+      "cpuMsPerSecond": 343.167,
+      "recordedFramesPerSecond": 42.583
+    },
+    {
+      "file": "candidate-b-1-shimmer.csv",
+      "scenario": "shimmer",
+      "run": "candidate-b-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 488,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 4194,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 66.602,
+        "p90": 75.407,
+        "p95": 77.417,
+        "p99": 83.459
+      },
+      "drawMs": {
+        "p50": 0.102,
+        "p90": 0.249,
+        "p95": 0.362,
+        "p99": 1.881
+      },
+      "layoutMs": {
+        "p50": 0.019,
+        "p90": 0.029,
+        "p95": 0.038,
+        "p99": 0.247
+      },
+      "gpuMs": {
+        "p50": 24.002,
+        "p90": 27.348,
+        "p95": 28.691,
+        "p99": 31.912
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 83.333,
+        "p95": 83.333,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 240,
+      "overBudgetPercent": 49.18,
+      "overrunMs": {
+        "p50": -0.109,
+        "p90": 7.679,
+        "p95": 8.625,
+        "p99": 13.476
+      },
+      "cpuMsPerFrame": 8.594,
+      "cpuMsPerSecond": 349.5,
+      "recordedFramesPerSecond": 40.667
+    },
+    {
+      "file": "candidate-c-1-progress.csv",
+      "scenario": "progress",
+      "run": "candidate-c-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 498,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 3859,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 55.027,
+        "p90": 69.092,
+        "p95": 70.931,
+        "p99": 83.715
+      },
+      "drawMs": {
+        "p50": 0.189,
+        "p90": 0.406,
+        "p95": 0.592,
+        "p99": 1.905
+      },
+      "layoutMs": {
+        "p50": 0.02,
+        "p90": 0.027,
+        "p95": 0.034,
+        "p99": 0.129
+      },
+      "gpuMs": {
+        "p50": 20.044,
+        "p90": 29.238,
+        "p95": 31.338,
+        "p99": 34.108
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 66.667,
+        "p95": 83.333,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 197,
+      "overBudgetPercent": 39.558,
+      "overrunMs": {
+        "p50": -1.068,
+        "p90": 2.433,
+        "p95": 3.04,
+        "p99": 4.544
+      },
+      "cpuMsPerFrame": 7.749,
+      "cpuMsPerSecond": 321.583,
+      "recordedFramesPerSecond": 41.5
+    },
+    {
+      "file": "candidate-c-1-shimmer.csv",
+      "scenario": "shimmer",
+      "run": "candidate-c-1",
+      "warmupSeconds": 4,
+      "measureSeconds": 12,
+      "frames": 488,
+      "droppedMetricCallbacks": 0,
+      "processCpuMs": 4983,
+      "refreshRateHz": 60.000004,
+      "model": "sdk_gphone16k_arm64",
+      "sdk": 37,
+      "debuggable": false,
+      "totalMs": {
+        "p50": 66.588,
+        "p90": 74.681,
+        "p95": 76.973,
+        "p99": 82.972
+      },
+      "drawMs": {
+        "p50": 0.1,
+        "p90": 0.247,
+        "p95": 0.376,
+        "p99": 3.733
+      },
+      "layoutMs": {
+        "p50": 0.019,
+        "p90": 0.028,
+        "p95": 0.05,
+        "p99": 0.332
+      },
+      "gpuMs": {
+        "p50": 23.69,
+        "p90": 26.266,
+        "p95": 27.624,
+        "p99": 30.971
+      },
+      "deadlineMs": {
+        "p50": 66.667,
+        "p90": 83.333,
+        "p95": 83.333,
+        "p99": 83.333
+      },
+      "overBudgetFrames": 245,
+      "overBudgetPercent": 50.205,
+      "overrunMs": {
+        "p50": 0.038,
+        "p90": 6.768,
+        "p95": 8.661,
+        "p99": 14.897
+      },
+      "cpuMsPerFrame": 10.211,
+      "cpuMsPerSecond": 415.25,
+      "recordedFramesPerSecond": 40.667
+    }
+  ],
+  "measurementAppVersionName": "2.1.0"
+}

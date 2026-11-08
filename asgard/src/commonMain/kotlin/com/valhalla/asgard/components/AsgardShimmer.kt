@@ -13,10 +13,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -71,18 +73,25 @@ fun AsgardShimmer(
     Box(
         modifier = modifier
             .clip(resolvedShape)
-            .drawBehind {
+            .drawWithCache {
                 // Sweep the highlight band across the actual measured width, so the animation is
                 // resolution- and width-independent (covers full-width cards on any display).
                 val width = size.width
-                val sweepX = progress * (width * 2f) - width
-                drawRect(
-                    brush = Brush.linearGradient(
-                        colors = listOf(baseColor, highlightColor, baseColor),
-                        start = Offset(sweepX, 0f),
-                        end = Offset(sweepX + width, 0f),
-                    ),
+                val brush = Brush.linearGradient(
+                    colors = listOf(baseColor, highlightColor, baseColor),
+                    start = Offset.Zero,
+                    end = Offset(width, 0f),
                 )
+                onDrawBehind {
+                    if (width > 0f) {
+                        // Keep the shader/gradient cached; translate it instead of allocating a
+                        // new brush every frame. The rectangle still covers the same viewport.
+                        val sweepX = progress * (width * 2f) - width
+                        translate(left = sweepX) {
+                            drawRect(brush, topLeft = Offset(-sweepX, 0f), size = size)
+                        }
+                    }
+                }
             },
     )
 }
