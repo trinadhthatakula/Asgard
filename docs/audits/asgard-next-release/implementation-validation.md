@@ -164,3 +164,11 @@ header text, rather than the component interaction contracts demonstrated in tho
   creating a release. The four required publication secret names are configured; their values
   were not inspected or validated. Maven Central still reports 2.0.1 as the latest release.
 - The validation limits above remain applicable. Hosted PR CI must be reviewed before merging.
+
+## Hosted CI SDK setup correction
+
+- The first PR #9 run failed in both jobs before compilation: `sdkmanager: command not found`
+  (exit 127). The workflows invoked SDK installation without setting up Android command-line tools.
+- PR CI, publication and gallery deployment now use `android-actions/setup-android@v3` to
+  configure the SDK tools and PATH and install `platform-tools` and `platforms;android-37.2`.
+  Hosted build and emulator validation must complete on the corrected commit.

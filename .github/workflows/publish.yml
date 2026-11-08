@@ -125,8 +125,10 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Install Android compile SDK
-        run: sdkmanager "platforms;android-37.2"
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-37.2'
 
       - name: Publish to Maven Central
         env:

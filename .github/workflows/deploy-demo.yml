@@ -31,8 +31,10 @@ jobs:
           java-version: '21'
           cache: 'gradle'
 
-      - name: Install Android compile SDK
-        run: sdkmanager "platforms;android-37.2"
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-37.2'
 
       - name: Build wasm production distribution
         run: ./gradlew :demo:wasmJsBrowserDistribution --no-daemon
