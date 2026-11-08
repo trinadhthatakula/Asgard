@@ -15,6 +15,12 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 dependencyResolutionManagement {
+    // Composite consumers must use one AGP version across every included Android build.
+    providers.gradleProperty("asgardAgpVersion").orNull?.let { agpVersion ->
+        versionCatalogs {
+            create("libs") { version("agp", agpVersion) }
+        }
+    }
     // PREFER_PROJECT (not FAIL_ON_PROJECT_REPOS): the Kotlin wasm toolchain adds project-scoped
     // Node.js/Yarn download repositories at build time. Modules without their own repositories
     // still fall back to the settings repositories below for the Compose dependencies.

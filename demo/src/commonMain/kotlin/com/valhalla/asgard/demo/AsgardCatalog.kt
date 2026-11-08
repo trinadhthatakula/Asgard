@@ -143,6 +143,23 @@ val asgardCatalog: List<ComponentEntry> = listOf(
     },
 
     ComponentEntry(
+        "ConnectedButtonGroup · multiple selections", "Input",
+        "Independent toggles with primary-color selection. This example keeps at least one type selected.",
+        "ConnectedButtonGroup(items = items, selectedIndices = selected, onSelectionChanged = { if (it.isNotEmpty()) selected = it })",
+    ) {
+        var selected by remember { mutableStateOf(setOf(0, 1)) }
+        ConnectedButtonGroup(
+            items = listOf(
+                ConnectedButtonGroupItem.Label("User"),
+                ConnectedButtonGroupItem.Label("System"),
+            ),
+            selectedIndices = selected,
+            onSelectionChanged = { if (it.isNotEmpty()) selected = it },
+            modifier = Modifier.fillMaxWidth(),
+        )
+    },
+
+    ComponentEntry(
         "ConnectedButtonGroup · icons", "Input",
         "The same group using the Icon (icon-only) and IconWithLabel item variants instead of plain labels.",
         "ConnectedButtonGroup(items = listOf(\n    ConnectedButtonGroupItem.Icon(Icons.Rounded.Star, \"Home\"),\n    ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Bolt, \"Recent\", \"Recent\"),\n), selectedIndex, onItemSelected)",
