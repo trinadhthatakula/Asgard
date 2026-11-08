@@ -9,4 +9,7 @@ data class ComponentEntry(
     val description: String,
     val code: String,
     val content: @Composable () -> Unit,
-)
+) {
+    /** Name-derived IDs are part of the gallery URL contract; keep names stable. */
+    val id: String = name.lowercase().replace(Regex("[^a-z0-9]+"), "-").trim('-')
+}

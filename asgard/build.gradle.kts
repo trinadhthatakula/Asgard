@@ -16,13 +16,17 @@ kotlin {
     // com.android.kotlin.multiplatform.library plugin — NOT a top-level android { } block.
     androidLibrary {
         namespace = "com.valhalla.asgard"
-        compileSdk = libs.versions.compileSdk.get().toInt()
+        compileSdk {
+            version = release(libs.versions.compileSdk.get().toInt()) {
+                minorApiLevel = libs.versions.compileSdkMinor.get().toInt()
+            }
+        }
         minSdk = libs.versions.minSdk.get().toInt()
         compilerOptions {
             jvmTarget = JvmTarget.JVM_21
         }
         // Enable JVM-hosted unit tests (androidHostTest) so commonTest runs without an emulator.
-        withHostTest {}
+        withHostTest { isIncludeAndroidResources = true }
     }
 
     wasmJs {
@@ -41,12 +45,17 @@ kotlin {
             // foundation + ui + material3 must be exposed transitively rather than relying on
             // material3's POM to re-export them.
             implementation(libs.compose.runtime)
+            api(libs.kotlinx.datetime)
             api(libs.compose.foundation)
             api(libs.compose.material3)
             api(libs.compose.ui)
             // NOTE: material-icons-extended intentionally dropped in 1.2.0 — AsgardHeader's only
             // icon (Icons.AutoMirrored.Filled.ArrowBack) lives in material-icons-core (pulled in
             // transitively by material3). Consumers pass their own ImageVectors for everything else.
+        }
+        getByName("androidHostTest").dependencies {
+            implementation("org.jetbrains.compose.ui:ui-test-junit4:${libs.versions.composeMultiplatform.get()}")
+            implementation("org.robolectric:robolectric:4.17")
         }
         commonTest.dependencies {
             // Pure-logic unit tests for the extracted chart/progress domain math. They run on the

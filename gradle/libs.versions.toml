@@ -5,10 +5,13 @@ kotlin = "2.4.21"
 composeMultiplatform = "1.13.0-alpha02"
 material3Cmp = "1.13.0-alpha02"
 compileSdk = "37"
+compileSdkMinor = "2"
 minSdk = "28"
 vanniktechMavenPublish = "0.37.0"
+kotlinxDatetime = "0.7.1"
 
 [libraries]
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 # Compose Multiplatform artifacts (provide the same androidx.compose.* packages on every target).
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }

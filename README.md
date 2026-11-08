@@ -28,11 +28,11 @@ palette or font.
 
 - 🎨 **Theme-agnostic by design** — every color, type, shape and motion value comes from *your*
   `MaterialTheme`. Drop it into any app and it looks like *that* app.
-- 🧩 **~30 components + 5 charts** — headers, navigation, inputs, stat cards, banners, settings rows,
+- 🧩 **Reusable components and charts** — headers, navigation, inputs, stat cards, banners, settings rows,
   a pro-gate kit, progress rings, charts, and more.
 - 🛠️ **Deeply customizable** — flat params for text truncation, typography, color, shape, padding,
   and accessibility on every component — with defaults that just work.
-- 🪶 **Featherweight** — pure Compose, **no icon pack** and **no third-party** dependencies.
+- 🪶 **Featherweight** — pure Compose, **no icon pack or image-loader dependency**; calendar dates use kotlinx-datetime.
 - 🌐 **Kotlin Multiplatform** — one artifact for **Android** and **wasmJs**.
 
 ## ▶ Live gallery
@@ -42,6 +42,13 @@ component and chart live, drag the interactive knobs, and flip **light/dark** an
 to watch each one inherit the theme. The gallery is itself built from Asgard, running in the browser
 via Compose Multiplatform (wasm).
 
+## Upcoming component expansion
+
+The implementation branch adds configurable connected-button shapes; docked/floating,
+expanding/segmented/standard navigation; sheets and searchable pickers; action toolbars and
+avatars; list/grid scrollbars; and a date/value calendar heatmap. These APIs are not yet
+published. See the [new API guide](docs/component-expansion.md) for examples and input contracts.
+
 ## 📦 Install
 
 Asgard is on Maven Central. Add the dependency — Gradle resolves the correct platform artifact
@@ -50,7 +57,7 @@ automatically:
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("com.trinadhthatakula:asgard:2.0.0")
+    implementation("com.trinadhthatakula:asgard:2.0.1")
 }
 ```
 
@@ -71,7 +78,7 @@ on a single platform artifact directly if you only want one:
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("com.trinadhthatakula:asgard:2.0.0")
+            implementation("com.trinadhthatakula:asgard:2.0.1")
         }
     }
 }
@@ -87,7 +94,7 @@ If the host app already bundles Asgard, depend on it as `compileOnly` so it isn'
 extension APK — the host provides it at runtime:
 
 ```kotlin
-compileOnly("com.trinadhthatakula:asgard:2.0.0")
+compileOnly("com.trinadhthatakula:asgard:2.0.1")
 ```
 Asgard shares the `com.trinadhthatakula` namespace with the
 [`thor-extension-api`](https://github.com/trinadhthatakula/Thor-extension-api) contract; both are

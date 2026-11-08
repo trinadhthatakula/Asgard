@@ -92,7 +92,7 @@ private val demoNavItems = listOf(
 )
 
 /** Single source of truth for the gallery — one entry per public Asgard component. */
-val asgardCatalog: List<ComponentEntry> = listOf(
+val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
     ComponentEntry(
         "AsgardHeader", "Structure",
         "The signature screen header: a bold primary-tinted title, optional leading icon, trailing actions.",

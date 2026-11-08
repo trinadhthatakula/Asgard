@@ -5,6 +5,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 
 /** Seed colors offered in the demo toolbar to prove components inherit the host theme. */
 val demoSeeds: List<Pair<String, Color>> = listOf(
@@ -20,10 +21,16 @@ val demoSeeds: List<Pair<String, Color>> = listOf(
  */
 @Composable
 fun DemoTheme(dark: Boolean, seed: Color, content: @Composable () -> Unit) {
+    val index = demoSeeds.indexOfFirst { it.second == seed }.coerceAtLeast(0)
+    val secondary = demoSeeds[(index + 1) % demoSeeds.size].second
+    val tertiary = demoSeeds[(index + 2) % demoSeeds.size].second
     val scheme = if (dark) {
-        darkColorScheme(primary = seed, secondary = seed, tertiary = seed)
+        darkColorScheme(primary = lerp(seed, Color.White, .4f), onPrimary = Color.Black,
+            secondary = lerp(secondary, Color.White, .4f), onSecondary = Color.Black,
+            tertiary = lerp(tertiary, Color.White, .4f), onTertiary = Color.Black)
     } else {
-        lightColorScheme(primary = seed, secondary = seed, tertiary = seed)
+        lightColorScheme(primary = seed, onPrimary = Color.White, secondary = secondary,
+            onSecondary = Color.White, tertiary = tertiary, onTertiary = Color.White)
     }
     MaterialTheme(colorScheme = scheme, content = content)
 }

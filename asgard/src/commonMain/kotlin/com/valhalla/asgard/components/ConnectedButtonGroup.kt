@@ -2,6 +2,8 @@ package com.valhalla.asgard.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -16,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -98,6 +101,35 @@ fun ConnectedButtonGroup(
     )
 }
 
+/** Shape-configurable overload; the configuration is required to preserve old entry points. */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun ConnectedButtonGroup(
+    items: List<ConnectedButtonGroupItem>,
+    selectedIndex: Int,
+    onItemSelected: (index: Int) -> Unit,
+    shapes: ConnectedButtonGroupShapes,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: ToggleButtonColors? = null,
+    spacing: Dp = ButtonGroupDefaults.ConnectedSpaceBetween,
+    contentDescription: String? = null,
+    labelMaxLines: Int = 1,
+) {
+    ConnectedButtonGroupContent(
+        items = items,
+        selectedIndices = setOf(selectedIndex),
+        onItemCheckedChange = { index, checked -> if (checked) onItemSelected(index) },
+        modifier = modifier,
+        enabled = enabled,
+        colors = colors,
+        spacing = spacing,
+        contentDescription = contentDescription,
+        labelMaxLines = labelMaxLines,
+        shapes = shapes,
+    )
+}
+
 /**
  * A multi-select connected button group. Each item can be checked independently, with the
  * same primary/onPrimary selection colors and connected shapes as the single-select overload.
@@ -141,6 +173,38 @@ fun ConnectedButtonGroup(
     )
 }
 
+/** Shape-configurable overload; the configuration is required to preserve old entry points. */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun ConnectedButtonGroup(
+    items: List<ConnectedButtonGroupItem>,
+    selectedIndices: Set<Int>,
+    onSelectionChanged: (Set<Int>) -> Unit,
+    shapes: ConnectedButtonGroupShapes,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: ToggleButtonColors? = null,
+    spacing: Dp = ButtonGroupDefaults.ConnectedSpaceBetween,
+    contentDescription: String? = null,
+    labelMaxLines: Int = 1,
+) {
+    val validSelection = selectedIndices.filterTo(mutableSetOf()) { it in items.indices }
+    ConnectedButtonGroupContent(
+        items = items,
+        selectedIndices = validSelection,
+        onItemCheckedChange = { index, checked ->
+            onSelectionChanged(if (checked) validSelection + index else validSelection - index)
+        },
+        modifier = modifier,
+        enabled = enabled,
+        colors = colors,
+        spacing = spacing,
+        contentDescription = contentDescription,
+        labelMaxLines = labelMaxLines,
+        shapes = shapes,
+    )
+}
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ConnectedButtonGroupContent(
@@ -153,6 +217,7 @@ private fun ConnectedButtonGroupContent(
     spacing: Dp,
     contentDescription: String?,
     labelMaxLines: Int,
+    shapes: ConnectedButtonGroupShapes = ConnectedButtonGroupShapes.Expressive,
 ) {
     require(items.isNotEmpty()) { "ConnectedButtonGroup requires at least one item" }
 
@@ -166,7 +231,7 @@ private fun ConnectedButtonGroupContent(
     val groupDescription = contentDescription
 
     Row(
-        modifier = modifier.then(
+        modifier = modifier.selectableGroup().then(
             if (groupDescription != null) {
                 Modifier.semantics { this.contentDescription = groupDescription }
             } else {
@@ -187,7 +252,7 @@ private fun ConnectedButtonGroupContent(
                     .zIndex(if (index in selectedIndices) 1f else 0f),
                 enabled = enabled && item.enabled,
                 colors = resolvedColors,
-                shapes = connectedShapesFor(index, lastIndex),
+                shapes = resolveConnectedShapes(shapes, index, lastIndex),
             ) {
                 ItemContent(item, labelMaxLines)
             }
@@ -283,7 +348,42 @@ private fun ItemContent(item: ConnectedButtonGroupItem, labelMaxLines: Int = 1) 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun connectedShapesFor(index: Int, lastIndex: Int): ToggleButtonShapes = when {
+    lastIndex == 0 -> ToggleButtonShapes(
+        RoundedCornerShape(50), MaterialTheme.shapes.small, MaterialTheme.shapes.large,
+    )
     index == 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
     index == lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
     else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+}
+
+
+/** Shape behavior is independent of checked colors. Logical positions retain RTL end caps. */
+sealed interface ConnectedButtonGroupShapes {
+    data object Expressive : ConnectedButtonGroupShapes
+    data object FixedConnected : ConnectedButtonGroupShapes
+    data class Uniform(val shape: Shape) : ConnectedButtonGroupShapes
+    /** Material handles pressed precedence; non-corner shapes can switch instead of morphing. */
+    data class Custom(
+        val leading: ToggleButtonShapes,
+        val middle: ToggleButtonShapes,
+        val trailing: ToggleButtonShapes,
+        val standalone: ToggleButtonShapes,
+    ) : ConnectedButtonGroupShapes
+}
+
+@Composable
+private fun resolveConnectedShapes(
+    config: ConnectedButtonGroupShapes, index: Int, lastIndex: Int,
+): ToggleButtonShapes = when (config) {
+    ConnectedButtonGroupShapes.Expressive -> connectedShapesFor(index, lastIndex)
+    ConnectedButtonGroupShapes.FixedConnected -> connectedShapesFor(index, lastIndex).let {
+        ToggleButtonShapes(it.shape, it.shape, it.shape)
+    }
+    is ConnectedButtonGroupShapes.Uniform -> ToggleButtonShapes(config.shape, config.shape, config.shape)
+    is ConnectedButtonGroupShapes.Custom -> when {
+        lastIndex == 0 -> config.standalone
+        index == 0 -> config.leading
+        index == lastIndex -> config.trailing
+        else -> config.middle
+    }
 }

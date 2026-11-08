@@ -1,4 +1,7 @@
 package com.valhalla.asgard.demo
 
-/** Copies [text] to the system clipboard. Platform-provided (browser clipboard on wasmJs). */
-expect fun copyToClipboard(text: String)
+/** Reports completion, including denied or unsupported clipboard access. */
+expect fun copyToClipboard(text: String, onResult: (Boolean) -> Unit)
+expect fun readGalleryEntry(): String?
+expect fun selectGalleryEntry(id: String)
+expect fun observeGalleryEntry(onChanged: (String?) -> Unit): () -> Unit

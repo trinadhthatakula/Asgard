@@ -31,6 +31,9 @@ jobs:
           java-version: '21'
           cache: 'gradle'
 
+      - name: Install Android compile SDK
+        run: sdkmanager "platforms;android-37.2"
+
       - name: Compile (wasmJs + Android) & run unit tests
         run: >-
           ./gradlew
@@ -38,4 +41,8 @@ jobs:
           :asgard:compileAndroidMain
           :asgard:testAndroidHostTest
           :demo:compileKotlinWasmJs
+          :demo:wasmJsBrowserDistribution
           --stacktrace
+
+      - name: Check retained JVM entry points
+        run: python3 tools/check_api_compatibility.py
