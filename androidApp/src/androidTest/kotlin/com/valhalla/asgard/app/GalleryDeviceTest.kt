@@ -22,8 +22,8 @@ class GalleryDeviceTest {
         compose.onNode(hasSetTextAction()).performTextInput("Heatmap")
         compose.onNodeWithContentDescription("AsgardCalendarHeatmap").performClick()
         compose.onNodeWithText("Selected: 2026-11-08 · Value: 1.0").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText("Add an entry for selected date").performClick()
-        compose.onNodeWithText("Selected: 2026-11-08 · Value: 2.0").assertIsDisplayed()
+        compose.onNodeWithText("Add an entry for selected date").performScrollTo().performClick()
+        compose.onNodeWithText("Selected: 2026-11-08 · Value: 2.0").performScrollTo().assertIsDisplayed()
     }
 
     @Test fun nativeClipboardCopiesActualExample() {

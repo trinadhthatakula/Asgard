@@ -172,3 +172,12 @@ header text, rather than the component interaction contracts demonstrated in tho
 - PR CI, publication and gallery deployment now use `android-actions/setup-android@v3` to
   configure the SDK tools and PATH and install `platform-tools` and `platforms;android-37.2`.
   Hosted build and emulator validation must complete on the corrected commit.
+
+- The SDK-corrected hosted run passed the full build, lint, host tests and retained JVM checks.
+  API 35 instrumentation passed 20 of 21 tests. The gallery heatmap test failed because its
+  updated value was outside the small emulator viewport after activating the add-entry button.
+- Reproduced the same assertion on the local API 37 emulator at 320x640 dp. The test now
+  scrolls to the action before clicking and to the updated result before asserting visibility;
+  the expected value and visibility assertions are preserved. Rebuilt and installed the APKs:
+  all 21 tests passed at that compact viewport (`OK (21 tests)`, 42.218 seconds). Restored the
+  emulator's original display size afterward. Hosted CI is re-run for the test correction.
