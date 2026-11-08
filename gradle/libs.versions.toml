@@ -1,9 +1,9 @@
 [versions]
 # Bleeding-edge KMP toolchain (matches the verified LedgerX combo; keep latest, no downgrade).
-agp = "9.5.0-alpha04"
-kotlin = "2.4.20"
-composeMultiplatform = "1.13.0-alpha01"
-material3Cmp = "1.13.0-alpha01"
+agp = "9.6.0-alpha03"
+kotlin = "2.4.21"
+composeMultiplatform = "1.13.0-alpha02"
+material3Cmp = "1.13.0-alpha02"
 compileSdk = "37"
 minSdk = "28"
 vanniktechMavenPublish = "0.37.0"

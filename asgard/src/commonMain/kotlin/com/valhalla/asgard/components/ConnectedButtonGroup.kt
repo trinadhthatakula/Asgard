@@ -85,6 +85,75 @@ fun ConnectedButtonGroup(
     contentDescription: String? = null,
     labelMaxLines: Int = 1,
 ) {
+    ConnectedButtonGroupContent(
+        items = items,
+        selectedIndices = setOf(selectedIndex),
+        onItemCheckedChange = { index, checked -> if (checked) onItemSelected(index) },
+        modifier = modifier,
+        enabled = enabled,
+        colors = colors,
+        spacing = spacing,
+        contentDescription = contentDescription,
+        labelMaxLines = labelMaxLines,
+    )
+}
+
+/**
+ * A multi-select connected button group. Each item can be checked independently, with the
+ * same primary/onPrimary selection colors and connected shapes as the single-select overload.
+ *
+ * Selection is controlled by the caller. Empty selection is allowed; callers that require at
+ * least one selection can ignore an empty set in [onSelectionChanged]. This preserves the
+ * selected button's appearance without marking it disabled.
+ *
+ * @param selectedIndices indices of the checked items. Out-of-range indices are ignored and
+ *   omitted from the next selection passed to [onSelectionChanged].
+ * @param onSelectionChanged receives a new set when an enabled item is checked or unchecked.
+ *   The supplied [selectedIndices] set is never mutated.
+ * @see ConnectedButtonGroupItem
+ */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun ConnectedButtonGroup(
+    items: List<ConnectedButtonGroupItem>,
+    selectedIndices: Set<Int>,
+    onSelectionChanged: (Set<Int>) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: ToggleButtonColors? = null,
+    spacing: Dp = ButtonGroupDefaults.ConnectedSpaceBetween,
+    contentDescription: String? = null,
+    labelMaxLines: Int = 1,
+) {
+    val validSelection = selectedIndices.filterTo(mutableSetOf()) { it in items.indices }
+    ConnectedButtonGroupContent(
+        items = items,
+        selectedIndices = validSelection,
+        onItemCheckedChange = { index, checked ->
+            onSelectionChanged(if (checked) validSelection + index else validSelection - index)
+        },
+        modifier = modifier,
+        enabled = enabled,
+        colors = colors,
+        spacing = spacing,
+        contentDescription = contentDescription,
+        labelMaxLines = labelMaxLines,
+    )
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun ConnectedButtonGroupContent(
+    items: List<ConnectedButtonGroupItem>,
+    selectedIndices: Set<Int>,
+    onItemCheckedChange: (Int, Boolean) -> Unit,
+    modifier: Modifier,
+    enabled: Boolean,
+    colors: ToggleButtonColors?,
+    spacing: Dp,
+    contentDescription: String?,
+    labelMaxLines: Int,
+) {
     require(items.isNotEmpty()) { "ConnectedButtonGroup requires at least one item" }
 
     val lastIndex = items.lastIndex
@@ -109,13 +178,13 @@ fun ConnectedButtonGroup(
     ) {
         items.forEachIndexed { index, item ->
             ToggleButton(
-                checked = index == selectedIndex,
-                onCheckedChange = { checked -> if (checked) onItemSelected(index) },
+                checked = index in selectedIndices,
+                onCheckedChange = { checked -> onItemCheckedChange(index, checked) },
                 modifier = Modifier
                     .weight(1f)
                     // Draw the selected button on top so its borders aren't clipped by
                     // the overlapping neighbours produced by the negative connected spacing.
-                    .zIndex(if (index == selectedIndex) 1f else 0f),
+                    .zIndex(if (index in selectedIndices) 1f else 0f),
                 enabled = enabled && item.enabled,
                 colors = resolvedColors,
                 shapes = connectedShapesFor(index, lastIndex),

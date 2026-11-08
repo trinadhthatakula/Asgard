@@ -162,7 +162,7 @@ exposes flat customization params. Browse them all — live — in the
 **Inputs & actions**
 | Component | What it is |
 |---|---|
-| `ConnectedButtonGroup` | Single-select connected segmented control; crash-safe at any font scale. Items via `ConnectedButtonGroupItem` (`Label` / `Icon` / `IconWithLabel`). |
+| `ConnectedButtonGroup` | Single- or multi-select connected segmented control; crash-safe at any font scale. Items via `ConnectedButtonGroupItem` (`Label` / `Icon` / `IconWithLabel`). |
 | `AsgardLabeledSlider` | Label + formatted value over an M3 `Slider`. |
 | `AsgardStepperRow` | Labeled numeric stepper with decrement/increment. |
 | `AsgardSearchBar` | Single-line search field with an auto-managed clear button. |
@@ -228,6 +228,27 @@ AsgardLineChart(
 
 ## 🎨 Theming & customization
 
+### Multiple selections in a connected group
+
+Use the `selectedIndices` overload to toggle items independently. Every checked item uses
+the theme's `primary` container and `onPrimary` content, just like the single-select overload.
+
+```kotlin
+var selected by remember { mutableStateOf(setOf(0, 1)) }
+ConnectedButtonGroup(
+    items = listOf(
+        ConnectedButtonGroupItem.Label("User"),
+        ConnectedButtonGroupItem.Label("System"),
+    ),
+    selectedIndices = selected,
+    onSelectionChanged = { if (it.isNotEmpty()) selected = it },
+)
+```
+
+The component permits an empty selection; the callback above keeps at least one item selected.
+Group-wide and per-item `enabled` flags, icons, labels, colors and spacing work with either overload.
+The existing `selectedIndex` / `onItemSelected` API remains single-select.
+
 **Nothing is hardcoded.** Asgard resolves color, typography, shape and motion from the host
 `MaterialTheme`, so it adopts your brand automatically:
 
@@ -280,6 +301,10 @@ JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew publishToMavenCentral
 ```
 
 Local dry-run without a GPG key: `./gradlew publishToMavenLocal -PVERSION_NAME=2.0.1-SNAPSHOT`.
+
+For a consumer that includes Asgard as a composite build, use `-PasgardAgpVersion=<consumer AGP version>`
+when its Android Gradle Plugin differs from Asgard's default. Gradle requires matching AGP versions
+across included Android builds; the override only applies to that invocation.
 
 ## 📄 License
 
