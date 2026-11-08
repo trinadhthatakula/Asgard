@@ -2,7 +2,7 @@
 
 Date: 2026-11-08. The user approved **all six recommended new components**, navigation
 variations, connected-button customization, correctness fixes and the responsive gallery
-as one bundled release. Proposed version: **2.1.0**, provided existing public APIs remain
+as one bundled release. Release PR version: **2.1.0**, provided existing public APIs remain
 compatible. This document records requirements; unchecked items have remaining implementation or verification work. Current evidence is in
 [the implementation record](implementation-validation.md).
 
@@ -109,7 +109,7 @@ Support combinations such as a floating container with segmented destinations.
   visible keyboard focus; a bounded selectable code pane and reachable Copy action.
 - [x] Clipboard success is shown only after completion; failure has a usable recovery state.
 - [x] Distinct theme chart colors, named controls and demonstrated version/install coordinates.
-- [x] Public API reference, integration guidance and draft release notes cover the complete scope.
+- [x] Public API reference, integration guidance and 2.1.0 release notes cover the complete scope.
 
 ## Validation and release gate
 
@@ -122,8 +122,9 @@ Support combinations such as a floating container with segmented destinations.
   claim only the coverage actually exercised.
 - [x] Representative consumer fixtures demonstrate app-owned models, actions and image content
   without introducing Android-only APIs or domain dependencies into commonMain.
-- [ ] All scoped components, fixes and examples are complete before preparing the version bump
-  and release PR to Asgard's main branch. Verify publication before updating Thor's dependency.
+- [x] Prepare the user-requested 2.1.0 version bump and release PR to Asgard's main branch,
+  retaining the documented validation limits for review. Verify publication before updating
+  Thor's dependency.
 
 Implementation order: correctness and API compatibility; connected-button/navigation options;
 sheet then picker; toolbar/avatar; scrollbar/heatmap; responsive gallery and all examples;

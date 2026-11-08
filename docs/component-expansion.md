@@ -1,8 +1,9 @@
 # Component expansion API guide
 
-These APIs are implemented on `feat/asgard-component-expansion` and are **not yet published**.
+These APIs require **Asgard 2.1.0 or later**. Release artifacts become available after the
+release PR merges and the Maven Central publication succeeds.
 The existing library entry points are retained; configuration overloads require their new
-configuration argument. The planned release remains 2.1.0 after validation and release review.
+configuration argument.
 
 All layout components read defaults from the caller's MaterialTheme. Localized text, icons,
 models, selection, routes, persistence, permissions and image loading remain caller-owned.

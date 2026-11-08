@@ -42,12 +42,13 @@ component and chart live, drag the interactive knobs, and flip **light/dark** an
 to watch each one inherit the theme. The gallery is itself built from Asgard, running in the browser
 via Compose Multiplatform (wasm).
 
-## Upcoming component expansion
+## 2.1.0 component expansion
 
-The implementation branch adds configurable connected-button shapes; docked/floating,
+This release adds configurable connected-button shapes and multiselect; docked/floating,
 expanding/segmented/standard navigation; sheets and searchable pickers; action toolbars and
-avatars; list/grid scrollbars; and a date/value calendar heatmap. These APIs are not yet
-published. See the [new API guide](docs/component-expansion.md) for examples and input contracts.
+avatars; list/grid scrollbars; and a date/value calendar heatmap. See the
+[API guide](docs/component-expansion.md) for examples and input contracts. Release artifacts
+become available after the release PR merges and the Maven Central workflow succeeds.
 
 ## Native Android gallery
 
@@ -58,13 +59,13 @@ installed test APKs and the independently compiled published-version compatibili
 
 ## 📦 Install
 
-Asgard is on Maven Central. Add the dependency — Gradle resolves the correct platform artifact
-automatically:
+Asgard is on Maven Central. For 2.1.0, wait for the release publication to complete, then add
+the dependency — Gradle resolves the correct platform artifact automatically:
 
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("com.trinadhthatakula:asgard:2.0.1")
+    implementation("com.trinadhthatakula:asgard:2.1.0")
 }
 ```
 
@@ -85,7 +86,7 @@ on a single platform artifact directly if you only want one:
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("com.trinadhthatakula:asgard:2.0.1")
+            implementation("com.trinadhthatakula:asgard:2.1.0")
         }
     }
 }
@@ -98,7 +99,9 @@ the `asgard-android` variant from the same coordinate.
 <summary><b>Building a Thor extension?</b></summary>
 
 If the host app already bundles Asgard, depend on it as `compileOnly` so it isn't duplicated in your
-extension APK — the host provides it at runtime:
+extension APK — the host provides it at runtime.
+
+Match the host's bundled version; this example uses a host on 2.0.1:
 
 ```kotlin
 compileOnly("com.trinadhthatakula:asgard:2.0.1")
@@ -306,7 +309,8 @@ add the dependency and use Asgard's components and charts correctly in a KMP or 
 
 ## 🛠️ Publishing (maintainer)
 
-Releases are automated: bump `VERSION_NAME` in `gradle.properties` on `main` and the
+Releases are automated: bump `VERSION_NAME` in `gradle.properties` on a topic branch and merge
+its PR to `main`. The
 **Publish to Maven Central** workflow publishes via the Vanniktech plugin, then tags + creates a
 GitHub Release. Credentials live in repository secrets. To publish manually on **JDK 21**:
 
@@ -314,7 +318,7 @@ GitHub Release. Credentials live in repository secrets. To publish manually on *
 JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew publishToMavenCentral
 ```
 
-Local dry-run without a GPG key: `./gradlew publishToMavenLocal -PVERSION_NAME=2.0.1-SNAPSHOT`.
+Local dry-run without a GPG key: `./gradlew publishToMavenLocal -PVERSION_NAME=2.1.0-SNAPSHOT`.
 
 For a consumer that includes Asgard as a composite build, use `-PasgardAgpVersion=<consumer AGP version>`
 when its Android Gradle Plugin differs from Asgard's default. Gradle requires matching AGP versions

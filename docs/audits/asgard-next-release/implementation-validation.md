@@ -1,7 +1,8 @@
 # Component expansion implementation and validation
 
-Implemented on `feat/asgard-component-expansion`, starting from `97903e9`. VERSION_NAME remains
-2.0.1; no Maven publication, release tag, app migration or pull request has been performed.
+Implemented on `feat/asgard-component-expansion`, starting from `97903e9`. VERSION_NAME is
+2.1.0 for the release PR. Maven publication, release tagging and application migrations have
+not been performed. Earlier checks below record the implementation before the version bump.
 The initial audit reports remain historical evidence, rather than descriptions of the updated UI.
 
 ## Implemented
@@ -84,9 +85,10 @@ header text, rather than the component interaction contracts demonstrated in tho
 - Browser clipboard denial/retry was exercised with injected rejected/resolved write promises.
   The native clipboard has an actual write/read test. Real browser permission-prompt behavior
   remains unverified; the promise tests do not imply that a browser permission was changed.
-- The new API 35 emulator CI job has been configured but has not run on GitHub yet. Local device
-  tests ran on API 37. Review the hosted result before release preparation.
-- VERSION_NAME remains 2.0.1. These outstanding checks and review remain part of the release decision.
+- API 35 emulator coverage runs in PR CI. Local device tests ran on API 37; review the hosted
+  result as part of release approval.
+- VERSION_NAME is now 2.1.0 for the requested release PR. These outstanding checks and review
+  remain part of the release decision.
 
 
 ## Final workflow check
@@ -103,8 +105,8 @@ header text, rather than the component interaction contracts demonstrated in tho
   from claiming that its new APIs are already published.
 - `.github/workflows/pr-ci.yml` validates the complete Android/wasm/test/production build and
   retained JVM entry points for PRs to main. PR and publication workflows install SDK 37.2.
-- VERSION_NAME is still 2.0.1. This implementation branch does not trigger automatic publication;
-  the eventual version bump on main is the release trigger.
+- The initial workflow check used VERSION_NAME 2.0.1. The release PR now bumps it to 2.1.0.
+  Pushing this topic branch does not publish; merging the version bump to main is the release trigger.
 
 ## Follow-up: permanent Android app and remaining local checks
 
@@ -150,3 +152,15 @@ header text, rather than the component interaction contracts demonstrated in tho
 - PR CI now builds/lints both Android variants and the test APK, plus a separate API 35 emulator
   job. All three workflows install compile SDK 37.2. A final publication dry run passed and
   showed uploads only for `:asgard`; the Android gallery and compatibility fixture are not published.
+
+## 2.1.0 release verification
+
+- Re-ran the complete local PR build with VERSION_NAME 2.1.0: Android/wasm compilation,
+  production wasm distribution, app/test APK builds, host tests and debug/release lint passed.
+  The 29 host tests, 12 tooling tests and all 9 retained JVM entry points passed.
+- Installed both 2.1.0 APKs and re-ran the build-free emulator suite: `OK (21 tests)`,
+  41.09 seconds. Both APKs remain installed for future checks.
+- The 2.1.0 Maven Central publication dry run passed without signing, uploading, tagging or
+  creating a release. The four required publication secret names are configured; their values
+  were not inspected or validated. Maven Central still reports 2.0.1 as the latest release.
+- The validation limits above remain applicable. Hosted PR CI must be reviewed before merging.
