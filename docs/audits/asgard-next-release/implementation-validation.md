@@ -41,7 +41,7 @@ The [API guide](../../component-expansion.md) contains caller-owned boundaries a
 - Android library compilation and wasm library/demo compilation passed.
 - Production wasm distribution passed. Webpack reports the existing class of large wasm/JS
   asset warnings; the build succeeds. These checks do not measure load performance.
-- 28 host tests passed: 10 existing domain tests, 9 new date/key/scrollbar/layout math tests and
+- 29 host tests passed: 10 existing domain tests, 10 new date/key/scrollbar/layout math tests and
   9 native Compose interaction tests hosted by Robolectric at SDK 35.
 - Native tests cover disabled Clear, one switch target/one callback, hidden navigation names and
   selected state, independent multiselect, duplicate picker items across sections, scrollbar progress
@@ -77,15 +77,16 @@ header text, rather than the component interaction contracts demonstrated in tho
 
 ## Remaining release validation
 
-- Exercise an independently compiled published-2.0.1 consumer against the updated library. The
-  JVM descriptor and source-call checks are useful evidence but do not replace that runtime fixture.
-- Physical Android/iOS browsers, screen readers and native device smoke checks have not been run.
-  `adb devices` returned no connected devices during this task; host tests use Robolectric.
-- Clipboard rejection/success handling is implemented, but browser permission-denial behavior
-  still needs dedicated verification. Header/keyboard focus and further content-change/reverse-grid
-  cases should be included in the final release review.
-- Keep the version bump/publication gate open until the remaining release checks and review are complete.
-  All six components are implemented; these limits concern release verification and app adoption.
+- Physical Android devices and iOS/Safari browser checks remain unrun. This machine has no
+  connected physical device or iOS simulator; the browser evidence uses ego-browser/Chromium.
+- TalkBack keyboard focus/activation has a native smoke check. Spoken announcements, touch
+  exploration and a complete screen-reader journey remain outside the recorded coverage.
+- Browser clipboard denial/retry was exercised with injected rejected/resolved write promises.
+  The native clipboard has an actual write/read test. Real browser permission-prompt behavior
+  remains unverified; the promise tests do not imply that a browser permission was changed.
+- The new API 35 emulator CI job has been configured but has not run on GitHub yet. Local device
+  tests ran on API 37. Review the hosted result before release preparation.
+- VERSION_NAME remains 2.0.1. These outstanding checks and review remain part of the release decision.
 
 
 ## Final workflow check
@@ -104,3 +105,48 @@ header text, rather than the component interaction contracts demonstrated in tho
   retained JVM entry points for PRs to main. PR and publication workflows install SDK 37.2.
 - VERSION_NAME is still 2.0.1. This implementation branch does not trigger automatic publication;
   the eventual version bump on main is the release trigger.
+
+## Follow-up: permanent Android app and remaining local checks
+
+- Added `:androidApp`, namespace/application ID `com.valhalla.asgard.app`, sharing the complete
+  `:demo` catalog. Native platform services supply clipboard writes, saved last selection and
+  Android Back handling. Insets, system font scale, initial system theme/direction and bar icon
+  appearance are handled on Android. The app/test host is documented in
+  [Android gallery and tests](../../android-gallery.md).
+- `:compatibilityConsumer` compiled against the strictly pinned, actual published
+  `com.trinadhthatakula:asgard-android:2.0.1` AAR. Gradle dependencyInsight confirmed the published
+  Android API variant on its compile classpath. Its compiled bytecode ran against the updated
+  project library on the emulator, exercising all eight changed entry points present in 2.0.1.
+  The merged multiselect overload is newer than published 2.0.1 and is covered separately.
+- **21 native instrumentation tests passed** on `Tely_Magisk_API_37_2`, Android 17 / SDK 37,
+  1080x2400 at density 420. These include compatibility, independent selection, disabled Clear,
+  switch semantics, 320dp/RTL/2x-text navigation targets, animated sheet dismissal, native IME
+  footer reachability, picker selection/empty results/query reset, toolbar and avatar callbacks,
+  heatmap selection, scrollbar keyboard boundaries/reversed lists/reversed grids/content shrink,
+  zero-travel dragging, native clipboard and gallery search/Back behavior.
+- Gradle connected tests passed for the first 20 cases. The final 21-case suite was then run
+  from the explicitly installed APKs with `python3 tools/run_android_tests.py --serial emulator-5554`,
+  without invoking Gradle: `OK (21 tests)`, 43.635 seconds. Gradle removes its connected-test APKs;
+  explicit install tasks preserve the binaries for future build-free reruns. Both APKs remain installed.
+- Reversed scrollbar metrics now track physical top-to-bottom progress. Boundary requests use
+  real item boundaries instead of relying on estimated pixel ranges. The extra host test covers
+  reversed metrics; all **29 host tests**, **12 tooling tests** and **9 retained JVM entry points** pass.
+- Android debug/release lint passed with **zero errors and one upstream warning** each:
+  `ObsoleteLintCustomCheck` in the Lifecycle lint jar. `UnsafeLifecycleWhenUsage` and
+  `RepeatOnLifecycleWrongUsage` are skipped by that jar on this Kotlin/lint toolchain. A fresh
+  lint run with `--rerun-tasks --no-build-cache` confirmed the current manifests/resources.
+- The Android and production wasm builds passed after the shared gallery/platform changes.
+  Native screenshots under [android-screenshots](android-screenshots/) show portrait navigation,
+  2x **system** font scale and an action sheet with both footer actions reachable in landscape
+  at that scale. TalkBack enabled/touch-exploration enabled were confirmed; Tab moved the green
+  accessibility focus to System and Enter unchecked it while User remained selected. Emulator
+  font, rotation and enabled accessibility services were restored afterward. Android normalized
+  `accessibility_enabled` to zero once no accessibility services remained enabled.
+  A native track drag moved the variable-height list from item 1 to the item 58–64 range,
+  independently of the instrumentation progress-action checks.
+- Final Chromium promise-failure/retry screenshots and keyboard activation evidence are under
+  [implementation-screenshots](implementation-screenshots/). The retry showed Copied only after
+  completion; Tab/Enter activated the named avatar and changed the profile count from 0 to 1.
+- PR CI now builds/lints both Android variants and the test APK, plus a separate API 35 emulator
+  job. All three workflows install compile SDK 37.2. A final publication dry run passed and
+  showed uploads only for `:asgard`; the Android gallery and compatibility fixture are not published.

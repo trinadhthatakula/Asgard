@@ -49,6 +49,13 @@ expanding/segmented/standard navigation; sheets and searchable pickers; action t
 avatars; list/grid scrollbars; and a date/value calendar heatmap. These APIs are not yet
 published. See the [new API guide](docs/component-expansion.md) for examples and input contracts.
 
+## Native Android gallery
+
+Run the permanent `:androidApp` module (`com.valhalla.asgard.app`) in Android Studio, or install it
+with `./gradlew :androidApp:installDebug`. It shares the web gallery's catalog and includes reusable
+device tests. See [Android gallery and tests](docs/android-gallery.md) for build-free reruns of the
+installed test APKs and the independently compiled published-version compatibility fixture.
+
 ## 📦 Install
 
 Asgard is on Maven Central. Add the dependency — Gradle resolves the correct platform artifact

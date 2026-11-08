@@ -148,6 +148,9 @@ Box(Modifier.height(320.dp)) {
 
 A corresponding adapter accepts LazyGridState. The core also accepts an AsgardScrollbarState
 for custom adapters. The component supports vertical layouts, including reverse layouts.
+Progress follows the physical top-to-bottom track: in a reversed list, progress zero reaches
+the last item and progress one reaches the first. Boundary requests use actual item boundaries;
+intermediate positions use the measured content estimate.
 
 Reserve a **48dp end gutter** and bounded height. The overlay does not resize content. Visible
 index labels are zero-based inputs to the caller's formatter. Geometry uses Compose's measured
@@ -205,3 +208,6 @@ per-command environment override, not a change to the user's global package-mana
 The retained JVM descriptor check covers the six modified existing API classes at the audit
 baseline. It does not replace an independently compiled published-version consumer test.
 Physical Android/iOS browser and screen-reader checks must be recorded separately.
+
+The [permanent Android gallery](android-gallery.md) shares these examples and provides native
+instrumentation tests, including a separately compiled published-2.0.1 consumer fixture.

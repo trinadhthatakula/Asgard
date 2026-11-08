@@ -1,6 +1,7 @@
 package com.valhalla.asgard.demo
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,24 +36,29 @@ import kotlinx.coroutines.delay
 
 /** Responsive shell; the same catalog drives sidebar, searchable navigation and URL state. */
 @Composable
-fun GalleryApp() {
-    var dark by remember { mutableStateOf(false) }
-    var rtl by remember { mutableStateOf(false) }
+fun GalleryApp(initialEntry: String? = null) {
+    val platform = rememberGalleryPlatform()
+    val systemDark = isSystemInDarkTheme()
+    val systemRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    var dark by remember { mutableStateOf(systemDark) }
+    var rtl by remember { mutableStateOf(systemRtl) }
     var textScale by remember { mutableFloatStateOf(1f) }
     var seed by remember { mutableStateOf(demoSeeds.first().second) }
-    var selected by remember { mutableStateOf(asgardCatalog.find { it.id == readGalleryEntry() } ?: asgardCatalog.first()) }
+    var selected by remember { mutableStateOf(asgardCatalog.find { it.id == (initialEntry ?: platform.readEntry()) } ?: asgardCatalog.first()) }
     var browsing by remember { mutableStateOf(false) }
     var appearance by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
-    DisposableEffect(Unit) {
-        val stop = observeGalleryEntry { id -> selected = asgardCatalog.find { it.id == id } ?: asgardCatalog.first() }
+    LaunchedEffect(initialEntry, platform) { initialEntry?.let(platform::selectEntry) }
+    DisposableEffect(platform) {
+        val stop = platform.observeEntry { id -> selected = asgardCatalog.find { it.id == id } ?: asgardCatalog.first() }
         onDispose { stop() }
     }
-    fun choose(entry: ComponentEntry) { selected = entry; browsing = false; selectGalleryEntry(entry.id) }
+    fun choose(entry: ComponentEntry) { selected = entry; browsing = false; platform.selectEntry(entry.id) }
+    SideEffect { platform.onThemeChanged(dark) }
     DemoTheme(dark = dark, seed = seed) {
         GalleryEnvironment(rtl, textScale) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            BoxWithConstraints(Modifier.fillMaxSize()) {
+            BoxWithConstraints(Modifier.fillMaxSize().safeDrawingPadding()) {
                 val compact = maxWidth < 840.dp
                 Column(Modifier.fillMaxSize()) {
                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -92,7 +98,7 @@ fun GalleryApp() {
                             }
                             VerticalDivider()
                         }
-                        key(selected.id) { DetailPane(selected, Modifier.weight(1f), compact) }
+                        key(selected.id) { DetailPane(selected, Modifier.weight(1f), compact, platform) }
                     }
                 }
                 if (browsing) {
@@ -104,7 +110,7 @@ fun GalleryApp() {
                                 .groupBy { it.category }.map { (category, entries) -> AsgardPickerSection(category, category, entries) },
                             query, { query = it }, itemKey = { it.id }, itemLabel = { it.name },
                             isSelected = { it == selected }, onSelect = { entry ->
-                                selected = entry; selectGalleryEntry(entry.id); dismiss()
+                                selected = entry; platform.selectEntry(entry.id); dismiss()
                             }, modifier = Modifier.fillMaxWidth().height(420.dp),
                             searchPlaceholder = "Find component", searchIcon = Icons.Rounded.Search, clearIcon = Icons.Rounded.Close,
                         )
@@ -131,14 +137,14 @@ fun GalleryApp() {
 private fun GalleryEnvironment(rtl: Boolean, textScale: Float, content: @Composable () -> Unit) {
     val density = LocalDensity.current
     CompositionLocalProvider(
-        LocalDensity provides Density(density.density, textScale),
+        LocalDensity provides Density(density.density, density.fontScale * textScale),
         LocalLayoutDirection provides if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr,
         content = content,
     )
 }
 
 @Composable
-private fun DetailPane(entry: ComponentEntry, modifier: Modifier, compact: Boolean) {
+private fun DetailPane(entry: ComponentEntry, modifier: Modifier, compact: Boolean, platform: GalleryPlatform) {
     val focus = remember { FocusRequester() }
     LaunchedEffect(entry.id) { focus.requestFocus() }
     Column(modifier.fillMaxHeight().verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp)) {
@@ -156,7 +162,7 @@ private fun DetailPane(entry: ComponentEntry, modifier: Modifier, compact: Boole
                     Text("Minimal example", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
                     TextButton(enabled = copyState != "Copying…", onClick = {
                         copyState = "Copying…"
-                        copyToClipboard(entry.code) { success -> copyState = if (success) "Copied" else "Copy failed · retry" }
+                        platform.copyToClipboard(entry.code) { success -> copyState = if (success) "Copied" else "Copy failed · retry" }
                     }) { Text(copyState) }
                 }
                 Text("Preview controls are independent of this example.", style = MaterialTheme.typography.labelSmall)

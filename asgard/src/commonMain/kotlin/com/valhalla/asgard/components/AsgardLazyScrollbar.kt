@@ -29,6 +29,10 @@ data class AsgardScrollbarMetrics(val offset: Int, val content: Int, val viewpor
     val viewportFraction: Float get() = if (content <= 0) 1f else (viewport.toFloat() / content).coerceIn(0f, 1f)
 }
 
+internal fun AsgardScrollbarMetrics.inReverseLayout(reverse: Boolean): AsgardScrollbarMetrics =
+    if (!reverse) this else copy(offset = ((content.toLong() - viewport.coerceAtLeast(0)).coerceAtLeast(0) - offset)
+        .coerceIn(0L, Int.MAX_VALUE.toLong()).toInt())
+
 interface AsgardScrollbarState {
     val metrics: AsgardScrollbarMetrics
     val firstVisibleIndex: Int
@@ -40,13 +44,21 @@ interface AsgardScrollbarState {
 @Composable
 fun rememberAsgardScrollbarState(state: LazyListState): AsgardScrollbarState = remember(state) {
     object : AsgardScrollbarState {
-        override val metrics get() = state.scrollIndicatorState?.let { AsgardScrollbarMetrics(it.scrollOffset, it.contentSize, it.viewportSize) } ?: AsgardScrollbarMetrics(0, 0, 0)
+        override val metrics get() = state.scrollIndicatorState?.let { AsgardScrollbarMetrics(it.scrollOffset, it.contentSize, it.viewportSize).inReverseLayout(state.layoutInfo.reverseLayout) } ?: AsgardScrollbarMetrics(0, 0, 0)
         override val firstVisibleIndex get() = state.layoutInfo.visibleItemsInfo.minOfOrNull { it.index } ?: 0
         override val lastVisibleIndex get() = state.layoutInfo.visibleItemsInfo.maxOfOrNull { it.index } ?: 0
         override val isScrolling get() = state.isScrollInProgress
         override suspend fun scrollToFraction(fraction: Float) {
             if (!fraction.isFinite()) return
             require(state.layoutInfo.orientation == androidx.compose.foundation.gestures.Orientation.Vertical) { "Scrollbar requires a vertical list" }
+            val count = state.layoutInfo.totalItemsCount
+            if (count == 0) return
+            val target = fraction.coerceIn(0f, 1f)
+            val logicalTarget = if (state.layoutInfo.reverseLayout) 1f - target else target
+            if (logicalTarget == 0f || logicalTarget == 1f) {
+                state.scrollToItem(if (logicalTarget == 0f) 0 else count - 1)
+                return
+            }
             val before = metrics
             state.scrollBy((fraction.coerceIn(0f, 1f) * before.range - before.offset) * if (state.layoutInfo.reverseLayout) -1f else 1f)
         }
@@ -56,13 +68,21 @@ fun rememberAsgardScrollbarState(state: LazyListState): AsgardScrollbarState = r
 @Composable
 fun rememberAsgardScrollbarState(state: LazyGridState): AsgardScrollbarState = remember(state) {
     object : AsgardScrollbarState {
-        override val metrics get() = state.scrollIndicatorState?.let { AsgardScrollbarMetrics(it.scrollOffset, it.contentSize, it.viewportSize) } ?: AsgardScrollbarMetrics(0, 0, 0)
+        override val metrics get() = state.scrollIndicatorState?.let { AsgardScrollbarMetrics(it.scrollOffset, it.contentSize, it.viewportSize).inReverseLayout(state.layoutInfo.reverseLayout) } ?: AsgardScrollbarMetrics(0, 0, 0)
         override val firstVisibleIndex get() = state.layoutInfo.visibleItemsInfo.minOfOrNull { it.index } ?: 0
         override val lastVisibleIndex get() = state.layoutInfo.visibleItemsInfo.maxOfOrNull { it.index } ?: 0
         override val isScrolling get() = state.isScrollInProgress
         override suspend fun scrollToFraction(fraction: Float) {
             if (!fraction.isFinite()) return
             require(state.layoutInfo.orientation == androidx.compose.foundation.gestures.Orientation.Vertical) { "Scrollbar requires a vertical grid" }
+            val count = state.layoutInfo.totalItemsCount
+            if (count == 0) return
+            val target = fraction.coerceIn(0f, 1f)
+            val logicalTarget = if (state.layoutInfo.reverseLayout) 1f - target else target
+            if (logicalTarget == 0f || logicalTarget == 1f) {
+                state.scrollToItem(if (logicalTarget == 0f) 0 else count - 1)
+                return
+            }
             val before = metrics
             state.scrollBy((fraction.coerceIn(0f, 1f) * before.range - before.offset) * if (state.layoutInfo.reverseLayout) -1f else 1f)
         }

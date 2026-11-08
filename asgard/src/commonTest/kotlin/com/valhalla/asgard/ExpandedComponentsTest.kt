@@ -62,6 +62,13 @@ class ExpandedComponentsTest {
         assertEquals(.5f, AsgardScrollbarMetrics(450, 1000, 100).fraction)
         assertTrue(AsgardScrollbarMetrics(Int.MAX_VALUE, Int.MAX_VALUE, 100).range > 0)
     }
+    @Test fun reverseScrollbarUsesPhysicalTopToBottomProgress() {
+        val start = AsgardScrollbarMetrics(0, 1000, 100).inReverseLayout(true)
+        val end = AsgardScrollbarMetrics(900, 1000, 100).inReverseLayout(true)
+        assertEquals(1f, start.fraction)
+        assertEquals(0f, end.fraction)
+        assertEquals(.5f, AsgardScrollbarMetrics(450, 1000, 100).inReverseLayout(true).fraction)
+    }
     @Test fun navigationCaptionUsesActualCountAndMeasuredLabelWidth() {
         assertFalse(navigationNeedsCaption(320f, 3, 100f))
         assertTrue(navigationNeedsCaption(320f, 5, 100f))

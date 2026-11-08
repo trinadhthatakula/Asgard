@@ -133,8 +133,7 @@ class ComponentInteractionTest {
         var firstVisible = 0
         content {
             val list = rememberLazyListState()
-            val index = list.firstVisibleItemIndex
-            SideEffect { firstVisible = index }
+            LaunchedEffect(list) { snapshotFlow { list.firstVisibleItemIndex }.collect { firstVisible = it } }
             Box(Modifier.height(240.dp).width(320.dp)) {
                 LazyColumn(state = list, modifier = Modifier.padding(end = 48.dp)) {
                     items(100) { Text("Item $it", Modifier.height(48.dp)) }

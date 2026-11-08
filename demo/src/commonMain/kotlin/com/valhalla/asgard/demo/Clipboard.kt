@@ -1,7 +1,15 @@
 package com.valhalla.asgard.demo
 
-/** Reports completion, including denied or unsupported clipboard access. */
-expect fun copyToClipboard(text: String, onResult: (Boolean) -> Unit)
-expect fun readGalleryEntry(): String?
-expect fun selectGalleryEntry(id: String)
-expect fun observeGalleryEntry(onChanged: (String?) -> Unit): () -> Unit
+import androidx.compose.runtime.Composable
+
+/** Gallery-only platform services; no platform state is part of the Asgard library. */
+internal interface GalleryPlatform {
+    fun onThemeChanged(dark: Boolean) {}
+    fun copyToClipboard(text: String, onResult: (Boolean) -> Unit)
+    fun readEntry(): String?
+    fun selectEntry(id: String)
+    fun observeEntry(onChanged: (String?) -> Unit): () -> Unit
+}
+
+@Composable
+internal expect fun rememberGalleryPlatform(): GalleryPlatform

@@ -47,7 +47,7 @@ Support combinations such as a floating container with segmented destinations.
   header/body/footer slots, composed from Material's sheet implementation.
 - [x] A bounded scrollable body leaves footer actions reachable in short windows, landscape
   and with the IME visible. Actions wrap when necessary.
-- [ ] Animated dismissal and inset ownership are documented and verified. App-lock, purchase
+- [x] Animated dismissal and inset ownership are documented and verified. App-lock, purchase
   and permission policy remain in consumers.
 
 ### Searchable picker / picker sheet
@@ -81,9 +81,9 @@ Support combinations such as a floating container with segmented destinations.
   visibility policy, range text and localized accessibility labels supplied by the caller.
 - [x] Document gutter reservation and physical/logical track placement. Reconcile scroll position
   and thumb size with visible items, variable item sizes and grid spans.
-- [ ] Handle empty/short lists, first/last positions, content changes and zero travel without
+- [x] Handle empty/short lists, first/last positions, content changes and zero travel without
   division-by-zero, NaN values, out-of-range item targets or a stale drag state.
-- [ ] Dragging, keyboard movement and semantics actions work on Android and wasm.
+- [x] Dragging, keyboard movement and semantics actions work on Android and wasm.
 - [x] Implement the reusable interaction pattern in Asgard without relocating or relicensing
   Thor's GPL source file.
 
@@ -116,7 +116,7 @@ Support combinations such as a floating container with segmented destinations.
 - [x] Android and wasm library/demo compilation; existing host and tooling tests.
 - [x] Meaningful tests for picker selection/key behavior, heatmap date/value mapping and scrollbar
   range calculations, plus focused navigation/button/disabled-input interaction coverage.
-- [ ] Source and compiled-consumer compatibility fixtures for retained APIs.
+- [x] Source and compiled-consumer compatibility fixtures for retained APIs.
 - [ ] Production wasm bundle and browser checks covering 320/360/390/768/1440 widths, light/dark,
   larger text, RTL, keyboard and touch. Record physical-device/Safari checks separately and
   claim only the coverage actually exercised.
