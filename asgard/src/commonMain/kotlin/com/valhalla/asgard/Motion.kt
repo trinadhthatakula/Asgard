@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
@@ -51,6 +52,7 @@ fun Modifier.expressivePress(
     releaseSpec: AnimationSpec<Float>? = null
 ): Modifier = composed {
     val animatable = remember { Animatable(1f) }
+    val currentScaleOnPress = rememberUpdatedState(scaleOnPress)
     val motionScheme = MaterialTheme.motionScheme
     val resolvedPressSpec = pressSpec ?: motionScheme.fastSpatialSpec()
     val resolvedReleaseSpec = releaseSpec ?: motionScheme.defaultSpatialSpec()
@@ -60,7 +62,7 @@ fun Modifier.expressivePress(
             when (interaction) {
                 is PressInteraction.Press -> launch {
                     animatable.animateTo(
-                        targetValue = scaleOnPress,
+                        targetValue = currentScaleOnPress.value,
                         animationSpec = resolvedPressSpec
                     )
                 }
