@@ -75,6 +75,16 @@ class ExpandedComponentsTest {
         assertTrue(navigationNeedsCaption(320f, 3, 220f))
         assertFalse(navigationNeedsCaption(0f, 0, 100f))
     }
+    @Test fun equalWidthSegmentsRequireRoomForTheWholeIconAndLabel() {
+        assertFalse(navigationNeedsCaption(308f, 4, 55f, AsgardNavigationAppearance.Expanding))
+        assertTrue(navigationNeedsCaption(308f, 4, 55f, AsgardNavigationAppearance.Segmented))
+        assertFalse(navigationNeedsCaption(412f, 4, 55f, AsgardNavigationAppearance.Segmented))
+    }
+    @Test fun stackedStandardLabelsNeedTextWidthWithoutReservingInlineIconSpace() {
+        assertFalse(navigationNeedsCaption(308f, 4, 55f, AsgardNavigationAppearance.Standard))
+        assertTrue(navigationNeedsCaption(308f, 4, 120f, AsgardNavigationAppearance.Standard))
+        assertFalse(navigationNeedsCaption(0f, 0, 120f, AsgardNavigationAppearance.Standard))
+    }
 }
 
 /** Compile fixture: old positional/default calls must remain unambiguous. */
