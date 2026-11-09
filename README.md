@@ -313,6 +313,11 @@ The **Expressive** Material 3 theme gives the richest motion; any `MaterialTheme
 An integration skill for coding agents lives at
 [`.claude/skills/asgard-ui/SKILL.md`](.claude/skills/asgard-ui/SKILL.md) — it teaches an agent how to
 add the dependency and use Asgard's components and charts correctly in a KMP or Android project.
+This repository is the source for its references and compiled examples. To check or update the
+installed Codex copy, run `python3 tools/sync_asgard_skill.py --check` or
+`python3 tools/sync_asgard_skill.py`, respectively. Use `--destination <skill-directory>` for a
+different installation. Synchronization updates repository-owned files and leaves unrelated local
+files alone. CI checks public API coverage and compiles the skill examples for Android and wasmJs.
 
 ## 🛠️ Publishing (maintainer)
 
