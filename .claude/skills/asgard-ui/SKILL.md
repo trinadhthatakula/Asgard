@@ -1,189 +1,66 @@
 ---
 name: asgard-ui
 description: >-
-  Integrate the Asgard Compose UI library (theme-agnostic components + charts, built on Expressive
-  Material 3) into a Kotlin Multiplatform or Android Jetpack Compose project. Use when a task asks to
-  add/build UI with Asgard, use com.trinadhthatakula:asgard, or reach for headers, navigation bars,
-  stat cards/tiles, banners, settings rows, a pro-gate, progress rings, or charts (line / stacked-bar
-  / timeline / legend / pulse) that inherit the app's MaterialTheme. Covers dependency setup, the
-  component + chart API, theming, and customization params. Targets Asgard 2.0.x.
+  Integrate the Asgard Compose component and chart library into an Android or Kotlin Multiplatform
+  app. Use for com.trinadhthatakula:asgard setup, choosing components, navigation, inputs, sheets,
+  pickers, scrollbars, charts, theming, accessibility, and adapting their APIs to an app.
+metadata:
+  asgard-version: "2.1.1"
 ---
 
 # Asgard UI integration
 
-Asgard is a **theme-agnostic** Compose component library on **Expressive Material 3**. It provides
-the *structure and motion* of a UI; it reads **all** color, typography, shape, and motion from the
-host `MaterialTheme`. Never hardcode brand colors into Asgard call sites — theme the app instead.
+Asgard supplies Compose components that use the host's Material theme. The app owns its routes,
+selection, persistence, permissions, localized strings, icons, images and business rules. Use
+`MaterialTheme` or `MaterialExpressiveTheme`, and pass theme colors and shapes when customizing.
 
-Coordinate: `com.trinadhthatakula:asgard` · package `com.valhalla.asgard` · Maven Central.
-Targets: **Android** (`minSdk` 28) + **wasmJs**, JDK 21.
+## Version and setup
 
-## 1. Add the dependency
+This skill is verified against **Asgard 2.1.1**. Respect the consuming project's pinned version;
+check the corresponding library sources or release notes before using a newer API. Asgard 2.1.0
+introduced the expanded components and configurable navigation; 2.1.1 includes motion and
+rendering fixes.
 
-Ensure `mavenCentral()` is in the repositories, then:
-
-```kotlin
-// Android app — build.gradle.kts
-dependencies { implementation("com.trinadhthatakula:asgard:2.0.0") }
-
-// Kotlin Multiplatform — build.gradle.kts
-kotlin { sourceSets { commonMain.dependencies { implementation("com.trinadhthatakula:asgard:2.0.0") } } }
-```
-
-Use the latest 2.0.x. **Always depend on the umbrella coordinate `com.trinadhthatakula:asgard`** — in
-both Android and KMP modules. Asgard is a Kotlin Multiplatform library published as three artifacts:
-
-| Coordinate | Contents | When to use |
-|---|---|---|
-| `com.trinadhthatakula:asgard` | KMP root + Gradle Module Metadata (`.module`) | **This is the one you depend on.** Gradle reads the metadata and resolves the right platform variant automatically. |
-| `com.trinadhthatakula:asgard-android` | Android library (`.aar`) | The variant Gradle resolves for Android. Reference it directly only if a non-KMP-metadata-aware setup can't resolve the umbrella coordinate. |
-| `com.trinadhthatakula:asgard-wasm-js` | wasmJs library (`.klib`) | The variant Gradle resolves for wasmJs. Reference it directly only for a wasm-only pin. |
-
-So `implementation("com.trinadhthatakula:asgard:2.0.0")` is correct everywhere — Gradle picks
-`asgard-android` or `asgard-wasm-js` per target via Gradle Module Metadata (enabled by default).
-Asgard already exposes `compose.ui` / `compose.foundation` / `compose.material3` as `api`, so their
-types are available transitively.
-
-## 2. Core rules
-
-- **Theme, don't hardcode.** Wrap the app in `MaterialExpressiveTheme { }` (richest motion) or any
-  `MaterialTheme`. To brand it, pass your `colorScheme` / `typography` / `shapes` to the theme —
-  every Asgard component follows them.
-- **Icons are yours.** Every icon is an `ImageVector` you pass in. Asgard bundles **no** icon pack;
-  add `androidx.compose.material:material-icons-extended` (or your own vectors) if you need icons.
-- **Every component** takes a `modifier: Modifier = Modifier` (second param, after content) and a set
-  of optional flat customization params (text `maxLines`/`overflow`/`style`/color, `shape`,
-  `contentPadding`, `contentDescription`, …). Defaults are sensible — only pass what you need.
-- **Opt-ins are handled inside the library**; consumers do not need `@OptIn` for Asgard components.
-
-## 3. Component reference (2.0)
-
-Condensed public signatures (required params first, then key optionals). All are `@Composable`.
-
-**Header & navigation**
-```kotlin
-AsgardHeader(title: String, modifier, icon: ImageVector? = null, onNavigateBack: (() -> Unit)? = null,
-    titleMaxLines: Int = 1, titleStyle: TextStyle? = null, titleColor: Color? = null,
-    leading: (@Composable () -> Unit)? = null, actions: @Composable RowScope.() -> Unit = {})
-
-AsgardNavItem(icon: ImageVector, label: String, selectedIcon: ImageVector? = null,
-    contentDescription: String? = null, badge: String? = null)   // data class
-AsgardNavigationBar(items: List<AsgardNavItem>, selectedIndex: Int, onSelect: (Int) -> Unit, modifier,
-    showLabel: Boolean = true, containerColor, selectedIndicatorColor, selectedContentColor,
-    unselectedContentColor, unselectedAlpha: Float = 0.7f, shape: Shape? = null, labelStyle: TextStyle? = null)
-AsgardNavigationRail(/* same params */, header: (@Composable ColumnScope.() -> Unit)? = null,
-    footer: (@Composable ColumnScope.() -> Unit)? = null)
-```
-
-**Inputs & actions**
-```kotlin
-ConnectedButtonGroup(items: List<ConnectedButtonGroupItem>, selectedIndex: Int,
-    onItemSelected: (Int) -> Unit, modifier, enabled: Boolean = true, colors: ToggleButtonColors? = null,
-    labelMaxLines: Int = 1)
-// items: ConnectedButtonGroupItem.Label(text), .Icon(icon, contentDescription),
-//        .IconWithLabel(icon, contentDescription, text)   — each also has `enabled: Boolean = true`
-AsgardLabeledSlider(label: String, value: Float, onValueChange: (Float) -> Unit, modifier,
-    valueRange = 0f..1f, steps: Int = 0, valueLabel: String? = null, enabled: Boolean = true)
-AsgardStepperRow(label, value: String, decrementIcon, incrementIcon, onDecrement, onIncrement, modifier,
-    canDecrement = true, canIncrement = true)
-AsgardSearchBar(query: String, onQueryChange: (String) -> Unit, modifier, placeholder = "Search",
-    leadingIcon: ImageVector? = null, onSearch: (() -> Unit)? = null, enabled = true)
-AsgardTonalIconButton(icon: ImageVector, contentDescription: String?, onClick: () -> Unit, modifier, enabled = true)
-AsgardActionItem(icon: ImageVector, label: String, onClick: () -> Unit, modifier, enabled = true,
-    labelMaxLines: Int = 2, iconTint, containerColor)
-```
-
-**Data display**
-```kotlin
-AsgardStatCard(label: String, value: String, modifier, icon: ImageVector? = null, iconTint,
-    iconInlineWithLabel: Boolean = false, unit: String? = null, onClick: (() -> Unit)? = null,
-    labelMaxLines = 1, valueMaxLines = 1, unitSeparator: String = " ")   // NOTE: iconTint (was iconColor in 1.x)
-AsgardStatTile(label: String, value: String, modifier, icon: ImageVector? = null, iconTint: Color? = null,
-    iconContainerColor: Color? = null, statusDotColor: Color? = null, secondaryValue: String? = null,
-    animateValue: Boolean = false, valueFirst: Boolean = false, onClick: (() -> Unit)? = null, border: BorderStroke? = null)
-AsgardAnimatedNumeral(value: String, modifier, style, color, countUp: Boolean = false, format: (Int) -> String = { it.toString() })
-AsgardListRow(title: String, modifier, subtitle: String? = null, caption: String? = null,
-    icon: ImageVector? = null, onClick: (() -> Unit)? = null, trailing: (@Composable () -> Unit)? = null,
-    titleMaxLines = 1, subtitleMaxLines = 2)
-AsgardBadge(text: String, modifier, icon: ImageVector? = null, outlined: Boolean = false, onClick: (() -> Unit)? = null)
-StatusChip(text: String, modifier, containerColor, contentColor)
-AsgardProgressRing(progress: Float, modifier, size = 220.dp, strokeWidth = 8.dp, progressColor, trackColor,
-    animate: Boolean = false, contentDescription: String? = null, content: @Composable () -> Unit = {})
-```
-
-**Feedback, settings, pro-gate, onboarding**
-```kotlin
-AsgardBanner(title: String, modifier, description: String? = null, icon: ImageVector? = null,
-    containerColor, action: (@Composable RowScope.() -> Unit)? = null)
-AsgardEmptyState(text: String, modifier, icon: ImageVector? = null, description: String? = null, action: (@Composable () -> Unit)? = null)
-AsgardLoadingState(modifier, text: String? = null)
-AsgardShimmer(modifier, shape: Shape? = null, cornerRadius = 12.dp, animate: Boolean = true)
-AsgardDialogScaffold(onDismissRequest, title: String, confirmText: String, onConfirm, modifier,
-    text: String? = null, dismissText: String? = null, icon: ImageVector? = null)
-AsgardSectionCard(title: String, modifier, content: @Composable ColumnScope.() -> Unit)
-AsgardSettingRow(title: String, modifier, subtitle: String? = null, value: String? = null,
-    icon: ImageVector? = null, onClick: (() -> Unit)? = null, trailing: (@Composable () -> Unit)? = null)
-AsgardSettingToggleRow(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier, subtitle: String? = null)
-AsgardProBadge(text: String = "PRO", modifier, icon: ImageVector? = null, onClick: (() -> Unit)? = null, outlined: Boolean = false)
-AsgardUpgradeCard(title: String, description: String, cta: String, onUpgrade: () -> Unit, modifier, leading: (@Composable () -> Unit)? = null)
-AsgardLockedOverlay(locked: Boolean, overlay: @Composable () -> Unit, modifier, blurRadius = 12.dp, content: @Composable () -> Unit)
-AsgardOnboardingScaffold(title: String, modifier, subtitle: String? = null, actions: (@Composable () -> Unit)? = null, content: @Composable ColumnScope.() -> Unit)
-```
-
-**Motion (Modifier extensions)**
-```kotlin
-Modifier.expressivePress(interactionSource: InteractionSource, scaleOnPress: Float = 0.95f)  // squish on press
-Modifier.animateExpressiveResize()                                                            // spring resize
-```
-
-## 4. Charts — `com.valhalla.asgard.charts`
+For a new integration, add Maven Central and use the KMP umbrella coordinate:
 
 ```kotlin
-data class AsgardChartPoint(val x: Float, val y: Float, val label: String? = null)
-data class AsgardLineSeries(val points: List<AsgardChartPoint>, val color: Color, val lineWidth: Dp = 3.dp,
-    val smoothing: AsgardLineSmoothing = AsgardLineSmoothing.Cubic, val areaFill: Brush? = null,
-    val fillArea: Boolean = true, val showEndMarker: Boolean = true)
-AsgardLineChart(series: List<AsgardLineSeries>, modifier, yRange: ClosedFloatingPointRange<Float>? = null,
-    gridLineCount: Int = 4, yValueFormatter: (Float) -> String = { it.toString() }, xLabelFormatter: (AsgardChartPoint) -> String? = { it.label },
-    maxXLabels: Int = 5, emptyContent: @Composable () -> Unit = {})
-
-data class AsgardBarStack(val values: List<Float>, val dimmed: Boolean = false)
-AsgardStackedBarChart(bars: List<AsgardBarStack>, segmentColors: List<Color>, modifier, maxTotal: Float? = null,
-    barWidthFraction: Float = 0.6f, gridLineCount: Int = 4, dimmedAlpha: Float = 0.45f)
-
-data class AsgardTimelineSegment(val startMillis: Long, val endMillis: Long, val color: Color)
-AsgardTimelineBar(segments: List<AsgardTimelineSegment>, windowStartMillis: Long, windowEndMillis: Long, modifier, height = 10.dp)
-
-data class AsgardLegendEntry(val label: String, val color: Color)
-AsgardChartLegend(entries: List<AsgardLegendEntry>, modifier, swatch: AsgardLegendSwatch = Square)  // or .Dot
-
-AsgardPulseRing(modifier, color, ringSize = 32.dp, durationMillis = 1200, pulsing: Boolean = true,
-    content: @Composable BoxScope.() -> Unit = {})   // decorative attention pulse
+// Android module dependencies, or KMP commonMain.dependencies:
+implementation("com.trinadhthatakula:asgard:2.1.1")
 ```
 
-To map app data: build one `AsgardLineSeries` per line, each point `AsgardChartPoint(index or x, yValue, xAxisLabel)`;
-supply `yValueFormatter` for the y-axis. Colors come from `MaterialTheme.colorScheme`.
+The umbrella resolves `asgard-android` or `asgard-wasm-js` automatically. Version 2.1.1's Android
+artifact requires **compile SDK 37.2**, supports `minSdk` 28, and targets JVM 21; align the host's
+Android Gradle Plugin, SDK and Compose versions before changing them. The library targets Android
+and wasmJs; do not assume it supplies iOS or desktop variants. A plugin hosted by an app that already
+provides Asgard may need `compileOnly` and must match the host's version.
 
-## 5. Recipes
+Compose UI, foundation, Material 3 and kotlinx-datetime types are exposed by the library. Supply
+icons and image-loading content from the host. Public APIs can expose experimental Material types:
+opt in at the call site when the types or theme used by that recipe require it; do not assume a
+library-internal opt-in applies to consumer code. Use named arguments; `modifier` is not always in
+the same position.
 
-Always call Asgard components with **named arguments** (as below) — `modifier` is the 2nd parameter,
-so positional calls easily misalign.
+## Choose the right API
 
-**Nav scaffold** — `Scaffold(bottomBar = { AsgardNavigationBar(items = tabs, selectedIndex = i, onSelect = { i = it }) })`;
-put `AsgardHeader(title = "Apps", icon = Icons.Rounded.Dashboard, actions = { ConnectedButtonGroup(/* … */) })` at the top of the body.
+- **Navigation or connected choices:** read [navigation and selection](references/navigation.md).
+  It covers the configuration overloads, floating placement, multiselect, state and shape choices.
+- **Sheets, pickers, rows, actions, avatars, status or loading:** read the complete
+  [component index and contracts](references/components.md).
+- **Line, bar, timeline, heatmap or legend:** read [charts](references/charts.md).
+- For complete Kotlin examples with imports, state and callbacks, read
+  [navigation examples](examples/NavigationExamples.kt) or [component examples](examples/ComponentExamples.kt).
+  These files are compiled as common code by the gallery's Android and wasm builds. Adapt text,
+  state lifetime and accessibility labels to the host; the examples are starting points.
 
-**Metric row** — a `Row` of `AsgardStatCard(label = "Battery", value = "82", unit = "%", icon = icon, modifier = Modifier.weight(1f))`,
-or `AsgardStatTile(label = "Uptime", value = "6h", statusDotColor = color, secondaryValue = "today")` for compact tiles.
+The repository's [component expansion guide](https://github.com/trinadhthatakula/Asgard/blob/v2.1.1/docs/component-expansion.md)
+and [gallery](https://trinadhthatakula.github.io/Asgard/) give further examples. If a signature or
+version is uncertain, inspect the source for the **version actually used by the app**, rather than
+assuming the current main branch matches it.
 
-**Pro-gate** — `AsgardLockedOverlay(locked = !isPro, overlay = { AsgardUpgradeCard(/* … */) }) { PremiumContent() }`.
+## Integration checks
 
-**Chart card** — `AsgardSectionCard(title = "Trend") { AsgardLineChart(series = series, modifier = Modifier.fillMaxWidth().height(220.dp)); AsgardChartLegend(entries = entries) }`.
-
-## 6. Gotchas
-
-- **2.0 rename:** `AsgardStatCard` uses `iconTint` (not `iconColor` — that was 1.x). See `MIGRATION.md`.
-- **Shapes are theme-driven** (from `MaterialTheme.shapes`); pass a component's `shape` param to pin one.
-- Provide icons yourself; add `material-icons-extended` if you want the Material icon set.
-- For a metric-heavy screen prefer `AsgardStatTile`; for a single big number use `AsgardStatCard`.
-- Verify the exact current signatures against the sources under
-  `com/valhalla/asgard/` if a param is uncertain — this is a condensed reference.
+Use caller-owned, stable state and keys. Bound lazy content and reserve space for overlays and
+scrollbars; apply each system inset once. Provide localized accessibility labels for interactive
+icons and controls. Verify relevant small/large-screen and font-scale behavior, including selection
+and dismissal. Run the consuming project's build and focused tests; for KMP changes check every
+supported target used by the host.
