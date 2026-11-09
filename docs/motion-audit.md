@@ -143,7 +143,14 @@ Thor built with the local Asgard source override, passed its nine navigation edi
 patched Foss debug APK was installed on the connected physical device. These are correctness checks;
 physical-device frame timing and WebAssembly runtime smoothness have not been benchmarked.
 
-The published artifact is still 2.1.0. This patch leaves `VERSION_NAME` unchanged. The fix requires
-an Asgard patch release and an updated Thor dependency pin before ordinary Maven Central builds
-include it. The publication workflow runs when a fresh non-SNAPSHOT `VERSION_NAME` is merged into
-`main`; merging this motion patch alone does not publish a new artifact.
+The navigation motion patch was merged in PR #10 without a version bump. The 2.1.1 release now
+bundles that patch with normalized progress-ring drawing/semantics, deferred ring animation
+sampling and cached shimmer drawing. The Android harness's Lifecycle warning is resolved with
+2.11.0, and both previously skipped detectors were verified using temporary faulty examples.
+The new optimized benchmark variant and its results are documented in
+[performance-2.1.1.md](performance-2.1.1.md), including 32 passing native tests and the emulator-only
+measurement limits. The broader unmeasured candidates above remain follow-ups.
+
+The publication workflow runs when the fresh non-SNAPSHOT `VERSION_NAME=2.1.1` is merged into
+`main`. Thor still needs the published artifact and a dependency-pin update before ordinary
+Maven Central builds receive the navigation motion fix.

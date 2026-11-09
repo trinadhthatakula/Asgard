@@ -42,6 +42,13 @@ component and chart live, drag the interactive knobs, and flip **light/dark** an
 to watch each one inherit the theme. The gallery is itself built from Asgard, running in the browser
 via Compose Multiplatform (wasm).
 
+## 2.1.1 motion and rendering fixes
+
+Configured navigation animates tab bounds and labels; progress rings keep custom-spring samples
+within their valid range; and shimmer reuses its gradient during drawing. Android Lifecycle lint
+checks run again. See the [release notes](docs/releases/2.1.1.md) and
+[performance report](docs/performance-2.1.1.md) for validation and emulator measurement limits.
+
 ## 2.1.0 component expansion
 
 This release adds configurable connected-button shapes and multiselect; docked/floating,
@@ -59,13 +66,13 @@ installed test APKs and the independently compiled published-version compatibili
 
 ## 📦 Install
 
-Asgard is on Maven Central. For 2.1.0, wait for the release publication to complete, then add
+Asgard is on Maven Central. For 2.1.1, wait for the release publication to complete, then add
 the dependency — Gradle resolves the correct platform artifact automatically:
 
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("com.trinadhthatakula:asgard:2.1.0")
+    implementation("com.trinadhthatakula:asgard:2.1.1")
 }
 ```
 
@@ -86,7 +93,7 @@ on a single platform artifact directly if you only want one:
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("com.trinadhthatakula:asgard:2.1.0")
+            implementation("com.trinadhthatakula:asgard:2.1.1")
         }
     }
 }
@@ -318,7 +325,7 @@ GitHub Release. Credentials live in repository secrets. To publish manually on *
 JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew publishToMavenCentral
 ```
 
-Local dry-run without a GPG key: `./gradlew publishToMavenLocal -PVERSION_NAME=2.1.0-SNAPSHOT`.
+Local dry-run without a GPG key: `./gradlew publishToMavenLocal -PVERSION_NAME=2.1.1-SNAPSHOT`.
 
 For a consumer that includes Asgard as a composite build, use `-PasgardAgpVersion=<consumer AGP version>`
 when its Android Gradle Plugin differs from Asgard's default. Gradle requires matching AGP versions

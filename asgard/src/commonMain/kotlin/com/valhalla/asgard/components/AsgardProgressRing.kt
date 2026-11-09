@@ -3,14 +3,14 @@ package com.valhalla.asgard.components
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * A circular progress / gauge ring drawn on a [Canvas]: a faint full-sweep track with a
+ * A circular progress / gauge ring: a faint full-sweep track with a
  * rounded-cap progress arc on top, and a centered [content] slot for a value/label.
  *
  * @param progress the fraction filled, in `0f..1f` (coerced into range; non-finite values render as `0f`).
@@ -64,23 +64,23 @@ fun AsgardProgressRing(
     content: @Composable () -> Unit = {},
 ) {
     val target = asgardClampProgress(progress)
-    val p = if (animate) {
-        animateFloatAsState(targetValue = target, animationSpec = animationSpec).value
+    val progressState = if (animate) {
+        animateFloatAsState(targetValue = target, animationSpec = animationSpec)
     } else {
-        target
+        rememberUpdatedState(target)
     }
     val rootModifier = if (contentDescription != null) {
         modifier
             .size(size)
             .semantics {
                 this.contentDescription = contentDescription
-                progressBarRangeInfo = ProgressBarRangeInfo(p, 0f..1f)
+                progressBarRangeInfo = ProgressBarRangeInfo(asgardClampProgress(progressState.value), 0f..1f)
             }
     } else {
         modifier.size(size)
     }
-    Box(modifier = rootModifier, contentAlignment = Alignment.Center) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = rootModifier.drawWithCache {
             val sw = strokeWidth.toPx()
             val trackSw = trackStrokeWidth.toPx()
             val trackStroke = Stroke(width = trackSw, cap = cap)
@@ -88,37 +88,44 @@ fun AsgardProgressRing(
             val maxSw = maxOf(sw, trackSw)
             val topLeft = Offset(maxSw / 2f, maxSw / 2f)
             val arcSize = Size(this.size.width - maxSw, this.size.height - maxSw)
-            drawArc(
-                color = trackColor,
-                startAngle = startAngle,
-                sweepAngle = sweepAngle,
-                useCenter = false,
-                topLeft = topLeft,
-                size = arcSize,
-                style = trackStroke,
-            )
-            if (progressBrush != null) {
+            onDrawBehind {
+                // Read animated state during drawing, keeping the container/content out of the
+                // frame-by-frame composition path. Springs can overshoot even normalized targets.
+                val p = asgardClampProgress(progressState.value)
                 drawArc(
-                    brush = progressBrush,
+                    color = trackColor,
                     startAngle = startAngle,
-                    sweepAngle = sweepAngle * p,
+                    sweepAngle = sweepAngle,
                     useCenter = false,
                     topLeft = topLeft,
                     size = arcSize,
-                    style = progressStroke,
+                    style = trackStroke,
                 )
-            } else {
-                drawArc(
-                    color = progressColor,
-                    startAngle = startAngle,
-                    sweepAngle = sweepAngle * p,
-                    useCenter = false,
-                    topLeft = topLeft,
-                    size = arcSize,
-                    style = progressStroke,
-                )
+                if (progressBrush != null) {
+                    drawArc(
+                        brush = progressBrush,
+                        startAngle = startAngle,
+                        sweepAngle = sweepAngle * p,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = progressStroke,
+                    )
+                } else {
+                    drawArc(
+                        color = progressColor,
+                        startAngle = startAngle,
+                        sweepAngle = sweepAngle * p,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = progressStroke,
+                    )
+                }
             }
-        }
+        },
+        contentAlignment = Alignment.Center,
+    ) {
         content()
     }
 }
