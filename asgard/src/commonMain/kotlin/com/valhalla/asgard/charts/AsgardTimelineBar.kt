@@ -56,15 +56,15 @@ fun AsgardTimelineBar(
     ) {
         drawRect(trackColor)
 
-        val span = (windowEndMillis - windowStartMillis).toFloat()
-        if (span <= 0f) return@Canvas
+        if (windowEndMillis <= windowStartMillis) return@Canvas
+        val span = timelineDistance(windowStartMillis, windowEndMillis)
 
         segments.forEach { seg ->
             val start = seg.startMillis.coerceIn(windowStartMillis, windowEndMillis)
             val end = seg.endMillis.coerceIn(windowStartMillis, windowEndMillis)
             if (end <= start) return@forEach
-            val left = (start - windowStartMillis) / span * size.width
-            val right = (end - windowStartMillis) / span * size.width
+            val left = (timelineDistance(windowStartMillis, start) / span * size.width).toFloat()
+            val right = (timelineDistance(windowStartMillis, end) / span * size.width).toFloat()
             drawRect(
                 color = seg.color,
                 topLeft = Offset(left, 0f),
@@ -73,3 +73,7 @@ fun AsgardTimelineBar(
         }
     }
 }
+
+// Ordered Long endpoints can be up to ULong.MAX_VALUE milliseconds apart.
+// Subtract before converting to Double to retain short intervals near either limit.
+internal fun timelineDistance(start: Long, end: Long): Double = (end.toULong() - start.toULong()).toDouble()

@@ -3,6 +3,11 @@ name: Deploy Demo
 on:
   push:
     branches: [ "main" ]
+  # Publishing creates the release tag after the main-branch gallery build has started.
+  workflow_run:
+    workflows: ["Publish to Maven Central"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -16,6 +21,7 @@ concurrency:
 
 jobs:
   build-deploy:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -24,6 +30,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0
+          # A delayed publication must deploy the current main branch.
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.sha }}
 
       - uses: actions/setup-java@v4
         with:
@@ -38,6 +47,9 @@ jobs:
 
       - name: Build wasm production distribution
         run: ./gradlew :demo:wasmJsBrowserDistribution --no-daemon
+
+      - name: Include the standalone glass report in the gallery
+        run: cp docs/glass-ui-report.html demo/build/dist/wasmJs/productionExecutable/glass-ui-report.html
 
       - uses: actions/configure-pages@v5
 

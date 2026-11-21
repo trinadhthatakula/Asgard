@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.valhalla.asgard.AsgardContainer
 
 /** Consumers decide availability and permissions; labels are localized at the call site. */
 data class AsgardToolbarAction(
@@ -32,10 +33,28 @@ fun AsgardActionToolbar(
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     elevation: Dp = 6.dp,
     leading: (@Composable () -> Unit)? = null,
+) = AsgardActionToolbar(
+    actions, AsgardContainer.Material, modifier, enabled, showLabels, shape, containerColor,
+    contentColor, elevation, leading,
+)
+
+/** Applies [container] only to this toolbar's surface. */
+@Composable
+fun AsgardActionToolbar(
+    actions: List<AsgardToolbarAction>,
+    container: AsgardContainer,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    showLabels: Boolean = false,
+    shape: Shape = MaterialTheme.shapes.extraLarge,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
+    elevation: Dp = 6.dp,
+    leading: (@Composable () -> Unit)? = null,
 ) {
     require(actions.map { it.id }.distinct().size == actions.size) { "Toolbar action IDs must be unique" }
     Surface(modifier, shape = shape, color = containerColor, contentColor = contentColor, shadowElevation = elevation) {
-        Row(Modifier.padding(6.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(container.backgroundModifier(containerColor).padding(6.dp), verticalAlignment = Alignment.CenterVertically) {
             leading?.invoke()
             Row(Modifier.weight(1f).horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)) {

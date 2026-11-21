@@ -14,6 +14,7 @@ kotlin {
             }
         }
         minSdk = libs.versions.minSdk.get().toInt()
+        androidResources.enable = true
         compilerOptions { jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21 }
     }
     wasmJs {
@@ -32,6 +33,8 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(project(":asgard"))
+            implementation(project(":asgard-glass"))
+            implementation(compose.components.resources)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -56,6 +59,8 @@ abstract class GenerateGalleryBuildInfo : DefaultTask() {
     @get:org.gradle.api.tasks.Input abstract val sourceVersion: org.gradle.api.provider.Property<String>
     @get:org.gradle.api.tasks.Input abstract val sourceRevision: org.gradle.api.provider.Property<String>
     @get:org.gradle.api.tasks.Input abstract val sourceTag: org.gradle.api.provider.Property<String>
+    @get:InputFile @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val glassGuide: RegularFileProperty
     @get:org.gradle.api.tasks.OutputDirectory abstract val outputDirectory: org.gradle.api.file.DirectoryProperty
 
     @org.gradle.api.tasks.TaskAction
@@ -67,6 +72,13 @@ abstract class GenerateGalleryBuildInfo : DefaultTask() {
         val version = sourceVersion.get()
         val revision = sourceRevision.get()
         val released = sourceTag.get() == "v$version" && !revision.endsWith("-dirty")
+        // The installed skill and both galleries use the same component ratings.
+        val row = Regex("""^\| `(\w+)` \| ([1-5])/5 \| ([^|]+) \|$""")
+        val ratings = glassGuide.get().asFile.readLines().filter { it.startsWith("| `") }.associate { line ->
+            val (component, score, guidance) = requireNotNull(row.matchEntire(line)) { line }.destructured
+            component to "    ${quoted(component)} to GlassCompatibility($score, ${quoted(guidance)}),"
+        }
+        require(ratings.isNotEmpty()) { "The glass compatibility table is empty" }
         target.writeText("""
             package com.valhalla.asgard.demo
             internal object GalleryBuildInfo {
@@ -74,13 +86,15 @@ abstract class GenerateGalleryBuildInfo : DefaultTask() {
                 const val revision = ${quoted(revision)}
                 const val released = $released
             }
-        """.trimIndent() + "\n")
+        """.trimIndent() + "\n\ninternal val glassCompatibility = mapOf(\n" +
+            ratings.values.joinToString("\n") + "\n)\n")
     }
 }
 val generateGalleryBuildInfo = tasks.register<GenerateGalleryBuildInfo>("generateGalleryBuildInfo") {
     sourceVersion.set(galleryVersion)
     sourceRevision.set(galleryRevision)
     sourceTag.set(galleryExactTag)
+    glassGuide.set(rootProject.layout.projectDirectory.file(".claude/skills/asgard-ui/references/glass.md"))
     outputDirectory.set(galleryInfoDirectory)
 }
 kotlin.sourceSets.getByName("commonMain").kotlin.srcDir(galleryInfoDirectory)

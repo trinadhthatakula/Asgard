@@ -48,6 +48,8 @@ kotlin.compilerOptions {
 dependencies {
     implementation(project(":demo"))
     implementation(project(":asgard"))
+    androidTestImplementation(project(":asgard-glass"))
+    "benchmarkImplementation"(project(":asgard-glass"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.material3)
     constraints {

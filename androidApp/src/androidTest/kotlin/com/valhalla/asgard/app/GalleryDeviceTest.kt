@@ -2,11 +2,15 @@ package com.valhalla.asgard.app
 
 import android.content.ClipboardManager
 import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.valhalla.asgard.demo.GalleryApp
+import com.valhalla.asgard.demo.asgardCatalog
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -24,6 +28,32 @@ class GalleryDeviceTest {
         compose.onNodeWithText("Selected: 2026-11-08 · Value: 1.0").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Add an entry for selected date").performScrollTo().performClick()
         compose.onNodeWithText("Selected: 2026-11-08 · Value: 2.0").performScrollTo().assertIsDisplayed()
+    }
+
+    @Test fun everyCatalogEntryCanPreviewItsRecommendedGlassTreatment() {
+        var id by mutableStateOf(asgardCatalog.first().id)
+        compose.setContent { GalleryApp(initialEntry = id) }
+        for (entry in asgardCatalog) {
+            compose.runOnIdle { id = entry.id }
+            compose.onNodeWithText("Preview glass").performScrollTo().assertIsOff().performClick().assertIsOn()
+        }
+    }
+
+    @Test fun glassChoiceFollowsItsEntryAndKeepsTheSampleInteractive() {
+        compose.setContent { GalleryApp(initialEntry = "asgardstattile-animated") }
+        val preview = compose.onNodeWithText("Preview glass")
+        preview.assertIsOff().performClick().assertIsOn()
+        compose.onNodeWithText("Steps today").performScrollTo().performClick()
+        compose.onNodeWithText("250").assertExists()
+        preview.performScrollTo().performClick().assertIsOff()
+        compose.onNodeWithText("250").assertExists()
+        preview.performClick()
+        compose.onNodeWithText("Browse").performClick()
+        compose.onNode(hasSetTextAction()).performTextInput("Avatar")
+        compose.onNodeWithContentDescription("AsgardAvatar").performClick()
+        preview.assertIsOff()
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        preview.assertIsOn()
     }
 
     @Test fun nativeClipboardCopiesActualExample() {

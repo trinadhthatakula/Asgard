@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "asgard/src/commonMain/kotlin/com/valhalla/asgard"
+GLASS_SOURCE = ROOT / "asgard-glass/src/commonMain/kotlin/com/valhalla/asgard/glass"
 SKILL = ROOT / ".claude/skills/asgard-ui"
 
 # Kotlin declarations in this library are top-level at column zero. This deliberately excludes
@@ -31,6 +32,20 @@ def public_api_names(source: Path) -> set[str]:
     return names
 
 
+def check_glass_scores(sources: tuple[Path, ...], guide: Path) -> tuple[int, list[str]]:
+    # The public component composables follow Compose's capitalized function convention.
+    components = {
+        name for source in sources for path in source.rglob("*.kt")
+        for match in DECLARATION.finditer(path.read_text(encoding="utf-8"))
+        if (name := match.group(2)) and name[0].isupper()
+    }
+    rows = re.findall(r"^\| `(\w+)` \| [1-5]/5 \| [^|\n]+ \|$", guide.read_text(encoding="utf-8"), re.MULTILINE)
+    issues = [f"Missing glass score for {name}" for name in sorted(components - set(rows))]
+    issues.extend(f"Unknown glass component {name}" for name in sorted(set(rows) - components))
+    issues.extend(f"Duplicate glass score for {name}" for name in sorted(set(rows)) if rows.count(name) > 1)
+    return len(components), issues
+
+
 def version_mismatch(properties: Path, skill_entry: Path) -> str | None:
     project = re.search(r"(?m)^VERSION_NAME\s*=\s*(\S+)\s*$", properties.read_text(encoding="utf-8"))
     skill = re.search(r'(?m)^  asgard-version:\s*["\']?([^"\'\s]+)["\']?\s*$', skill_entry.read_text(encoding="utf-8"))
@@ -41,10 +56,11 @@ def version_mismatch(properties: Path, skill_entry: Path) -> str | None:
     return None
 
 
-def skill_gaps(source: Path, skill: Path) -> tuple[list[str], list[str]]:
+def skill_gaps(source: Path, skill: Path, *other_sources: Path) -> tuple[list[str], list[str]]:
     markdown = list(skill.rglob("*.md"))
     text = "\n".join(path.read_text(encoding="utf-8") for path in markdown)
-    missing = sorted(name for name in public_api_names(source) if not re.search(rf"\b{re.escape(name)}\b", text))
+    names = public_api_names(source).union(*(public_api_names(path) for path in other_sources))
+    missing = sorted(name for name in names if not re.search(rf"\b{re.escape(name)}\b", text))
     broken = []
     for path in markdown:
         for target in LOCAL_LINK.findall(path.read_text(encoding="utf-8")):
@@ -54,11 +70,12 @@ def skill_gaps(source: Path, skill: Path) -> tuple[list[str], list[str]]:
 
 
 def main() -> int:
-    names = public_api_names(SOURCE)
+    names = public_api_names(SOURCE) | public_api_names(GLASS_SOURCE)
     if not names:
         print("No public APIs found; check the source path and declaration parser.")
         return 1
-    missing, broken = skill_gaps(SOURCE, SKILL)
+    missing, broken = skill_gaps(SOURCE, SKILL, GLASS_SOURCE)
+    components, score_issues = check_glass_scores((SOURCE, GLASS_SOURCE), SKILL / "references/glass.md")
     version_error = version_mismatch(ROOT / "gradle.properties", SKILL / "SKILL.md")
     if missing:
         print("Public APIs missing from the skill:", ", ".join(missing))
@@ -66,9 +83,11 @@ def main() -> int:
         print("Broken skill resource links:", ", ".join(broken))
     if version_error:
         print(version_error)
-    if missing or broken or version_error:
+    for issue in score_issues:
+        print(issue)
+    if missing or broken or version_error or score_issues:
         return 1
-    print(f"Skill references all {len(names)} public top-level common API names; version and local links match.")
+    print(f"Skill references all {len(names)} public top-level common API names and rates all {components} components. Version and local links match.")
     return 0
 
 

@@ -3,9 +3,9 @@ name: asgard-ui
 description: >-
   Integrate the Asgard Compose component and chart library into an Android or Kotlin Multiplatform
   app. Use for com.trinadhthatakula:asgard setup, choosing components, navigation, inputs, sheets,
-  pickers, scrollbars, charts, theming, accessibility, and adapting their APIs to an app.
+  pickers, scrollbars, charts, theming, accessibility, and opt-in frosted glass compatibility.
 metadata:
-  asgard-version: "2.1.1"
+  asgard-version: "2.2.0"
 ---
 
 # Asgard UI integration
@@ -16,19 +16,19 @@ selection, persistence, permissions, localized strings, icons, images and busine
 
 ## Version and setup
 
-This skill is verified against **Asgard 2.1.1**. Respect the consuming project's pinned version;
+This skill is verified against **Asgard 2.2.0**. Respect the consuming project's pinned version;
 check the corresponding library sources or release notes before using a newer API. Asgard 2.1.0
 introduced the expanded components and configurable navigation; 2.1.1 includes motion and
-rendering fixes.
+rendering fixes. Version 2.2.0 adds the optional glass artifact and per-component previews.
 
 For a new integration, add Maven Central and use the KMP umbrella coordinate:
 
 ```kotlin
 // Android module dependencies, or KMP commonMain.dependencies:
-implementation("com.trinadhthatakula:asgard:2.1.1")
+implementation("com.trinadhthatakula:asgard:2.2.0")
 ```
 
-The umbrella resolves `asgard-android` or `asgard-wasm-js` automatically. Version 2.1.1's Android
+The umbrella resolves `asgard-android` or `asgard-wasm-js` automatically. Version 2.2.0's Android
 artifact requires **compile SDK 37.2**, supports `minSdk` 28, and targets JVM 21; align the host's
 Android Gradle Plugin, SDK and Compose versions before changing them. The library targets Android
 and wasmJs; do not assume it supplies iOS or desktop variants. A plugin hosted by an app that already
@@ -42,6 +42,7 @@ the same position.
 
 ## Choose the right API
 
+- For per-component frosted glass in 2.2.0+, consult the [glass recipes and component compatibility scores](references/glass.md). Both galleries expose the same scores and a per-entry preview switch.
 - **Navigation or connected choices:** read [navigation and selection](references/navigation.md).
   It covers the configuration overloads, floating placement, multiselect, state and shape choices.
 - **Sheets, pickers, rows, actions, avatars, status or loading:** read the complete
@@ -49,10 +50,10 @@ the same position.
 - **Line, bar, timeline, heatmap or legend:** read [charts](references/charts.md).
 - For complete Kotlin examples with imports, state and callbacks, read
   [navigation examples](examples/NavigationExamples.kt) or [component examples](examples/ComponentExamples.kt).
-  These files are compiled as common code by the gallery's Android and wasm builds. Adapt text,
+  These files are compiled as common code by the skill examples module on Android and Wasm. Adapt text,
   state lifetime and accessibility labels to the host; the examples are starting points.
 
-The repository's [component expansion guide](https://github.com/trinadhthatakula/Asgard/blob/v2.1.1/docs/component-expansion.md)
+The repository's [component expansion guide](https://github.com/trinadhthatakula/Asgard/blob/v2.2.0/docs/component-expansion.md)
 and [gallery](https://trinadhthatakula.github.io/Asgard/) give further examples. If a signature or
 version is uncertain, inspect the source for the **version actually used by the app**, rather than
 assuming the current main branch matches it.

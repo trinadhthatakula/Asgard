@@ -1,10 +1,13 @@
-"""Compare retained Compose/JVM entry points against the pre-expansion compiled baseline."""
+"""Compare retained Compose/JVM entry points against their compiled baselines."""
 import json
 from pathlib import Path
 import subprocess
 
 root = Path(__file__).resolve().parents[1]
-baseline = json.loads((root / "api/android-97903e9.json").read_text())
+baseline = {}
+for snapshot in ("android-97903e9.json", "android-2.1.1-containers.json"):
+    for name, entries in json.loads((root / "api" / snapshot).read_text()).items():
+        baseline.setdefault(name, []).extend(entries)
 classpath = root / "asgard/build/classes/kotlin/android/main"
 missing = []
 count = 0

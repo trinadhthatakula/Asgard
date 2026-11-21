@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.valhalla.asgard.expressivePress
+import com.valhalla.asgard.AsgardContainer
 
 enum class AsgardNavigationPlacement { Docked, Floating }
 enum class AsgardNavigationAppearance { Expanding, Segmented, Standard }
@@ -73,11 +74,28 @@ private fun Modifier.navInsets(config: AsgardNavigationConfiguration): Modifier 
  * place the bar in a Scaffold bottomBar or overlay at the call site. Route state remains caller-owned.
  * Too many destinations for 48dp targets produce horizontal scrolling rather than overlapping targets.
  */
+@Composable
+fun AsgardNavigationBar(
+    items: List<AsgardNavItem>, selectedIndex: Int, onSelect: (Int) -> Unit,
+    configuration: AsgardNavigationConfiguration,
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    selectedIndicatorColor: Color = MaterialTheme.colorScheme.primary,
+    selectedContentColor: Color = MaterialTheme.colorScheme.onPrimary,
+    unselectedContentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    labelStyle: TextStyle = MaterialTheme.typography.labelLarge,
+) = AsgardNavigationBar(
+    items, selectedIndex, onSelect, configuration, AsgardContainer.Material, modifier, containerColor,
+    selectedIndicatorColor, selectedContentColor, unselectedContentColor, labelStyle,
+)
+
+/** Applies [container] to the bar itself, inside the configured width, margins and insets. */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AsgardNavigationBar(
     items: List<AsgardNavItem>, selectedIndex: Int, onSelect: (Int) -> Unit,
     configuration: AsgardNavigationConfiguration,
+    container: AsgardContainer,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     selectedIndicatorColor: Color = MaterialTheme.colorScheme.primary,
@@ -93,7 +111,7 @@ fun AsgardNavigationBar(
             shape = configuration.containerShape ?: if (configuration.placement == AsgardNavigationPlacement.Floating) MaterialTheme.shapes.extraLarge else RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
             color = containerColor, shadowElevation = if (configuration.placement == AsgardNavigationPlacement.Floating) configuration.elevation else 0.dp,
         ) {
-            BoxWithConstraints(Modifier.padding(configuration.contentPadding)) {
+            BoxWithConstraints(container.backgroundModifier(containerColor).padding(configuration.contentPadding)) {
                 val measurer = rememberTextMeasurer()
                 val density = androidx.compose.ui.platform.LocalDensity.current
                 val selectedItem = items.getOrNull(selectedIndex)

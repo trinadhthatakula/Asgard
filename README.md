@@ -42,6 +42,16 @@ component and chart live, drag the interactive knobs, and flip **light/dark** an
 to watch each one inherit the theme. The gallery is itself built from Asgard, running in the browser
 via Compose Multiplatform (wasm).
 
+## 2.2.0 opt-in frosted glass
+
+Use `Modifier.asgardGlass(source, enabled = …)` on an individual Asgard, Material, or custom Compose
+component. Register the backdrop with `Modifier.asgardGlassSource(source)`. The optional
+`com.trinadhthatakula:asgard-glass:2.2.0` artifact also provides a wrapper for slot content and dedicated toolbar and navigation containers.
+
+In the Android app or browser gallery, choose **Browse → component → Preview glass** to try the treatment
+and see its compatibility score out of five. [Integration guide](docs/glass-ui.md) ·
+[HTML engineering report](https://trinadhthatakula.github.io/Asgard/glass-ui-report.html) · [All component ratings](.claude/skills/asgard-ui/references/glass.md) · [Release notes](docs/releases/2.2.0.md)
+
 ## 2.1.1 motion and rendering fixes
 
 Configured navigation animates tab bounds and labels; progress rings keep custom-spring samples
@@ -66,17 +76,16 @@ installed test APKs and the independently compiled published-version compatibili
 
 ## 📦 Install
 
-Asgard is on Maven Central. For 2.1.1, wait for the release publication to complete, then add
-the dependency — Gradle resolves the correct platform artifact automatically:
+Add the Asgard dependency from Maven Central. Gradle resolves the matching platform artifact.
 
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("com.trinadhthatakula:asgard:2.1.1")
+    implementation("com.trinadhthatakula:asgard:2.2.0")
 }
 ```
 
-**Artifacts.** Asgard is a Kotlin Multiplatform library published as **three** Maven Central
+**Artifacts.** Asgard is a Kotlin Multiplatform library published as **three** core Maven Central
 coordinates. Depend on the umbrella `asgard` and Gradle resolves the right one per target — or depend
 on a single platform artifact directly if you only want one:
 
@@ -86,6 +95,9 @@ on a single platform artifact directly if you only want one:
 | `com.trinadhthatakula:asgard-android` | Android only | `.aar` |
 | `com.trinadhthatakula:asgard-wasm-js` | wasmJs only | `.klib` |
 
+The optional glass add-on follows the same scheme with `asgard-glass`, `asgard-glass-android` and
+`asgard-glass-wasm-js`. Adding the umbrella glass artifact also brings in matching Asgard core.
+
 <details>
 <summary><b>Kotlin Multiplatform</b> (shared module)</summary>
 
@@ -93,7 +105,7 @@ on a single platform artifact directly if you only want one:
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("com.trinadhthatakula:asgard:2.1.1")
+            implementation("com.trinadhthatakula:asgard:2.2.0")
         }
     }
 }
@@ -327,10 +339,10 @@ its PR to `main`. The
 GitHub Release. Credentials live in repository secrets. To publish manually on **JDK 21**:
 
 ```bash
-JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew publishToMavenCentral
+JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew publishToMavenCentral --no-configuration-cache
 ```
 
-Local dry-run without a GPG key: `./gradlew publishToMavenLocal -PVERSION_NAME=2.1.1-SNAPSHOT`.
+Local dry-run without a GPG key: `./gradlew publishToMavenLocal -PVERSION_NAME=2.2.0-SNAPSHOT --no-configuration-cache`.
 
 For a consumer that includes Asgard as a composite build, use `-PasgardAgpVersion=<consumer AGP version>`
 when its Android Gradle Plugin differs from Asgard's default. Gradle requires matching AGP versions
