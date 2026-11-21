@@ -129,6 +129,7 @@ class GlassDeviceTest {
         var enabled by mutableStateOf(true)
         var attached by mutableStateOf(true)
         var green by mutableStateOf(false)
+        val floatingMargin = 12.dp
         var clicks = 0
         compose.setContent {
             MaterialTheme {
@@ -153,7 +154,7 @@ class GlassDeviceTest {
                         AsgardNavigationBar(
                             listOf(AsgardNavItem(icon, "Home"), AsgardNavItem(icon, "Saved")), 0, { clicks++ },
                             AsgardNavigationConfiguration(placement = AsgardNavigationPlacement.Floating,
-                                containerShape = RectangleShape, maxWidth = 180.dp, floatingMargin = 0.dp, elevation = 0.dp),
+                                containerShape = RectangleShape, maxWidth = 180.dp, floatingMargin = floatingMargin, elevation = 0.dp),
                             source.frosted(navigation), modifier = Modifier.testTag("nav"), containerColor = Color.White,
                         )
                         AsgardGlassSurface(source, Modifier.size(80.dp, 32.dp).testTag("custom"),
@@ -166,7 +167,8 @@ class GlassDeviceTest {
         fun samples(tag: String, outside: Boolean = false): List<Color> {
             val pixels = compose.onNodeWithTag(tag).captureToImage().toPixelMap()
             val x = if (outside) 1 else pixels.width * 2 / 3
-            val y = if (tag == "nav") 4 else pixels.height / 2
+            // Sample the bar below its top margin even when maxWidth fills a narrow screen.
+            val y = if (tag == "nav") with(compose.density) { floatingMargin.roundToPx() } + 4 else pixels.height / 2
             return List(8) { pixels[x + it, y] }
         }
         fun solid(tag: String) = assertTrue("Expected white $tag", samples(tag).all { it == Color.White })
@@ -186,11 +188,13 @@ class GlassDeviceTest {
         }
         frost("toolbar")
         frost("custom")
+        val plainMargin = samples("nav", outside = true)
+        assertTrue("Expected source stripes in the floating margin",
+            plainMargin.maxOf { it.red } - plainMargin.minOf { it.red } > .5f)
         compose.runOnIdle { toolbar = false; navigation = true }
         solid("toolbar")
         frost("nav")
-        assertTrue("Floating margins must show the sharp source",
-            samples("nav", outside = true).all { it == Color.Red || it == Color.Blue })
+        assertEquals("Glass must leave the floating margin unchanged", plainMargin, samples("nav", outside = true))
         compose.runOnIdle { green = true }
         compose.waitUntil(timeoutMillis = 3_000) { samples("nav").all { it.green > it.red + .15f } }
         compose.runOnIdle { attached = false }
