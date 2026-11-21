@@ -1,4 +1,4 @@
-# Component index and contracts (2.1.1)
+# Component index and contracts (2.2.0)
 
 Import from `com.valhalla.asgard.components`, except navigation and charts in their respective
 packages. The source KDoc has complete parameters; these descriptions help choose an API.
@@ -56,3 +56,10 @@ packages. The source KDoc has complete parameters; these descriptions help choos
 `AsgardDefaults` resolves shared defaults from the theme. `Modifier.expressivePress` and
 `Modifier.animateExpressiveResize` expose motion helpers. See [component examples](../examples/ComponentExamples.kt)
 for complete recipes; inspect the corresponding version's source for all optional parameters.
+
+## Opt-in glass in 2.2.0
+
+Asgard 2.2.0 adds an `AsgardContainer` overload to the action toolbar and configured
+navigation bar. Apps using the optional `:asgard-glass` module can register their backdrop with
+`rememberAsgardGlassSource` and `Modifier.asgardGlassSource`, then pass `source.frosted()` to
+individual instances. Use `Modifier.asgardGlass` on arbitrary Compose components or `AsgardGlassSurface` for slot content. See [glass compatibility](glass.md) for each component's rating. Use matching versions of core and the add-on.

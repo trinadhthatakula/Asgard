@@ -23,7 +23,6 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlin.math.max
 import kotlin.math.roundToInt
 
 /** How a [AsgardLineSeries] connects its points. */
@@ -76,7 +75,7 @@ data class AsgardLineSeries(
  * )
  * ```
  *
- * @param series the lines to draw. Empty series are skipped; if none have points, [emptyContent] shows.
+ * @param series the lines to draw. Samples with non-finite coordinates are omitted. If no finite points remain, [emptyContent] shows.
  * @param yRange fixes the Y domain; `null` auto-scales from the data.
  * @param yPaddingFraction fractional headroom added above/below the data range when auto-scaling.
  * @param gridLineCount number of interior horizontal grid divisions.
@@ -105,7 +104,10 @@ fun AsgardLineChart(
     contentPadding: PaddingValues = PaddingValues(start = 44.dp, top = 12.dp, end = 12.dp, bottom = 24.dp),
     emptyContent: @Composable () -> Unit = {},
 ) {
-    val nonEmpty = series.filter { it.points.isNotEmpty() }
+    val nonEmpty = series.mapNotNull { line ->
+        val points = line.points.filter { it.x.isFinite() && it.y.isFinite() }
+        if (points.isEmpty()) null else line.copy(points = points)
+    }
     if (nonEmpty.isEmpty()) {
         Box(modifier, contentAlignment = Alignment.Center) { emptyContent() }
         return
@@ -120,7 +122,7 @@ fun AsgardLineChart(
     val xMax = allPoints.maxOf { it.x }
     val yMin: Float
     val yMax: Float
-    if (yRange != null) {
+    if (yRange != null && yRange.start.isFinite() && yRange.endInclusive.isFinite()) {
         yMin = yRange.start
         yMax = yRange.endInclusive
     } else {
@@ -132,7 +134,7 @@ fun AsgardLineChart(
     // Pre-measure axis labels in composition — measuring inside the DrawScope would re-run every frame.
     val divisions = gridLineCount.coerceAtLeast(1)
     val yLabelResults = (0..divisions).map { i ->
-        val value = yMax - (i.toFloat() / divisions) * (yMax - yMin)
+        val value = (yMax - (i.toDouble() / divisions) * (yMax.toDouble() - yMin)).toFloat()
         textMeasurer.measure(yValueFormatter(value), resolvedAxisStyle)
     }
     val labelPoints = nonEmpty.first().points
@@ -161,11 +163,11 @@ fun AsgardLineChart(
         val plotBottom = plotTop + plotHeight
 
         fun xToPx(x: Float): Float {
-            val t = if (xMax == xMin) 0.5f else (x - xMin) / (xMax - xMin)
+            val t = if (xMax == xMin) 0.5f else ((x.toDouble() - xMin) / (xMax.toDouble() - xMin)).toFloat()
             return plotLeft + t * plotWidth
         }
         fun yToPx(y: Float): Float {
-            val t = if (yMax == yMin) 0.5f else (y - yMin) / (yMax - yMin)
+            val t = if (yMax == yMin) 0.5f else ((y.toDouble() - yMin) / (yMax.toDouble() - yMin)).toFloat()
             return plotBottom - t * plotHeight
         }
 
@@ -258,8 +260,11 @@ fun AsgardLineChart(
  * span above and below, treating a zero span as `1f`. Extracted for unit testing.
  */
 internal fun asgardLineChartYBounds(dataMin: Float, dataMax: Float, paddingFraction: Float): Pair<Float, Float> {
-    val span = (dataMax - dataMin).let { if (it == 0f) 1f else it }
-    return (dataMin - span * paddingFraction) to (dataMax + span * paddingFraction)
+    val span = if (dataMax == dataMin) 1.0 else dataMax.toDouble() - dataMin
+    val padding = if (paddingFraction.isFinite()) span * paddingFraction else 0.0
+    val limit = Float.MAX_VALUE.toDouble()
+    return (dataMin - padding).coerceIn(-limit, limit).toFloat() to
+        (dataMax + padding).coerceIn(-limit, limit).toFloat()
 }
 
 /**
@@ -267,4 +272,4 @@ internal fun asgardLineChartYBounds(dataMin: Float, dataMax: Float, paddingFract
  * (`>= 1`, never zero). Extracted for unit testing.
  */
 internal fun asgardLabelSampleStep(count: Int, maxLabels: Int): Int =
-    if (count <= 0 || maxLabels <= 0) 1 else max(1, (count + maxLabels - 1) / maxLabels)
+    if (count <= 0 || maxLabels <= 0) 1 else 1 + (count - 1) / maxLabels

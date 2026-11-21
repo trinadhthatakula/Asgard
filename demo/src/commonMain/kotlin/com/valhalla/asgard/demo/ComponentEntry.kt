@@ -8,8 +8,11 @@ data class ComponentEntry(
     val category: String,
     val description: String,
     val code: String,
+    val glassComponent: String = name.substringBefore(" ·"),
     val content: @Composable () -> Unit,
 ) {
     /** Name-derived IDs are part of the gallery URL contract; keep names stable. */
     val id: String = name.lowercase().replace(Regex("[^a-z0-9]+"), "-").trim('-')
 }
+
+internal data class GlassCompatibility(val score: Int, val guidance: String)

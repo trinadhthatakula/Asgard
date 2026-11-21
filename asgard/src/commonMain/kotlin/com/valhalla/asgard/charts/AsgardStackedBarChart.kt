@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * One bar in an [AsgardStackedBarChart]: a list of segment [values] stacked bottom-to-top, plus a
+ * One bar in an [AsgardStackedBarChart]: a list of positive, finite segment [values] stacked bottom-to-top, plus a
  * [dimmed] flag for partial/incomplete bars (rendered at a reduced alpha).
  */
 data class AsgardBarStack(val values: List<Float>, val dimmed: Boolean = false)
@@ -54,7 +54,7 @@ fun AsgardStackedBarChart(
         Canvas(modifier) {}
         return
     }
-    val resolvedMax = asgardResolveMaxTotal(bars.map { it.values.sum() }, maxTotal)
+    val resolvedMax = asgardStackScale(bars, maxTotal)
 
     Canvas(modifier) {
         val w = size.width
@@ -76,16 +76,14 @@ fun AsgardStackedBarChart(
             val left = slotStart + (slot - barWidth) / 2f
             val alpha = if (bar.dimmed) dimmedAlpha else 1f
             var yCursor = h // stack upward from the baseline
-            bar.values.forEachIndexed { segIndex, value ->
-                if (value <= 0f) return@forEachIndexed
-                val segHeight = (value / resolvedMax) * h
+            val topSegment = bar.values.indexOfLast { it.isFinite() && it > 0f }
+            bar.values.forEachIndexed segment@{ segIndex, value ->
+                if (!value.isFinite() || value <= 0f) return@segment
+                val segHeight = (value / resolvedMax * h).toFloat()
                 val top = (yCursor - segHeight).coerceAtLeast(0f)
-                val color = segmentColors[segIndex.coerceAtMost(segmentColors.lastIndex)].copy(alpha = alpha)
-                // Only the topmost drawn segment gets rounded corners; others are square so the
-                // stack reads as one bar. A simple approach: round the whole bar's top by rounding
-                // the last (top) non-zero segment.
-                val isTopSegment = segIndex == bar.values.indexOfLast { it > 0f }
-                if (isTopSegment && radiusPx > 0f) {
+                val segmentColor = segmentColors[segIndex.coerceAtMost(segmentColors.lastIndex)]
+                val color = segmentColor.copy(alpha = segmentColor.alpha * alpha)
+                if (segIndex == topSegment && radiusPx > 0f) {
                     drawRoundRect(
                         color = color,
                         topLeft = Offset(left, top),
@@ -101,11 +99,16 @@ fun AsgardStackedBarChart(
     }
 }
 
-/**
- * Resolves the value that maps to full bar height: the [explicit] max when given, else the tallest
- * bar total from [barSums]; a non-positive result is floored to `1f` to avoid divide-by-zero.
- * Extracted for unit testing.
- */
+/** Scale only segments the chart can draw. Double accumulation handles large finite stacks. */
+internal fun asgardStackScale(bars: List<AsgardBarStack>, explicit: Float?): Double {
+    if (explicit != null && explicit.isFinite()) return if (explicit > 0f) explicit.toDouble() else 1.0
+    val tallest = bars.maxOfOrNull { bar ->
+        bar.values.sumOf { if (it.isFinite() && it > 0f) it.toDouble() else 0.0 }
+    } ?: 0.0
+    return if (tallest > 0.0) tallest else 1.0
+}
+
+// Kotlin internal functions are callable from Java. Retain the 2.1.1 JVM descriptor.
 internal fun asgardResolveMaxTotal(barSums: List<Float>, explicit: Float?): Float {
     val max = explicit ?: (barSums.maxOrNull() ?: 0f)
     return if (max <= 0f) 1f else max

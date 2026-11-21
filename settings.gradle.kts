@@ -33,6 +33,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "asgard"
 include(":asgard")
+include(":asgard-glass")
 include(":demo")
 include(":androidApp")
 include(":compatibilityConsumer")

@@ -10,6 +10,7 @@ from pathlib import Path
 
 PACKAGE = "com.valhalla.asgard.app.benchmark"
 SCENARIOS = ["progress", "shimmer", "charts", "navigation", "scrollbar", "numerals", "press", "connected", "pulse"]
+GLASS_SCENARIOS = ["glass-plain", "glass-toolbar", "glass-both"]
 
 
 def main():
@@ -18,7 +19,7 @@ def main():
     parser.add_argument("--apk", type=Path, required=True)
     parser.add_argument("--label", required=True)
     parser.add_argument("--out", type=Path, required=True)
-    parser.add_argument("--scenarios", nargs="+", choices=SCENARIOS, default=SCENARIOS)
+    parser.add_argument("--scenarios", nargs="+", choices=SCENARIOS + GLASS_SCENARIOS, default=SCENARIOS)
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--seconds", type=int, default=12)
     args = parser.parse_args()

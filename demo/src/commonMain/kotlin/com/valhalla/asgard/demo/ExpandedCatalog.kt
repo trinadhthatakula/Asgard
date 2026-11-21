@@ -2,6 +2,7 @@ package com.valhalla.asgard.demo
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -29,7 +30,9 @@ private val destinations = listOf(
 internal val expandedCatalog = listOf(
     ComponentEntry("Navigation variations", "Navigation",
         "Combine container placement, destination appearance, labels and shapes. Routes stay in the app.",
-        "AsgardNavigationBar(items, selectedIndex, onSelect,\n    configuration = AsgardNavigationConfiguration(\n        placement = AsgardNavigationPlacement.Floating,\n        appearance = AsgardNavigationAppearance.Segmented,\n        labels = AsgardNavigationLabels.Always,\n    ),\n)") {
+        "AsgardNavigationBar(items, selectedIndex, onSelect,\n    configuration = AsgardNavigationConfiguration(\n        placement = AsgardNavigationPlacement.Floating,\n        appearance = AsgardNavigationAppearance.Segmented,\n        labels = AsgardNavigationLabels.Always,\n    ),\n)",
+        glassComponent = "AsgardNavigationBar",
+    ) {
         var selected by remember { mutableIntStateOf(0) }
         var placement by remember { mutableIntStateOf(1) }
         var appearance by remember { mutableIntStateOf(1) }
@@ -44,8 +47,18 @@ internal val expandedCatalog = listOf(
             indicatorShape = if (square) MaterialTheme.shapes.small else null,
         )
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            if (rail) AsgardNavigationRail(destinations, selected, { selected = it }, configuration = config)
-            else AsgardNavigationBar(destinations, selected, { selected = it }, configuration = config)
+            if (rail) {
+                // Place the floating margin outside the glass shape.
+                GlassSample(shape = MaterialTheme.shapes.extraLarge) {
+                    AsgardNavigationRail(
+                        destinations, selected, { selected = it },
+                        configuration = if (LocalPreviewGlass.current) config.copy(floatingMargin = 0.dp) else config,
+                        containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainer),
+                    )
+                }
+            } else PreviewBackdrop { source ->
+                AsgardNavigationBar(destinations, selected, { selected = it }, config, source.frosted())
+            }
             Choice("Placement", listOf("Docked", "Floating"), placement) { placement = it }
             Choice("Appearance", listOf("Expand", "Segments", "Standard"), appearance) { appearance = it }
             Choice("Labels", listOf("Select", "All", "Hide", "Auto"), labels) { labels = it }
@@ -54,9 +67,12 @@ internal val expandedCatalog = listOf(
             AsgardSettingToggleRow("Show rail", rail, { rail = it }, modifier = Modifier.fillMaxWidth())
         }
     },
+    glassSurfaceEntry,
     ComponentEntry("Connected button shapes", "Input",
         "Shape changes are independent of primary selection colors, for single and multiple selections.",
-        "ConnectedButtonGroup(items, selectedIndices, onSelectionChanged,\n    shapes = ConnectedButtonGroupShapes.FixedConnected,\n)") {
+        "ConnectedButtonGroup(items, selectedIndices, onSelectionChanged,\n    shapes = ConnectedButtonGroupShapes.FixedConnected,\n)",
+        glassComponent = "ConnectedButtonGroup",
+    ) {
         var mode by remember { mutableIntStateOf(1) }
         var selected by remember { mutableStateOf(setOf(0, 1)) }
         var singleton by remember { mutableStateOf(false) }
@@ -69,9 +85,11 @@ internal val expandedCatalog = listOf(
             }
         }
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            ConnectedButtonGroup(listOf(ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Person, "User apps", "User"),
-                ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Android, "System apps", "System")).take(if (singleton) 1 else 2),
-                selected, { selected = it }, shapes = shapes, modifier = Modifier.fillMaxWidth())
+            GlassSample(inset = 8.dp) {
+                ConnectedButtonGroup(listOf(ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Person, "User apps", "User"),
+                    ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Android, "System apps", "System")).take(if (singleton) 1 else 2),
+                    selected, { selected = it }, shapes = shapes, modifier = Modifier.fillMaxWidth(), colors = previewToggleColors())
+            }
             Choice("Shape behavior", listOf("Motion", "Fixed", "Same", "Custom"), mode) { mode = it }
             AsgardSettingToggleRow("Single button", singleton, { singleton = it }, modifier = Modifier.fillMaxWidth())
         }
@@ -87,28 +105,31 @@ internal val expandedCatalog = listOf(
                 TextButton(onClick = dismiss) { Text("Close") }
                 Button(onClick = dismiss) { Text("Continue") }
             }, sheetState = state) {
-                Text("The message scrolls while actions remain reachable. Resize the window to try a short layout.\n\n".repeat(12))
+                GlassSample(inset = 12.dp) {
+                    Text("The message scrolls while actions remain reachable. Resize the window to try a short layout.\n\n".repeat(12))
+                }
             }
         }
     },
     ComponentEntry("AsgardPicker", "Input", "Controlled query and sections, with domain filtering and recent-history storage left to the app.",
         "AsgardPicker(sections, query, onQueryChange,\n    itemKey = { it.id }, itemLabel = { it.label },\n    isSelected = { it.id == selectedId }, onSelect = onSelect,\n    modifier = Modifier.height(320.dp),\n)") {
-        var query by remember { mutableStateOf("") }
-        var selected by remember { mutableStateOf("India") }
-        var sheet by remember { mutableStateOf(false) }
-        val countries = listOf("India", "Australia", "Brazil", "Canada", "Germany", "Japan", "United Kingdom", "United States")
-        val sections = listOf(AsgardPickerSection("recent", "Recent", listOf("India", "Japan").filter { it.contains(query, true) }),
-            AsgardPickerSection("all", "All countries", countries.filter { it.contains(query, true) }))
-        val picker: @Composable () -> Unit = {
-            AsgardPicker(sections, query, { query = it }, { it }, { it }, { it == selected }, { selected = it },
-                Modifier.fillMaxWidth().height(320.dp), searchIcon = Icons.Rounded.Search, clearIcon = Icons.Rounded.Close)
+        CountryPickerDemo(sheetOnly = false)
+    },
+    ComponentEntry("AsgardPickerSheet", "Input", "Search and select a country inside a modal sheet.",
+        "AsgardPickerSheet(onDismissRequest, title = \"Choose country\") { CountryPicker() }") {
+        CountryPickerDemo(sheetOnly = true)
+    },
+    ComponentEntry("AsgardSheet", "Structure", "A modal sheet with a caller-owned header and body.",
+        "AsgardSheet(onDismissRequest, header = { Text(\"Location\") }) { Text(region) }") {
+        var open by remember { mutableStateOf(false) }
+        TextButton(onClick = { open = true }) { Text("Open sheet") }
+        if (open) AsgardSheet(onDismissRequest = { open = false }, header = { Text("Location") }) {
+            GlassSample(inset = 12.dp) { Text("Vatnajökull, Iceland", Modifier.fillMaxWidth()) }
         }
-        Column {
-            Text("Selected: $selected")
-            TextButton(onClick = { sheet = true }) { Text("Open picker sheet") }
-            picker()
-        }
-        if (sheet) AsgardPickerSheet({ sheet = false }, "Choose country") { picker() }
+    },
+    ComponentEntry("AsgardLegendItem", "Charts", "A single series label with a colored swatch.",
+        "AsgardLegendItem(label = \"Temperature\", color = MaterialTheme.colorScheme.primary)") {
+        GlassSample(inset = 8.dp) { AsgardLegendItem("Temperature", MaterialTheme.colorScheme.primary) }
     },
     ComponentEntry("AsgardActionToolbar", "Actions", "A scrolling selection/editor toolbar with enabled and selected actions.",
         "AsgardActionToolbar(actions = actions, showLabels = true,\n    leading = { Text(\"3 selected\") },\n)") {
@@ -121,8 +142,10 @@ internal val expandedCatalog = listOf(
             AsgardToolbarAction(label, label, icon, { last = label }, selected = last == label, destructive = label == "Delete")
         }
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            AsgardActionToolbar(actions, Modifier.fillMaxWidth(), enabled = enabled, showLabels = labels,
-                leading = { IconButton(onClick = { count = if (count == 0) 3 else 0 }) { Icon(Icons.Rounded.Close, "Clear or restore selection") } })
+            PreviewBackdrop { source ->
+                AsgardActionToolbar(actions, source.frosted(), Modifier.fillMaxWidth(), enabled = enabled, showLabels = labels,
+                    leading = { IconButton(onClick = { count = if (count == 0) 3 else 0 }) { Icon(Icons.Rounded.Close, "Clear or restore selection") } })
+            }
             Text("$count selected · Last action: $last")
             AsgardSettingToggleRow("Enabled", enabled, { enabled = it }, modifier = Modifier.fillMaxWidth())
             AsgardSettingToggleRow("Action labels", labels, { labels = it }, modifier = Modifier.fillMaxWidth())
@@ -135,10 +158,24 @@ internal val expandedCatalog = listOf(
         var taps by remember { mutableIntStateOf(0) }
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                AsgardAvatar(initials = "TT", contentDescription = "Open profile", onClick = { taps++ },
-                    shape = if (round) androidx.compose.foundation.shape.CircleShape else MaterialTheme.shapes.large,
-                    image = if (image) { { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.tertiary), contentAlignment = Alignment.Center) { Icon(Icons.Rounded.Favorite, null, tint = MaterialTheme.colorScheme.onTertiary) } } } else null)
-                AsgardAvatar(fallbackIcon = Icons.Rounded.Person)
+                val shape = if (round) CircleShape else MaterialTheme.shapes.large
+                val fill = MaterialTheme.colorScheme.primaryContainer
+                GlassSample(shape, fill, inset = if (image) 4.dp else 0.dp) {
+                    AsgardAvatar(
+                        initials = "TT", contentDescription = "Open profile", onClick = { taps++ },
+                        shape = shape, containerColor = previewFill(fill),
+                        image = if (image) {
+                            {
+                                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.tertiary), contentAlignment = Alignment.Center) {
+                                    Icon(Icons.Rounded.Favorite, null, tint = MaterialTheme.colorScheme.onTertiary)
+                                }
+                            }
+                        } else null,
+                    )
+                }
+                GlassSample(CircleShape, fill) {
+                    AsgardAvatar(fallbackIcon = Icons.Rounded.Person, containerColor = previewFill(fill))
+                }
             }
             Text("Profile taps: $taps")
             AsgardSettingToggleRow("Caller image content", image, { image = it }, modifier = Modifier.fillMaxWidth())
@@ -151,23 +188,25 @@ internal val expandedCatalog = listOf(
         var reverse by remember { mutableStateOf(false) }
         var count by remember { mutableFloatStateOf(80f) }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Box(Modifier.fillMaxWidth().height(320.dp)) {
-                if (grid) {
-                    val state = rememberLazyGridState()
-                    LazyVerticalGrid(GridCells.Fixed(2), Modifier.fillMaxSize().padding(end = 48.dp), state = state, reverseLayout = reverse) {
-                        items(count.roundToInt(), span = { if (it % 10 == 0) GridItemSpan(maxLineSpan) else GridItemSpan(1) }) { index ->
-                            Text("Cell ${index + 1}", Modifier.height(if (index % 3 == 0) 80.dp else 48.dp).padding(8.dp))
+            GlassSample {
+                Box(Modifier.fillMaxWidth().height(320.dp)) {
+                    if (grid) {
+                        val state = rememberLazyGridState()
+                        LazyVerticalGrid(GridCells.Fixed(2), Modifier.fillMaxSize().padding(end = 48.dp), state = state, reverseLayout = reverse) {
+                            items(count.roundToInt(), span = { if (it % 10 == 0) GridItemSpan(maxLineSpan) else GridItemSpan(1) }) { index ->
+                                Text("Cell ${index + 1}", Modifier.height(if (index % 3 == 0) 80.dp else 48.dp).padding(8.dp))
+                            }
                         }
-                    }
-                    AsgardLazyScrollbar(rememberAsgardScrollbarState(state), Modifier.align(Alignment.CenterEnd))
-                } else {
-                    val state = rememberLazyListState()
-                    LazyColumn(Modifier.fillMaxSize().padding(end = 48.dp), state = state, reverseLayout = reverse) {
-                        items((0 until count.roundToInt()).toList(), key = { it }) { index ->
-                            Text("Item ${index + 1}", Modifier.fillMaxWidth().height(if (index % 3 == 0) 72.dp else 48.dp).padding(12.dp))
+                        AsgardLazyScrollbar(rememberAsgardScrollbarState(state), Modifier.align(Alignment.CenterEnd))
+                    } else {
+                        val state = rememberLazyListState()
+                        LazyColumn(Modifier.fillMaxSize().padding(end = 48.dp), state = state, reverseLayout = reverse) {
+                            items((0 until count.roundToInt()).toList(), key = { it }) { index ->
+                                Text("Item ${index + 1}", Modifier.fillMaxWidth().height(if (index % 3 == 0) 72.dp else 48.dp).padding(12.dp))
+                            }
                         }
+                        AsgardLazyScrollbar(rememberAsgardScrollbarState(state), Modifier.align(Alignment.CenterEnd))
                     }
-                    AsgardLazyScrollbar(rememberAsgardScrollbarState(state), Modifier.align(Alignment.CenterEnd))
                 }
             }
             AsgardLabeledSlider("Items", count, { count = it }, valueRange = 0f..100f, steps = 99, valueLabel = "${count.roundToInt()}")
@@ -183,11 +222,13 @@ internal val expandedCatalog = listOf(
         var selected by remember { mutableStateOf(end) }
         var entries by remember { mutableStateOf(listOf(AsgardHeatmapEntry(end, 1.0), AsgardHeatmapEntry(LocalDate(2026, 11, 7), 0.0), AsgardHeatmapEntry(LocalDate(2026, 11, 4), 3.0))) }
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            AsgardCalendarHeatmap(entries, LocalDate.fromEpochDays(end.toEpochDays() - days.roundToInt() + 1), end,
-                Modifier.fillMaxWidth(), selectedDate = selected, onDateSelected = { selected = it },
-                weekStart = if (sunday) DayOfWeek.SUNDAY else DayOfWeek.MONDAY,
-                weekLabel = { "${it.day}/${it.month.ordinal + 1}" },
-                dayLabel = { it.name.take(3).lowercase().replaceFirstChar { c -> c.uppercase() } })
+            GlassSample(inset = 8.dp) {
+                AsgardCalendarHeatmap(entries, LocalDate.fromEpochDays(end.toEpochDays() - days.roundToInt() + 1), end,
+                    Modifier.fillMaxWidth(), selectedDate = selected, onDateSelected = { selected = it },
+                    weekStart = if (sunday) DayOfWeek.SUNDAY else DayOfWeek.MONDAY,
+                    weekLabel = { "${it.day}/${it.month.ordinal + 1}" },
+                    dayLabel = { it.name.take(3).lowercase().replaceFirstChar { c -> c.uppercase() } })
+            }
             Text("Selected: $selected · Value: ${entries.filter { it.date == selected }.sumOf { it.value }}")
             TextButton(onClick = { entries = entries + AsgardHeatmapEntry(selected, 1.0) }) { Text("Add an entry for selected date") }
             AsgardLabeledSlider("Range in days", days, { days = it }, valueRange = 7f..84f, steps = 76, valueLabel = "${days.roundToInt()}")
@@ -203,4 +244,26 @@ private fun Choice(label: String, values: List<String>, selected: Int, change: (
         ConnectedButtonGroup(values.map { ConnectedButtonGroupItem.Label(it) }, selected, change,
             shapes = ConnectedButtonGroupShapes.FixedConnected, modifier = Modifier.fillMaxWidth())
     }
+}
+
+@Composable
+private fun CountryPickerDemo(sheetOnly: Boolean) {
+    var query by remember { mutableStateOf("") }
+    var selected by remember { mutableStateOf("India") }
+    var sheet by remember { mutableStateOf(false) }
+    val countries = listOf("India", "Australia", "Brazil", "Canada", "Germany", "Japan", "United Kingdom", "United States")
+    val sections = listOf(AsgardPickerSection("recent", "Recent", listOf("India", "Japan").filter { it.contains(query, true) }),
+        AsgardPickerSection("all", "All countries", countries.filter { it.contains(query, true) }))
+    val picker: @Composable () -> Unit = {
+        GlassSample {
+            AsgardPicker(sections, query, { query = it }, { it }, { it }, { it == selected }, { selected = it },
+            Modifier.fillMaxWidth().height(320.dp), searchIcon = Icons.Rounded.Search, clearIcon = Icons.Rounded.Close)
+        }
+    }
+    Column {
+        Text("Selected: $selected")
+        TextButton(onClick = { sheet = true }) { Text("Open picker sheet") }
+        if (!sheetOnly) picker()
+    }
+    if (sheet) AsgardPickerSheet({ sheet = false }, "Choose country") { picker() }
 }

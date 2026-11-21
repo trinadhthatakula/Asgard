@@ -1,6 +1,6 @@
 name: Publish to Maven Central
 
-# Auto-publishes the :asgard artifact to Maven Central whenever VERSION_NAME in
+# Auto-publishes the :asgard and :asgard-glass artifacts to Maven Central whenever VERSION_NAME in
 # gradle.properties is bumped to a new, non-SNAPSHOT value on `main`.
 #
 # Flow:

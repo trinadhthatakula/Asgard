@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import com.valhalla.asgard.charts.*
 import com.valhalla.asgard.components.*
 import com.valhalla.asgard.expressivePress
+import com.valhalla.asgard.glass.asgardGlassSource
+import com.valhalla.asgard.glass.rememberAsgardGlassSource
 import com.valhalla.asgard.navigation.*
 import kotlinx.coroutines.delay
 import org.json.JSONObject
@@ -142,6 +144,9 @@ private fun StressScenario(scenario: String) {
         "charts" -> ChartStress()
         "navigation" -> NavigationStress()
         "scrollbar" -> ScrollbarStress()
+        "glass-plain" -> GlassStress(0)
+        "glass-toolbar" -> GlassStress(1)
+        "glass-both" -> GlassStress(2)
         "numerals" -> NumeralStress()
         "press" -> PressStress()
         "connected" -> ConnectedStress()
@@ -187,6 +192,19 @@ private fun StressScenario(scenario: String) {
 }
 
 private val BenchmarkIcon = ImageVector.Builder("Benchmark", 24.dp, 24.dp, 24f, 24f).build()
+
+@Composable private fun GlassStress(surfaces: Int) {
+    val source = rememberAsgardGlassSource(enabled = surfaces > 0)
+    val actions = remember { listOf(AsgardToolbarAction("sort", "Sort", BenchmarkIcon, {})) }
+    val tabs = remember { listOf("Home", "Apps", "Settings").map { AsgardNavItem(BenchmarkIcon, it) } }
+    Box(Modifier.fillMaxSize()) {
+        Box(Modifier.fillMaxSize().asgardGlassSource(source)) { ScrollbarStress() }
+        AsgardActionToolbar(actions, container = source.frosted(surfaces > 0),
+            modifier = Modifier.padding(12.dp), showLabels = true)
+        AsgardNavigationBar(tabs, 0, {}, AsgardNavigationConfiguration(placement = AsgardNavigationPlacement.Floating),
+            container = source.frosted(surfaces > 1), modifier = Modifier.align(Alignment.BottomCenter))
+    }
+}
 
 @Composable private fun NavigationStress() {
     var selected by remember { mutableIntStateOf(0) }

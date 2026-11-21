@@ -1,4 +1,4 @@
-# Charts (2.1.1)
+# Charts (2.2.0)
 
 Import from `com.valhalla.asgard.charts`. Supply localized formatters and accessibility text as
 needed; choose theme colors at the call site and give charts bounded dimensions.

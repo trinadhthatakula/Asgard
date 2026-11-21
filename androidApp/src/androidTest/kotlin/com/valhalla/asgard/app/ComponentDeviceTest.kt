@@ -159,10 +159,15 @@ class ComponentDeviceTest {
         val first = LocalDate(2026, 11, 2)
         val second = LocalDate(2026, 11, 3)
         var selected by mutableStateOf(first)
-        content { AsgardCalendarHeatmap(listOf(AsgardHeatmapEntry(first, 0.0)), first, second, selectedDate = selected, onDateSelected = { selected = it }) }
+        val entries = mutableStateListOf(AsgardHeatmapEntry(first, 0.0))
+        content { AsgardCalendarHeatmap(entries, first, second, selectedDate = selected, onDateSelected = { selected = it }) }
         compose.onNodeWithContentDescription("2026-11-02: 0.0").assertIsSelected()
         compose.onNodeWithContentDescription("2026-11-03: No data").performClick().assertIsSelected()
-        compose.runOnIdle { assertEquals(second, selected) }
+        compose.runOnIdle {
+            assertEquals(second, selected)
+            entries.add(AsgardHeatmapEntry(second, 3.0))
+        }
+        compose.onNodeWithContentDescription("2026-11-03: 3.0").assertIsSelected()
     }
 
     @Test fun listScrollbarReachesEndAndHomeViaKeyboard() {

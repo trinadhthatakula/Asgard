@@ -4,16 +4,19 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Inbox
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Remove
@@ -22,30 +25,44 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material.icons.rounded.Wifi
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.valhalla.asgard.AsgardDefaults
+import com.valhalla.asgard.charts.AsgardBarStack
+import com.valhalla.asgard.charts.AsgardChartLegend
+import com.valhalla.asgard.charts.AsgardChartPoint
+import com.valhalla.asgard.charts.AsgardLegendEntry
+import com.valhalla.asgard.charts.AsgardLegendSwatch
+import com.valhalla.asgard.charts.AsgardLineChart
+import com.valhalla.asgard.charts.AsgardLineSeries
+import com.valhalla.asgard.charts.AsgardLineSmoothing
+import com.valhalla.asgard.charts.AsgardPulseRing
+import com.valhalla.asgard.charts.AsgardStackedBarChart
+import com.valhalla.asgard.charts.AsgardTimelineBar
+import com.valhalla.asgard.charts.AsgardTimelineSegment
 import com.valhalla.asgard.components.AsgardActionItem
-import com.valhalla.asgard.components.AsgardHeader
-import com.valhalla.asgard.components.ConnectedButtonGroup
-import com.valhalla.asgard.components.ConnectedButtonGroupItem
-import com.valhalla.asgard.navigation.AsgardNavItem
-import com.valhalla.asgard.navigation.AsgardNavigationBar
-import com.valhalla.asgard.navigation.AsgardNavigationRail
 import com.valhalla.asgard.components.AsgardAnimatedNumeral
 import com.valhalla.asgard.components.AsgardBadge
 import com.valhalla.asgard.components.AsgardBanner
 import com.valhalla.asgard.components.AsgardDialogScaffold
 import com.valhalla.asgard.components.AsgardEmptyState
 import com.valhalla.asgard.components.AsgardFeatureRow
+import com.valhalla.asgard.components.AsgardHeader
 import com.valhalla.asgard.components.AsgardLabeledSlider
 import com.valhalla.asgard.components.AsgardListRow
 import com.valhalla.asgard.components.AsgardLoadingState
@@ -63,24 +80,12 @@ import com.valhalla.asgard.components.AsgardStatTile
 import com.valhalla.asgard.components.AsgardStepperRow
 import com.valhalla.asgard.components.AsgardTonalIconButton
 import com.valhalla.asgard.components.AsgardUpgradeCard
+import com.valhalla.asgard.components.ConnectedButtonGroup
+import com.valhalla.asgard.components.ConnectedButtonGroupItem
 import com.valhalla.asgard.components.StatusChip
-import com.valhalla.asgard.charts.AsgardBarStack
-import com.valhalla.asgard.charts.AsgardChartLegend
-import com.valhalla.asgard.charts.AsgardChartPoint
-import com.valhalla.asgard.charts.AsgardLegendEntry
-import com.valhalla.asgard.charts.AsgardLegendSwatch
-import com.valhalla.asgard.charts.AsgardLineChart
-import com.valhalla.asgard.charts.AsgardLineSeries
-import com.valhalla.asgard.charts.AsgardLineSmoothing
-import com.valhalla.asgard.charts.AsgardPulseRing
-import com.valhalla.asgard.charts.AsgardStackedBarChart
-import com.valhalla.asgard.charts.AsgardTimelineBar
-import com.valhalla.asgard.charts.AsgardTimelineSegment
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import com.valhalla.asgard.navigation.AsgardNavItem
+import com.valhalla.asgard.navigation.AsgardNavigationBar
+import com.valhalla.asgard.navigation.AsgardNavigationRail
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -97,7 +102,11 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "AsgardHeader", "Structure",
         "The signature screen header: a bold primary-tinted title, optional leading icon, trailing actions.",
         "AsgardHeader(title = \"Clusters\", icon = Icons.Rounded.Star)",
-    ) { AsgardHeader(title = "Clusters", icon = Icons.Rounded.Star, modifier = Modifier.fillMaxWidth()) },
+    ) {
+        GlassSample {
+            AsgardHeader(title = "Clusters", icon = Icons.Rounded.Star, modifier = Modifier.fillMaxWidth())
+        }
+    },
 
     ComponentEntry(
         "AsgardNavigationBar", "Navigation",
@@ -105,12 +114,15 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "AsgardNavigationBar(items, selectedIndex, onSelect = { … })",
     ) {
         var sel by remember { mutableStateOf(0) }
-        AsgardNavigationBar(
-            items = demoNavItems,
-            selectedIndex = sel,
-            onSelect = { sel = it },
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample(shape = RoundedCornerShape(topStart = AsgardDefaults.navContainerRadius, topEnd = AsgardDefaults.navContainerRadius)) {
+            AsgardNavigationBar(
+                items = demoNavItems,
+                selectedIndex = sel,
+                onSelect = { sel = it },
+                modifier = Modifier.fillMaxWidth(),
+                containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainer),
+            )
+        }
     },
 
     ComponentEntry(
@@ -120,7 +132,12 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
     ) {
         var sel by remember { mutableStateOf(0) }
         Box(Modifier.height(300.dp)) {
-            AsgardNavigationRail(items = demoNavItems, selectedIndex = sel, onSelect = { sel = it })
+            GlassSample(shape = RoundedCornerShape(topEnd = AsgardDefaults.navContainerRadius, bottomEnd = AsgardDefaults.navContainerRadius)) {
+                AsgardNavigationRail(
+                    items = demoNavItems, selectedIndex = sel, onSelect = { sel = it },
+                    containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainer),
+                )
+            }
         }
     },
 
@@ -130,16 +147,19 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "ConnectedButtonGroup(items = listOf(Label(\"Day\"), Label(\"Week\")), selectedIndex, onItemSelected)",
     ) {
         var sel by remember { mutableStateOf(0) }
-        ConnectedButtonGroup(
-            items = listOf(
-                ConnectedButtonGroupItem.Label("Day"),
-                ConnectedButtonGroupItem.Label("Week"),
-                ConnectedButtonGroupItem.Label("Month"),
-            ),
-            selectedIndex = sel,
-            onItemSelected = { sel = it },
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample(inset = 8.dp) {
+            ConnectedButtonGroup(
+                items = listOf(
+                    ConnectedButtonGroupItem.Label("Day"),
+                    ConnectedButtonGroupItem.Label("Week"),
+                    ConnectedButtonGroupItem.Label("Month"),
+                ),
+                selectedIndex = sel,
+                onItemSelected = { sel = it },
+                modifier = Modifier.fillMaxWidth(),
+                colors = previewToggleColors(),
+            )
+        }
     },
 
     ComponentEntry(
@@ -148,15 +168,18 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "ConnectedButtonGroup(items = items, selectedIndices = selected, onSelectionChanged = { if (it.isNotEmpty()) selected = it })",
     ) {
         var selected by remember { mutableStateOf(setOf(0, 1)) }
-        ConnectedButtonGroup(
-            items = listOf(
-                ConnectedButtonGroupItem.Label("User"),
-                ConnectedButtonGroupItem.Label("System"),
-            ),
-            selectedIndices = selected,
-            onSelectionChanged = { if (it.isNotEmpty()) selected = it },
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample(inset = 8.dp) {
+            ConnectedButtonGroup(
+                items = listOf(
+                    ConnectedButtonGroupItem.Label("User"),
+                    ConnectedButtonGroupItem.Label("System"),
+                ),
+                selectedIndices = selected,
+                onSelectionChanged = { if (it.isNotEmpty()) selected = it },
+                modifier = Modifier.fillMaxWidth(),
+                colors = previewToggleColors(),
+            )
+        }
     },
 
     ComponentEntry(
@@ -167,25 +190,31 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         var iconSel by remember { mutableStateOf(0) }
         var labelSel by remember { mutableStateOf(1) }
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            ConnectedButtonGroup(
-                items = listOf(
-                    ConnectedButtonGroupItem.Icon(Icons.Rounded.Star, "Home"),
-                    ConnectedButtonGroupItem.Icon(Icons.Rounded.Search, "Search"),
-                    ConnectedButtonGroupItem.Icon(Icons.Rounded.Settings, "Settings"),
-                ),
-                selectedIndex = iconSel,
-                onItemSelected = { iconSel = it },
-                modifier = Modifier.fillMaxWidth(),
-            )
-            ConnectedButtonGroup(
-                items = listOf(
-                    ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Star, "Starred", "Starred"),
-                    ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Bolt, "Recent", "Recent"),
-                ),
-                selectedIndex = labelSel,
-                onItemSelected = { labelSel = it },
-                modifier = Modifier.fillMaxWidth(),
-            )
+            GlassSample(inset = 8.dp) {
+                ConnectedButtonGroup(
+                    items = listOf(
+                        ConnectedButtonGroupItem.Icon(Icons.Rounded.Star, "Home"),
+                        ConnectedButtonGroupItem.Icon(Icons.Rounded.Search, "Search"),
+                        ConnectedButtonGroupItem.Icon(Icons.Rounded.Settings, "Settings"),
+                    ),
+                    selectedIndex = iconSel,
+                    onItemSelected = { iconSel = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = previewToggleColors(),
+                )
+            }
+            GlassSample(inset = 8.dp) {
+                ConnectedButtonGroup(
+                    items = listOf(
+                        ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Star, "Starred", "Starred"),
+                        ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Bolt, "Recent", "Recent"),
+                    ),
+                    selectedIndex = labelSel,
+                    onItemSelected = { labelSel = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = previewToggleColors(),
+                )
+            }
         }
     },
 
@@ -193,7 +222,15 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "StatusChip", "Chips & badges",
         "A compact, pill-shaped status label that inherits the theme.",
         "StatusChip(text = \"Frozen\")",
-    ) { StatusChip(text = "Frozen") },
+    ) {
+        GlassSample(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
+            StatusChip(
+                text = "Frozen",
+                containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainerHigh),
+                contentColor = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    },
 
     ComponentEntry(
         "AsgardBadge", "Chips & badges",
@@ -202,7 +239,12 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
     ) {
         var outlined by remember { mutableStateOf(false) }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            AsgardBadge(text = "NEW", icon = Icons.Rounded.Star, outlined = outlined)
+            GlassSample(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
+                AsgardBadge(
+                    text = "NEW", icon = Icons.Rounded.Star, outlined = outlined,
+                    containerColor = previewFill(MaterialTheme.colorScheme.secondaryContainer),
+                )
+            }
             ControlToggle("Outlined", outlined) { outlined = it }
         }
     },
@@ -211,25 +253,42 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "AsgardProBadge", "Monetization",
         "A PRO/premium marker pill preset over AsgardBadge.",
         "AsgardProBadge(icon = Icons.Rounded.Lock)",
-    ) { AsgardProBadge(icon = Icons.Rounded.Lock) },
+    ) {
+        GlassSample(shape = CircleShape, color = MaterialTheme.colorScheme.tertiaryContainer) {
+            AsgardProBadge(
+                icon = Icons.Rounded.Lock,
+                containerColor = previewFill(MaterialTheme.colorScheme.tertiaryContainer),
+            )
+        }
+    },
 
     ComponentEntry(
         "AsgardStatTile", "Data display",
         "Compact metric tile: a label over an emphasized value, optional icon.",
         "AsgardStatTile(label = \"Uptime\", value = \"12h 30m\", icon = Icons.Rounded.Bolt)",
-    ) { AsgardStatTile(label = "Uptime", value = "12h 30m", icon = Icons.Rounded.Bolt) },
+    ) {
+        GlassSample(color = MaterialTheme.colorScheme.surfaceContainerLow) {
+            AsgardStatTile(
+                label = "Uptime", value = "12h 30m", icon = Icons.Rounded.Bolt,
+                containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainerLow),
+            )
+        }
+    },
 
     ComponentEntry(
         "AsgardStatTile · status dot", "Data display",
         "A stat tile with a colored status dot beside the label — for live health/state read-outs.",
         "AsgardStatTile(label = \"Server\", value = \"Online\",\n    statusDotColor = Color(0xFF22C55E))",
     ) {
-        AsgardStatTile(
-            label = "Server",
-            value = "Online",
-            statusDotColor = Color(0xFF22C55E),
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample(color = MaterialTheme.colorScheme.surfaceContainerLow) {
+            AsgardStatTile(
+                label = "Server",
+                value = "Online",
+                statusDotColor = Color(0xFF22C55E),
+                modifier = Modifier.fillMaxWidth(),
+                containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainerLow),
+            )
+        }
     },
 
     ComponentEntry(
@@ -237,14 +296,17 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "A stat tile whose icon sits inside a filled circular badge instead of a bare glyph.",
         "AsgardStatTile(label = \"Downloads\", value = \"1,204\",\n    icon = Icons.Rounded.Bolt, iconTint = Color.White,\n    iconContainerColor = Color(0xFF6750A4))",
     ) {
-        AsgardStatTile(
-            label = "Downloads",
-            value = "1,204",
-            icon = Icons.Rounded.Bolt,
-            iconTint = Color.White,
-            iconContainerColor = Color(0xFF6750A4),
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample(color = MaterialTheme.colorScheme.surfaceContainerLow) {
+            AsgardStatTile(
+                label = "Downloads",
+                value = "1,204",
+                icon = Icons.Rounded.Bolt,
+                iconTint = Color.White,
+                iconContainerColor = Color(0xFF6750A4),
+                modifier = Modifier.fillMaxWidth(),
+                containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainerLow),
+            )
+        }
     },
 
     ComponentEntry(
@@ -253,16 +315,19 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "var n by remember { mutableStateOf(0) }\nAsgardStatTile(label = \"Steps today\", value = n.toString(),\n    secondaryValue = \"steps\", animateValue = true, valueFirst = true,\n    onClick = { n += 250 },\n    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))",
     ) {
         var n by remember { mutableStateOf(0) }
-        AsgardStatTile(
-            label = "Steps today",
-            value = n.toString(),
-            secondaryValue = "steps",
-            animateValue = true,
-            valueFirst = true,
-            onClick = { n += 250 },
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample(color = MaterialTheme.colorScheme.surfaceContainerLow) {
+            AsgardStatTile(
+                label = "Steps today",
+                value = n.toString(),
+                secondaryValue = "steps",
+                animateValue = true,
+                valueFirst = true,
+                onClick = { n += 250 },
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                modifier = Modifier.fillMaxWidth(),
+                containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainerLow),
+            )
+        }
     },
 
     ComponentEntry(
@@ -270,13 +335,16 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "Vertical metric card: an icon + label header over a large value with an optional unit suffix.",
         "AsgardStatCard(label = \"Voltage\", value = \"5.00\", unit = \"V\",\n    icon = Icons.Rounded.Bolt)",
     ) {
-        AsgardStatCard(
-            label = "Voltage",
-            value = "5.00",
-            unit = "V",
-            icon = Icons.Rounded.Bolt,
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample(color = MaterialTheme.colorScheme.surfaceContainer) {
+            AsgardStatCard(
+                label = "Voltage",
+                value = "5.00",
+                unit = "V",
+                icon = Icons.Rounded.Bolt,
+                modifier = Modifier.fillMaxWidth(),
+                containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainer),
+            )
+        }
     },
 
     ComponentEntry(
@@ -284,17 +352,20 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "A compact bento cell: the icon sits inline with the label, a tight unit suffix, clickable with a border.",
         "AsgardStatCard(label = \"Battery\", value = \"95\", unit = \"%\",\n    unitSeparator = \"\", icon = Icons.Rounded.Bolt,\n    iconInlineWithLabel = true, onClick = {},\n    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))",
     ) {
-        AsgardStatCard(
-            label = "Battery",
-            value = "95",
-            unit = "%",
-            unitSeparator = "",
-            icon = Icons.Rounded.Bolt,
-            iconInlineWithLabel = true,
-            onClick = {},
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample(color = MaterialTheme.colorScheme.surfaceContainer) {
+            AsgardStatCard(
+                label = "Battery",
+                value = "95",
+                unit = "%",
+                unitSeparator = "",
+                icon = Icons.Rounded.Bolt,
+                iconInlineWithLabel = true,
+                onClick = {},
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                modifier = Modifier.fillMaxWidth(),
+                containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainer),
+            )
+        }
     },
 
     ComponentEntry(
@@ -306,17 +377,21 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         var showDescription by remember { mutableStateOf(true) }
         var showAction by remember { mutableStateOf(true) }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            AsgardBanner(
-                title = "No connection",
-                description = if (showDescription) "Check your network and try again." else null,
-                icon = if (showIcon) Icons.Rounded.Warning else null,
-                modifier = Modifier.fillMaxWidth(),
-                action = if (showAction) {
-                    { TextButton(onClick = {}) { Text("Retry") } }
-                } else {
-                    null
-                },
-            )
+            GlassSample(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.errorContainer) {
+                AsgardBanner(
+                    title = "No connection",
+                    description = if (showDescription) "Check your network and try again." else null,
+                    icon = if (showIcon) Icons.Rounded.Warning else null,
+                    modifier = Modifier.fillMaxWidth(),
+                    action = if (showAction) {
+                        { TextButton(onClick = {}) { Text("Retry") } }
+                    } else {
+                        null
+                    },
+                    containerColor = previewFill(MaterialTheme.colorScheme.errorContainer),
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                )
+            }
             ControlToggle("Show icon", showIcon) { showIcon = it }
             ControlToggle("Show description", showDescription) { showDescription = it }
             ControlToggle("Show action", showAction) { showAction = it }
@@ -328,17 +403,21 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "A banner with a horizontal-gradient background and a description clamped to two lines.",
         "AsgardBanner(title = \"You're on Pro\", description = \"…\",\n    descriptionMaxLines = 2, icon = Icons.Rounded.Star,\n    containerBrush = Brush.horizontalGradient(\n        listOf(Color(0xFF6750A4), Color(0xFF9A82DB))))",
     ) {
-        AsgardBanner(
-            title = "You're on Pro",
-            description = "Enjoy unlimited exports, priority sync, and every premium theme — " +
-                "all included with your plan for as long as your subscription stays active.",
-            descriptionMaxLines = 2,
-            icon = Icons.Rounded.Star,
-            containerBrush = Brush.horizontalGradient(
-                listOf(Color(0xFF6750A4), Color(0xFF9A82DB)),
-            ),
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.errorContainer) {
+            AsgardBanner(
+                title = "You're on Pro",
+                description = "Enjoy unlimited exports, priority sync, and every premium theme — " +
+                    "all included with your plan for as long as your subscription stays active.",
+                descriptionMaxLines = 2,
+                icon = Icons.Rounded.Star,
+                containerBrush = if (LocalPreviewGlass.current) null else Brush.horizontalGradient(
+                    listOf(Color(0xFF6750A4), Color(0xFF9A82DB)),
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                contentColor = if (LocalPreviewGlass.current) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurface,
+                containerColor = previewFill(MaterialTheme.colorScheme.errorContainer),
+            )
+        }
     },
 
     ComponentEntry(
@@ -346,13 +425,15 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "A generic list item: leading icon, title/subtitle, optional trailing slot.",
         "AsgardListRow(title = \"Wi-Fi\", subtitle = \"Home network\",\n    icon = Icons.Rounded.Wifi, onClick = {})",
     ) {
-        AsgardListRow(
-            title = "Wi-Fi",
-            subtitle = "Home network",
-            icon = Icons.Rounded.Wifi,
-            onClick = {},
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample {
+            AsgardListRow(
+                title = "Wi-Fi",
+                subtitle = "Home network",
+                icon = Icons.Rounded.Wifi,
+                onClick = {},
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     },
 
     ComponentEntry(
@@ -360,9 +441,14 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "A titled tonal container that groups related rows.",
         "AsgardSectionCard(title = \"General\") { /* rows */ }",
     ) {
-        AsgardSectionCard(title = "General", modifier = Modifier.fillMaxWidth()) {
-            AsgardSettingRow(title = "Language", value = "English", icon = Icons.Rounded.Settings)
-            AsgardSettingRow(title = "Notifications", value = "On", icon = Icons.Rounded.Notifications)
+        GlassSample(color = MaterialTheme.colorScheme.surfaceContainerLow) {
+            AsgardSectionCard(
+                title = "General", modifier = Modifier.fillMaxWidth(),
+                containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainerLow),
+            ) {
+                AsgardSettingRow(title = "Language", value = "English", icon = Icons.Rounded.Settings)
+                AsgardSettingRow(title = "Notifications", value = "On", icon = Icons.Rounded.Notifications)
+            }
         }
     },
 
@@ -371,7 +457,9 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "A labeled row with an optional trailing value or custom slot.",
         "AsgardSettingRow(title = \"Version\", value = \"1.90.3\")",
     ) {
-        AsgardSettingRow(title = "Version", value = "1.90.3", modifier = Modifier.fillMaxWidth())
+        GlassSample {
+            AsgardSettingRow(title = "Version", value = "1.90.3", modifier = Modifier.fillMaxWidth())
+        }
     },
 
     ComponentEntry(
@@ -380,13 +468,15 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "var on by remember { mutableStateOf(true) }\nAsgardSettingToggleRow(\"Wi-Fi only\", on) { on = it }",
     ) {
         var on by remember { mutableStateOf(true) }
-        AsgardSettingToggleRow(
-            title = "Wi-Fi only downloads",
-            checked = on,
-            onCheckedChange = { on = it },
-            icon = Icons.Rounded.Wifi,
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample {
+            AsgardSettingToggleRow(
+                title = "Wi-Fi only downloads",
+                checked = on,
+                onCheckedChange = { on = it },
+                icon = Icons.Rounded.Wifi,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     },
 
     ComponentEntry(
@@ -394,13 +484,20 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "A promotional card with a title, description, and CTA button.",
         "AsgardUpgradeCard(title = \"Go Pro\", description = \"…\", cta = \"Upgrade\") {}",
     ) {
-        AsgardUpgradeCard(
-            title = "Go Pro",
-            description = "Unlock every feature and remove ads.",
-            cta = "Upgrade",
-            onUpgrade = {},
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample(color = MaterialTheme.colorScheme.tertiaryContainer) {
+            AsgardUpgradeCard(
+                title = "Go Pro",
+                description = "Unlock every feature and remove ads.",
+                cta = "Upgrade",
+                onUpgrade = {},
+                modifier = Modifier.fillMaxWidth(),
+                containerColor = previewFill(MaterialTheme.colorScheme.tertiaryContainer),
+                ctaColors = if (LocalPreviewGlass.current) ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.tertiaryContainer,
+                ) else null,
+            )
+        }
     },
 
     ComponentEntry(
@@ -414,7 +511,12 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
             overlay = { TextButton(onClick = { locked = false }) { Text("Unlock") } },
             modifier = Modifier.fillMaxWidth(),
         ) {
-            AsgardStatTile(label = "Revenue", value = "$4,210", modifier = Modifier.fillMaxWidth())
+            GlassSample(color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                AsgardStatTile(
+                    label = "Revenue", value = "$4,210", modifier = Modifier.fillMaxWidth(),
+                    containerColor = previewFill(MaterialTheme.colorScheme.surfaceContainerLow),
+                )
+            }
         }
     },
 
@@ -428,8 +530,10 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            AsgardProgressRing(progress = progress, size = 140.dp, animate = true) {
-                Text("${(progress * 100).roundToInt()}%", style = MaterialTheme.typography.titleLarge)
+            GlassSample(inset = 8.dp) {
+                AsgardProgressRing(progress = progress, size = 140.dp, animate = true) {
+                    Text("${(progress * 100).roundToInt()}%", style = MaterialTheme.typography.titleLarge)
+                }
             }
             AsgardLabeledSlider("Progress", progress, { progress = it }, valueLabel = "${(progress * 100).roundToInt()}%")
         }
@@ -439,25 +543,35 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "AsgardEmptyState", "Feedback",
         "A centered placeholder for empty screens.",
         "AsgardEmptyState(text = \"No items yet\", icon = Icons.Rounded.Inbox)",
-    ) { AsgardEmptyState(text = "No items yet", icon = Icons.Rounded.Inbox) },
+    ) {
+        GlassSample {
+            AsgardEmptyState(text = "No items yet", icon = Icons.Rounded.Inbox)
+        }
+    },
 
     ComponentEntry(
         "AsgardLoadingState", "Feedback",
         "A centered spinner with an optional caption.",
         "AsgardLoadingState(text = \"Loading…\")",
-    ) { AsgardLoadingState(text = "Loading…") },
+    ) {
+        GlassSample(inset = 8.dp) {
+            AsgardLoadingState(text = "Loading…")
+        }
+    },
 
     ComponentEntry(
         "AsgardFeatureRow", "Onboarding",
         "An icon badge beside a title and description — for benefit lists.",
         "AsgardFeatureRow(icon = Icons.Rounded.Bolt, title = \"Fast\", description = \"…\")",
     ) {
-        AsgardFeatureRow(
-            icon = Icons.Rounded.Bolt,
-            title = "Blazing fast",
-            description = "Optimized for instant results.",
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample {
+            AsgardFeatureRow(
+                icon = Icons.Rounded.Bolt,
+                title = "Blazing fast",
+                description = "Optimized for instant results.",
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     },
 
     ComponentEntry(
@@ -465,13 +579,15 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "A page scaffold: title, subtitle, body, and a bottom actions row.",
         "AsgardOnboardingScaffold(title = \"Welcome\", subtitle = \"…\") { /* body */ }",
     ) {
-        AsgardOnboardingScaffold(
-            title = "Welcome",
-            subtitle = "Everything you need in one place.",
-            actions = { TextButton(onClick = {}) { Text("Next") } },
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            AsgardFeatureRow(icon = Icons.Rounded.Favorite, title = "Made for you")
+        GlassSample {
+            AsgardOnboardingScaffold(
+                title = "Welcome",
+                subtitle = "Everything you need in one place.",
+                actions = { TextButton(onClick = {}) { Text("Next") } },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                AsgardFeatureRow(icon = Icons.Rounded.Favorite, title = "Made for you")
+            }
         }
     },
 
@@ -483,7 +599,9 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         var n by remember { mutableStateOf(42) }
         Box {
             TextButton(onClick = { n += 7 }) {
-                AsgardAnimatedNumeral(n.toString())
+                GlassSample(inset = 8.dp) {
+                    AsgardAnimatedNumeral(n.toString())
+                }
             }
         }
     },
@@ -499,7 +617,9 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
             AsgardDialogScaffold(
                 onDismissRequest = { show = false },
                 title = "Delete item?",
-                text = "This action can't be undone.",
+                content = {
+                    GlassSample(inset = 12.dp) { Text("This action can't be undone.") }
+                },
                 confirmText = "Delete",
                 onConfirm = { show = false },
                 dismissText = "Cancel",
@@ -514,17 +634,19 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "AsgardStepperRow(\"Servings\", value, Icons.Rounded.Remove, Icons.Rounded.Add, …)",
     ) {
         var n by remember { mutableStateOf(2) }
-        AsgardStepperRow(
-            label = "Servings",
-            value = n.toString(),
-            decrementIcon = Icons.Rounded.Remove,
-            incrementIcon = Icons.Rounded.Add,
-            onDecrement = { n-- },
-            onIncrement = { n++ },
-            canDecrement = n > 1,
-            canIncrement = n < 12,
-            modifier = Modifier.fillMaxWidth(),
-        )
+        GlassSample {
+            AsgardStepperRow(
+                label = "Servings",
+                value = n.toString(),
+                decrementIcon = Icons.Rounded.Remove,
+                incrementIcon = Icons.Rounded.Add,
+                onDecrement = { n-- },
+                onIncrement = { n++ },
+                canDecrement = n > 1,
+                canIncrement = n < 12,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     },
 
     ComponentEntry(
@@ -533,13 +655,15 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "AsgardSearchBar(query, onQueryChange, leadingIcon = Icons.Rounded.Search)",
     ) {
         var q by remember { mutableStateOf("") }
-        AsgardSearchBar(
-            query = q,
-            onQueryChange = { q = it },
-            leadingIcon = Icons.Rounded.Search,
-            clearIcon = Icons.Rounded.Close,
-            placeholder = "Search apps",
-        )
+        GlassSample(shape = androidx.compose.material3.OutlinedTextFieldDefaults.shape) {
+            AsgardSearchBar(
+                query = q,
+                onQueryChange = { q = it },
+                leadingIcon = Icons.Rounded.Search,
+                clearIcon = Icons.Rounded.Close,
+                placeholder = "Search apps",
+            )
+        }
     },
 
     ComponentEntry(
@@ -548,12 +672,14 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "AsgardLabeledSlider(\"Volume\", value, onValueChange)",
     ) {
         var v by remember { mutableStateOf(0.4f) }
-        AsgardLabeledSlider(
-            label = "Volume",
-            value = v,
-            onValueChange = { v = it },
-            valueLabel = "${(v * 100).toInt()}%",
-        )
+        GlassSample {
+            AsgardLabeledSlider(
+                label = "Volume",
+                value = v,
+                onValueChange = { v = it },
+                valueLabel = "${(v * 100).toInt()}%",
+            )
+        }
     },
 
     ComponentEntry(
@@ -561,32 +687,50 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         "A skeleton/shimmer placeholder shown while content loads.",
         "AsgardShimmer(Modifier.fillMaxWidth().height(24.dp))",
     ) {
-        AsgardShimmer(Modifier.fillMaxWidth().height(24.dp))
+        GlassSample(inset = 8.dp) {
+            AsgardShimmer(Modifier.fillMaxWidth().height(24.dp))
+        }
     },
 
     ComponentEntry(
         "AsgardTonalIconButton", "Input",
         "A thin tonal icon button wrapper.",
         "AsgardTonalIconButton(Icons.Rounded.Favorite, \"Like\", onClick)",
-    ) { AsgardTonalIconButton(icon = Icons.Rounded.Favorite, contentDescription = "Like", onClick = {}) },
+    ) {
+        GlassSample(shape = IconButtonDefaults.filledShape) {
+            AsgardTonalIconButton(
+                icon = Icons.Rounded.Favorite, contentDescription = "Like", onClick = {},
+                colors = if (LocalPreviewGlass.current) IconButtonDefaults.filledTonalIconButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                ) else null,
+            )
+        }
+    },
 
     ComponentEntry(
         "AsgardActionItem", "Actions",
         "A vertical tappable action tile: icon chip over a caption.",
         "AsgardActionItem(icon = Icons.Rounded.Info, label = \"Info\", onClick = {})",
-    ) { AsgardActionItem(icon = Icons.Rounded.Info, label = "Info", onClick = {}) },
+    ) {
+        GlassSample {
+            AsgardActionItem(icon = Icons.Rounded.Info, label = "Info", onClick = {})
+        }
+    },
 
     ComponentEntry(
         "AsgardActionItem · one line", "Actions",
         "An action tile capped at a single label line (labelMaxLines = 1) so long captions truncate cleanly.",
         "AsgardActionItem(icon = Icons.Rounded.Notifications,\n    label = \"Notification settings\", labelMaxLines = 1, onClick = {})",
     ) {
-        AsgardActionItem(
-            icon = Icons.Rounded.Notifications,
-            label = "Notification settings",
-            labelMaxLines = 1,
-            onClick = {},
-        )
+        GlassSample {
+            AsgardActionItem(
+                icon = Icons.Rounded.Notifications,
+                label = "Notification settings",
+                labelMaxLines = 1,
+                onClick = {},
+            )
+        }
     },
 
     // ─── Charts (interactive — drag the knobs to see live changes) ───────────────
@@ -620,11 +764,13 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            AsgardLineChart(
-                series = series,
-                modifier = Modifier.fillMaxWidth().height(200.dp),
-                yValueFormatter = { (it * 100).roundToInt().toString() },
-            )
+            GlassSample(inset = 8.dp) {
+                AsgardLineChart(
+                    series = series,
+                    modifier = Modifier.fillMaxWidth().height(200.dp),
+                    yValueFormatter = { (it * 100).roundToInt().toString() },
+                )
+            }
             AsgardChartLegend(
                 entries = buildList {
                     add(AsgardLegendEntry("Series A", primary))
@@ -656,11 +802,13 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            AsgardStackedBarChart(
-                bars = bars,
-                segmentColors = listOf(c1, c2),
-                modifier = Modifier.fillMaxWidth().height(160.dp),
-            )
+            GlassSample(inset = 8.dp) {
+                AsgardStackedBarChart(
+                    bars = bars,
+                    segmentColors = listOf(c1, c2),
+                    modifier = Modifier.fillMaxWidth().height(160.dp),
+                )
+            }
             AsgardChartLegend(entries = listOf(AsgardLegendEntry("Active", c1), AsgardLegendEntry("Idle", c2)))
             AsgardLabeledSlider("Bars", barCount, { barCount = it }, valueRange = 3f..12f, steps = 8, valueLabel = "$n")
             ControlToggle("Dim last bar (partial)", dimLast) { dimLast = it }
@@ -677,15 +825,17 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         val doze = MaterialTheme.colorScheme.tertiary
         val s = split.roundToInt().toLong()
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            AsgardTimelineBar(
-                segments = listOf(
-                    AsgardTimelineSegment(0, s, on),
-                    AsgardTimelineSegment(s + 5, 100, doze),
-                ),
-                windowStartMillis = 0, windowEndMillis = 100,
-                modifier = Modifier.fillMaxWidth(),
-                height = 14.dp,
-            )
+            GlassSample(inset = 8.dp) {
+                AsgardTimelineBar(
+                    segments = listOf(
+                        AsgardTimelineSegment(0, s, on),
+                        AsgardTimelineSegment(s + 5, 100, doze),
+                    ),
+                    windowStartMillis = 0, windowEndMillis = 100,
+                    modifier = Modifier.fillMaxWidth(),
+                    height = 14.dp,
+                )
+            }
             AsgardChartLegend(
                 entries = listOf(AsgardLegendEntry("On", on), AsgardLegendEntry("Doze", doze)),
                 swatch = AsgardLegendSwatch.Dot,
@@ -702,14 +852,16 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         var dot by remember { mutableStateOf(false) }
         val cs = MaterialTheme.colorScheme
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            AsgardChartLegend(
-                entries = listOf(
-                    AsgardLegendEntry("Petrol", cs.primary),
-                    AsgardLegendEntry("Diesel", cs.secondary),
-                    AsgardLegendEntry("CNG", cs.tertiary),
-                ),
-                swatch = if (dot) AsgardLegendSwatch.Dot else AsgardLegendSwatch.Square,
-            )
+            GlassSample(inset = 8.dp) {
+                AsgardChartLegend(
+                    entries = listOf(
+                        AsgardLegendEntry("Petrol", cs.primary),
+                        AsgardLegendEntry("Diesel", cs.secondary),
+                        AsgardLegendEntry("CNG", cs.tertiary),
+                    ),
+                    swatch = if (dot) AsgardLegendSwatch.Dot else AsgardLegendSwatch.Square,
+                )
+            }
             ControlToggle("Dot swatches", dot) { dot = it }
         }
     },
@@ -722,13 +874,15 @@ val asgardCatalog: List<ComponentEntry> = expandedCatalog + listOf(
         var speed by remember { mutableStateOf(1200f) }
         var pulsing by remember { mutableStateOf(true) }
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            AsgardPulseRing(
-                color = MaterialTheme.colorScheme.tertiary,
-                ringSize = 40.dp,
-                durationMillis = speed.roundToInt(),
-                pulsing = pulsing,
-            ) {
-                Icon(Icons.Rounded.Star, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary)
+            GlassSample(inset = 8.dp) {
+                AsgardPulseRing(
+                    color = MaterialTheme.colorScheme.tertiary,
+                    ringSize = 40.dp,
+                    durationMillis = speed.roundToInt(),
+                    pulsing = pulsing,
+                ) {
+                    Icon(Icons.Rounded.Star, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary)
+                }
             }
             AsgardLabeledSlider("Speed (ms)", speed, { speed = it }, valueRange = 400f..2400f, valueLabel = "${speed.roundToInt()}")
             ControlToggle("Pulsing", pulsing) { pulsing = it }

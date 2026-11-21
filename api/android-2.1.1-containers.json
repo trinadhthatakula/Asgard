@@ -1,0 +1,14 @@
+{
+  "com.valhalla.asgard.components.AsgardActionToolbarKt": [
+    [
+      "AsgardActionToolbar-8L-wENs",
+      "(Ljava/util/List;Landroidx/compose/ui/Modifier;ZZLandroidx/compose/ui/graphics/Shape;JJFLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V"
+    ]
+  ],
+  "com.valhalla.asgard.navigation.AsgardNavigationConfigurationKt": [
+    [
+      "AsgardNavigationBar-eQBnUkQ",
+      "(Ljava/util/List;ILkotlin/jvm/functions/Function1;Lcom/valhalla/asgard/navigation/AsgardNavigationConfiguration;Landroidx/compose/ui/Modifier;JJJJLandroidx/compose/ui/text/TextStyle;Landroidx/compose/runtime/Composer;II)V"
+    ]
+  ]
+}

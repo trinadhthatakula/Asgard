@@ -1,4 +1,4 @@
-# Navigation and selection (2.1.1)
+# Navigation and selection (2.2.0)
 
 Use `com.valhalla.asgard.navigation` for `AsgardNavItem`, `AsgardNavigationBar` and
 `AsgardNavigationRail`. Both retain the legacy simple overload and offer an overload accepting

@@ -1,6 +1,9 @@
 package com.valhalla.asgard
 
 import androidx.compose.ui.unit.dp
+import com.valhalla.asgard.charts.AsgardBarStack
+import com.valhalla.asgard.charts.asgardStackScale
+import com.valhalla.asgard.charts.timelineDistance
 import com.valhalla.asgard.charts.asgardLabelSampleStep
 import com.valhalla.asgard.charts.asgardLineChartYBounds
 import com.valhalla.asgard.charts.asgardResolveMaxTotal
@@ -82,6 +85,23 @@ class AsgardDomainTest {
         assertEquals(1f, asgardResolveMaxTotal(emptyList(), explicit = null))
         assertEquals(1f, asgardResolveMaxTotal(listOf(0f, 0f), explicit = null))
         assertEquals(1f, asgardResolveMaxTotal(listOf(3f), explicit = -5f))
+    }
+
+    @Test
+    fun stackedBarsUseOnlyDrawableValuesAndHandleLargeTotals() {
+        val bars = listOf(AsgardBarStack(listOf(-9f, 2f, Float.NaN, Float.POSITIVE_INFINITY)))
+        assertEquals(2.0, asgardStackScale(bars, explicit = null))
+        val large = listOf(AsgardBarStack(listOf(Float.MAX_VALUE, Float.MAX_VALUE)))
+        assertEquals(2.0 * Float.MAX_VALUE, asgardStackScale(large, explicit = null))
+    }
+
+    @Test
+    fun chartBoundsHandleExtremeFiniteSamplesAndTimestamps() {
+        assertEquals(-Float.MAX_VALUE to Float.MAX_VALUE,
+            asgardLineChartYBounds(-Float.MAX_VALUE, Float.MAX_VALUE, 0.15f))
+        assertEquals(1.0, timelineDistance(Long.MAX_VALUE - 1, Long.MAX_VALUE))
+        assertEquals(ULong.MAX_VALUE.toDouble(), timelineDistance(Long.MIN_VALUE, Long.MAX_VALUE))
+        assertEquals(2, asgardLabelSampleStep(Int.MAX_VALUE, Int.MAX_VALUE - 1))
     }
 
     // ── AsgardDefaults: spacing tokens ──────────────────────────────────────────

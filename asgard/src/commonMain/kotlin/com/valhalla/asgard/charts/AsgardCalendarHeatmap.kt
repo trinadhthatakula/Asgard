@@ -77,7 +77,9 @@ fun AsgardCalendarHeatmap(
 ) {
     require(cellSize > 0.dp && spacing >= 0.dp && intensityLevels > 0)
     require(maxValue == null || (maxValue.isFinite() && maxValue > 0.0))
-    val cells = remember(entries, start, endInclusive, weekStart) { asgardHeatmapCells(entries, start, endInclusive, weekStart) }
+    val cells by remember(entries, start, endInclusive, weekStart) {
+        derivedStateOf { asgardHeatmapCells(entries, start, endInclusive, weekStart) }
+    }
     val maximum = maxValue ?: (cells.maxOfOrNull { it.value ?: 0.0 } ?: 0.0).coerceAtLeast(1.0)
     val targetSize = if (onDateSelected != null) maxOf(cellSize, 48.dp) else cellSize
     val headingHeight = with(androidx.compose.ui.platform.LocalDensity.current) { MaterialTheme.typography.labelSmall.fontSize.toDp() * 1.5f }.coerceAtLeast(24.dp)

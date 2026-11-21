@@ -15,6 +15,8 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -48,6 +50,7 @@ fun GalleryApp(initialEntry: String? = null) {
     var browsing by remember { mutableStateOf(false) }
     var appearance by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
+    val detailState = rememberSaveableStateHolder()
     LaunchedEffect(initialEntry, platform) { initialEntry?.let(platform::selectEntry) }
     DisposableEffect(platform) {
         val stop = platform.observeEntry { id -> selected = asgardCatalog.find { it.id == id } ?: asgardCatalog.first() }
@@ -98,7 +101,9 @@ fun GalleryApp(initialEntry: String? = null) {
                             }
                             VerticalDivider()
                         }
-                        key(selected.id) { DetailPane(selected, Modifier.weight(1f), compact, platform) }
+                        detailState.SaveableStateProvider(selected.id) {
+                            DetailPane(selected, Modifier.weight(1f), compact, platform)
+                        }
                     }
                 }
                 if (browsing) {
@@ -146,6 +151,8 @@ private fun GalleryEnvironment(rtl: Boolean, textScale: Float, content: @Composa
 @Composable
 private fun DetailPane(entry: ComponentEntry, modifier: Modifier, compact: Boolean, platform: GalleryPlatform) {
     val focus = remember { FocusRequester() }
+    var glass by rememberSaveable { mutableStateOf(false) }
+    val rating = glassCompatibility.getValue(entry.glassComponent)
     LaunchedEffect(entry.id) { focus.requestFocus() }
     Column(modifier.fillMaxHeight().verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp)) {
         Text(entry.name, Modifier.focusRequester(focus).focusable().semantics { heading() },
@@ -153,7 +160,11 @@ private fun DetailPane(entry: ComponentEntry, modifier: Modifier, compact: Boole
         Text(entry.category, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
         Text(entry.description, Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Box(Modifier.fillMaxWidth().padding(vertical = 24.dp)) { entry.content() }
+        AsgardSettingToggleRow("Preview glass", glass, { glass = it }, subtitle = "Compatibility ${rating.score}/5")
+        if (glass) Text(rating.guidance, style = MaterialTheme.typography.bodySmall)
+        Box(Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
+            CompositionLocalProvider(LocalPreviewGlass provides glass) { entry.content() }
+        }
         var copyState by remember(entry.id) { mutableStateOf("Copy") }
         LaunchedEffect(copyState) { if (copyState != "Copy" && copyState != "Copying…") { delay(2000); copyState = "Copy" } }
         Surface(color = MaterialTheme.colorScheme.surfaceContainerHighest, shape = MaterialTheme.shapes.medium) {
