@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / ".claude/skills/asgard-ui"
 DEMO = ROOT / "demo/src/commonMain/kotlin/com/valhalla/asgard/demo"
 OUTPUT = ROOT / "demo/src/wasmJsMain/resources/llms-full.txt"
-SITE = "https://trinadhthatakula.github.io/Asgard/"
+SITE = "https://asgard.trinadhthatakula.com/"
 RAW = "https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/"
 
 # The first four ComponentEntry arguments are literal name, category, description and snippet.

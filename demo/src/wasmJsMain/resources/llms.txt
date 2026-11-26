@@ -5,11 +5,11 @@
 ## Start here
 
 - [Asgard UI skill](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/SKILL.md): Use the `asgard-ui` skill when integrating Asgard or choosing a component. If the skill is installed, invoke it by name. Otherwise read this file and its linked recipes. Match API guidance to the version pinned by the consuming project.
-- [Full agent reference](https://trinadhthatakula.github.io/Asgard/llms-full.txt): Read the skill, component contracts, glass compatibility table, Kotlin recipes and gallery examples in one plain-text document.
+- [Full agent reference](https://asgard.trinadhthatakula.com/llms-full.txt): Read the skill, component contracts, glass compatibility table, Kotlin recipes and gallery examples in one plain-text document.
 
 ## Explore
 
-- [Interactive gallery](https://trinadhthatakula.github.io/Asgard/): Browse the index or open a component using its hash link in the full reference.
-- [Glass surfaces report](https://trinadhthatakula.github.io/Asgard/glass-ui-report.html): Read about backdrop rendering and accessibility.
+- [Interactive gallery](https://asgard.trinadhthatakula.com/): Browse the index or open a component using its hash link in the full reference.
+- [Glass surfaces report](https://asgard.trinadhthatakula.com/glass-ui-report.html): Read about backdrop rendering and accessibility.
 - [Library source and setup](https://github.com/trinadhthatakula/Asgard): Find Gradle coordinates, supported targets and source code.
 - [Library releases](https://github.com/trinadhthatakula/Asgard/releases): Check the version and release notes before using an API.

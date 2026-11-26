@@ -2,6 +2,6 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://trinadhthatakula.github.io/Asgard/sitemap.xml
-# Agent guide: https://trinadhthatakula.github.io/Asgard/llms.txt
-# Full reference: https://trinadhthatakula.github.io/Asgard/llms-full.txt
+Sitemap: https://asgard.trinadhthatakula.com/sitemap.xml
+# Agent guide: https://asgard.trinadhthatakula.com/llms.txt
+# Full reference: https://asgard.trinadhthatakula.com/llms-full.txt

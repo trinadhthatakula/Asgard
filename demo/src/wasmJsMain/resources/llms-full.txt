@@ -48,7 +48,7 @@ the same position.
   state lifetime and accessibility labels to the host; the examples are starting points.
 
 The repository's [component expansion guide](https://github.com/trinadhthatakula/Asgard/blob/v2.2.0/docs/component-expansion.md)
-and [gallery](https://trinadhthatakula.github.io/Asgard/) give further examples. If a signature or
+and [gallery](https://asgard.trinadhthatakula.com/) give further examples. If a signature or
 version is uncertain, inspect the source for the **version actually used by the app**, rather than
 assuming the current main branch matches it.
 
@@ -493,7 +493,7 @@ fun FloatingNavigationExample(
 
 ## Actions
 
-### [AsgardActionItem](https://trinadhthatakula.github.io/Asgard/#asgardactionitem)
+### [AsgardActionItem](https://asgard.trinadhthatakula.com/#asgardactionitem)
 
 A vertical tappable action tile: icon chip over a caption.
 
@@ -501,7 +501,7 @@ A vertical tappable action tile: icon chip over a caption.
 AsgardActionItem(icon = Icons.Rounded.Info, label = "Info", onClick = {})
 ```
 
-### [AsgardActionItem · one line](https://trinadhthatakula.github.io/Asgard/#asgardactionitem-one-line)
+### [AsgardActionItem · one line](https://asgard.trinadhthatakula.com/#asgardactionitem-one-line)
 
 An action tile capped at a single label line (labelMaxLines = 1) so long captions truncate cleanly.
 
@@ -510,7 +510,7 @@ AsgardActionItem(icon = Icons.Rounded.Notifications,
     label = "Notification settings", labelMaxLines = 1, onClick = {})
 ```
 
-### [AsgardActionToolbar](https://trinadhthatakula.github.io/Asgard/#asgardactiontoolbar)
+### [AsgardActionToolbar](https://asgard.trinadhthatakula.com/#asgardactiontoolbar)
 
 A scrolling selection/editor toolbar with enabled and selected actions.
 
@@ -522,7 +522,7 @@ AsgardActionToolbar(actions = actions, showLabels = true,
 
 ## Charts
 
-### [AsgardCalendarHeatmap](https://trinadhthatakula.github.io/Asgard/#asgardcalendarheatmap)
+### [AsgardCalendarHeatmap](https://asgard.trinadhthatakula.com/#asgardcalendarheatmap)
 
 Sample dated entries, missing days and recorded zero. Select a date and add entries to see actual values change.
 
@@ -533,7 +533,7 @@ AsgardCalendarHeatmap(entries, start, endInclusive,
 )
 ```
 
-### [AsgardChartLegend](https://trinadhthatakula.github.io/Asgard/#asgardchartlegend)
+### [AsgardChartLegend](https://asgard.trinadhthatakula.com/#asgardchartlegend)
 
 The wrapping swatch + label key shared by every Asgard chart. Toggle square/dot swatches.
 
@@ -541,7 +541,7 @@ The wrapping swatch + label key shared by every Asgard chart. Toggle square/dot 
 AsgardChartLegend(entries = listOf(AsgardLegendEntry("Petrol", primary), AsgardLegendEntry("Diesel", secondary)))
 ```
 
-### [AsgardLegendItem](https://trinadhthatakula.github.io/Asgard/#asgardlegenditem)
+### [AsgardLegendItem](https://asgard.trinadhthatakula.com/#asgardlegenditem)
 
 A single series label with a colored swatch.
 
@@ -549,7 +549,7 @@ A single series label with a colored swatch.
 AsgardLegendItem(label = "Temperature", color = MaterialTheme.colorScheme.primary)
 ```
 
-### [AsgardLineChart](https://trinadhthatakula.github.io/Asgard/#asgardlinechart)
+### [AsgardLineChart](https://asgard.trinadhthatakula.com/#asgardlinechart)
 
 A multi-series smoothed line + area chart. Adjust the knobs below to see it react live.
 
@@ -561,7 +561,7 @@ AsgardLineChart(
 )
 ```
 
-### [AsgardPulseRing](https://trinadhthatakula.github.io/Asgard/#asgardpulsering)
+### [AsgardPulseRing](https://asgard.trinadhthatakula.com/#asgardpulsering)
 
 A decorative attention pulse behind any content. Change the speed or stop it.
 
@@ -569,7 +569,7 @@ A decorative attention pulse behind any content. Change the speed or stop it.
 AsgardPulseRing(color = colorScheme.tertiary) { Icon(Icons.Rounded.Star, null) }
 ```
 
-### [AsgardStackedBarChart](https://trinadhthatakula.github.io/Asgard/#asgardstackedbarchart)
+### [AsgardStackedBarChart](https://asgard.trinadhthatakula.com/#asgardstackedbarchart)
 
 N-segment stacked bars with a shared scale. Change the bar count and dim the last (partial) bar.
 
@@ -580,7 +580,7 @@ AsgardStackedBarChart(
 )
 ```
 
-### [AsgardTimelineBar](https://trinadhthatakula.github.io/Asgard/#asgardtimelinebar)
+### [AsgardTimelineBar](https://asgard.trinadhthatakula.com/#asgardtimelinebar)
 
 Colored interval spans across a time window (screen states, sessions, schedules). Drag to move the split.
 
@@ -590,7 +590,7 @@ AsgardTimelineBar(segments, windowStartMillis = 0, windowEndMillis = 100)
 
 ## Chips & badges
 
-### [AsgardBadge](https://trinadhthatakula.github.io/Asgard/#asgardbadge)
+### [AsgardBadge](https://asgard.trinadhthatakula.com/#asgardbadge)
 
 A neutral label pill with an optional icon; filled or outlined.
 
@@ -598,7 +598,7 @@ A neutral label pill with an optional icon; filled or outlined.
 AsgardBadge(text = "NEW", icon = Icons.Rounded.Star, outlined = false)
 ```
 
-### [StatusChip](https://trinadhthatakula.github.io/Asgard/#statuschip)
+### [StatusChip](https://asgard.trinadhthatakula.com/#statuschip)
 
 A compact, pill-shaped status label that inherits the theme.
 
@@ -608,7 +608,7 @@ StatusChip(text = "Frozen")
 
 ## Data display
 
-### [AsgardAnimatedNumeral](https://trinadhthatakula.github.io/Asgard/#asgardanimatednumeral)
+### [AsgardAnimatedNumeral](https://asgard.trinadhthatakula.com/#asgardanimatednumeral)
 
 Numeric text that slides on change (odometer style).
 
@@ -617,7 +617,7 @@ var n by remember { mutableStateOf(0) }
 AsgardAnimatedNumeral(n.toString())
 ```
 
-### [AsgardStatCard](https://trinadhthatakula.github.io/Asgard/#asgardstatcard)
+### [AsgardStatCard](https://asgard.trinadhthatakula.com/#asgardstatcard)
 
 Vertical metric card: an icon + label header over a large value with an optional unit suffix.
 
@@ -626,7 +626,7 @@ AsgardStatCard(label = "Voltage", value = "5.00", unit = "V",
     icon = Icons.Rounded.Bolt)
 ```
 
-### [AsgardStatCard · bento](https://trinadhthatakula.github.io/Asgard/#asgardstatcard-bento)
+### [AsgardStatCard · bento](https://asgard.trinadhthatakula.com/#asgardstatcard-bento)
 
 A compact bento cell: the icon sits inline with the label, a tight unit suffix, clickable with a border.
 
@@ -637,7 +637,7 @@ AsgardStatCard(label = "Battery", value = "95", unit = "%",
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))
 ```
 
-### [AsgardStatTile](https://trinadhthatakula.github.io/Asgard/#asgardstattile)
+### [AsgardStatTile](https://asgard.trinadhthatakula.com/#asgardstattile)
 
 Compact metric tile: a label over an emphasized value, optional icon.
 
@@ -645,7 +645,7 @@ Compact metric tile: a label over an emphasized value, optional icon.
 AsgardStatTile(label = "Uptime", value = "12h 30m", icon = Icons.Rounded.Bolt)
 ```
 
-### [AsgardStatTile · animated](https://trinadhthatakula.github.io/Asgard/#asgardstattile-animated)
+### [AsgardStatTile · animated](https://asgard.trinadhthatakula.com/#asgardstattile-animated)
 
 A value-first tile that counts up on change, with an inline secondary label and a border; tap to add.
 
@@ -657,7 +657,7 @@ AsgardStatTile(label = "Steps today", value = n.toString(),
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))
 ```
 
-### [AsgardStatTile · icon badge](https://trinadhthatakula.github.io/Asgard/#asgardstattile-icon-badge)
+### [AsgardStatTile · icon badge](https://asgard.trinadhthatakula.com/#asgardstattile-icon-badge)
 
 A stat tile whose icon sits inside a filled circular badge instead of a bare glyph.
 
@@ -667,7 +667,7 @@ AsgardStatTile(label = "Downloads", value = "1,204",
     iconContainerColor = Color(0xFF6750A4))
 ```
 
-### [AsgardStatTile · status dot](https://trinadhthatakula.github.io/Asgard/#asgardstattile-status-dot)
+### [AsgardStatTile · status dot](https://asgard.trinadhthatakula.com/#asgardstattile-status-dot)
 
 A stat tile with a colored status dot beside the label — for live health/state read-outs.
 
@@ -678,7 +678,7 @@ AsgardStatTile(label = "Server", value = "Online",
 
 ## Display
 
-### [AsgardAvatar](https://trinadhthatakula.github.io/Asgard/#asgardavatar)
+### [AsgardAvatar](https://asgard.trinadhthatakula.com/#asgardavatar)
 
 Image content, initials and icon fallback without requiring an image loader.
 
@@ -689,7 +689,7 @@ AsgardAvatar(initials = "TT", contentDescription = "Profile",
 )
 ```
 
-### [Glass surfaces](https://trinadhthatakula.github.io/Asgard/#glass-surfaces)
+### [Glass surfaces](https://asgard.trinadhthatakula.com/#glass-surfaces)
 
 Scroll the glacier beneath the controls. Preview glass on the region label or try it on either bar.
 
@@ -709,7 +709,7 @@ Box {
 
 ## Feedback
 
-### [AsgardBanner](https://trinadhthatakula.github.io/Asgard/#asgardbanner)
+### [AsgardBanner](https://asgard.trinadhthatakula.com/#asgardbanner)
 
 A tonal callout card: icon + title + description + optional action.
 
@@ -718,7 +718,7 @@ AsgardBanner(title = "No connection", description = "Check your network.",
     icon = Icons.Rounded.Warning) { TextButton(onClick = {}) { Text("Retry") } }
 ```
 
-### [AsgardBanner · gradient](https://trinadhthatakula.github.io/Asgard/#asgardbanner-gradient)
+### [AsgardBanner · gradient](https://asgard.trinadhthatakula.com/#asgardbanner-gradient)
 
 A banner with a horizontal-gradient background and a description clamped to two lines.
 
@@ -729,7 +729,7 @@ AsgardBanner(title = "You're on Pro", description = "…",
         listOf(Color(0xFF6750A4), Color(0xFF9A82DB))))
 ```
 
-### [AsgardDialogScaffold](https://trinadhthatakula.github.io/Asgard/#asgarddialogscaffold)
+### [AsgardDialogScaffold](https://asgard.trinadhthatakula.com/#asgarddialogscaffold)
 
 A thin confirm/dismiss dialog wrapper over M3 AlertDialog.
 
@@ -737,7 +737,7 @@ A thin confirm/dismiss dialog wrapper over M3 AlertDialog.
 AsgardDialogScaffold(onDismiss, title = "Delete?", confirmText = "Delete", onConfirm)
 ```
 
-### [AsgardEmptyState](https://trinadhthatakula.github.io/Asgard/#asgardemptystate)
+### [AsgardEmptyState](https://asgard.trinadhthatakula.com/#asgardemptystate)
 
 A centered placeholder for empty screens.
 
@@ -745,7 +745,7 @@ A centered placeholder for empty screens.
 AsgardEmptyState(text = "No items yet", icon = Icons.Rounded.Inbox)
 ```
 
-### [AsgardLoadingState](https://trinadhthatakula.github.io/Asgard/#asgardloadingstate)
+### [AsgardLoadingState](https://asgard.trinadhthatakula.com/#asgardloadingstate)
 
 A centered spinner with an optional caption.
 
@@ -753,7 +753,7 @@ A centered spinner with an optional caption.
 AsgardLoadingState(text = "Loading…")
 ```
 
-### [AsgardShimmer](https://trinadhthatakula.github.io/Asgard/#asgardshimmer)
+### [AsgardShimmer](https://asgard.trinadhthatakula.com/#asgardshimmer)
 
 A skeleton/shimmer placeholder shown while content loads.
 
@@ -763,7 +763,7 @@ AsgardShimmer(Modifier.fillMaxWidth().height(24.dp))
 
 ## Input
 
-### [AsgardLabeledSlider](https://trinadhthatakula.github.io/Asgard/#asgardlabeledslider)
+### [AsgardLabeledSlider](https://asgard.trinadhthatakula.com/#asgardlabeledslider)
 
 A labeled slider with a value read-out.
 
@@ -771,7 +771,7 @@ A labeled slider with a value read-out.
 AsgardLabeledSlider("Volume", value, onValueChange)
 ```
 
-### [AsgardPicker](https://trinadhthatakula.github.io/Asgard/#asgardpicker)
+### [AsgardPicker](https://asgard.trinadhthatakula.com/#asgardpicker)
 
 Controlled query and sections, with domain filtering and recent-history storage left to the app.
 
@@ -783,7 +783,7 @@ AsgardPicker(sections, query, onQueryChange,
 )
 ```
 
-### [AsgardPickerSheet](https://trinadhthatakula.github.io/Asgard/#asgardpickersheet)
+### [AsgardPickerSheet](https://asgard.trinadhthatakula.com/#asgardpickersheet)
 
 Search and select a country inside a modal sheet.
 
@@ -791,7 +791,7 @@ Search and select a country inside a modal sheet.
 AsgardPickerSheet(onDismissRequest, title = "Choose country") { CountryPicker() }
 ```
 
-### [AsgardSearchBar](https://trinadhthatakula.github.io/Asgard/#asgardsearchbar)
+### [AsgardSearchBar](https://asgard.trinadhthatakula.com/#asgardsearchbar)
 
 A single-line search field with an auto clear button.
 
@@ -799,7 +799,7 @@ A single-line search field with an auto clear button.
 AsgardSearchBar(query, onQueryChange, leadingIcon = Icons.Rounded.Search)
 ```
 
-### [AsgardTonalIconButton](https://trinadhthatakula.github.io/Asgard/#asgardtonaliconbutton)
+### [AsgardTonalIconButton](https://asgard.trinadhthatakula.com/#asgardtonaliconbutton)
 
 A thin tonal icon button wrapper.
 
@@ -807,7 +807,7 @@ A thin tonal icon button wrapper.
 AsgardTonalIconButton(Icons.Rounded.Favorite, "Like", onClick)
 ```
 
-### [Connected button shapes](https://trinadhthatakula.github.io/Asgard/#connected-button-shapes)
+### [Connected button shapes](https://asgard.trinadhthatakula.com/#connected-button-shapes)
 
 Shape changes are independent of primary selection colors, for single and multiple selections.
 
@@ -817,7 +817,7 @@ ConnectedButtonGroup(items, selectedIndices, onSelectionChanged,
 )
 ```
 
-### [ConnectedButtonGroup](https://trinadhthatakula.github.io/Asgard/#connectedbuttongroup)
+### [ConnectedButtonGroup](https://asgard.trinadhthatakula.com/#connectedbuttongroup)
 
 A single-select connected toggle-button group; crash-safe at any system font scale.
 
@@ -825,7 +825,7 @@ A single-select connected toggle-button group; crash-safe at any system font sca
 ConnectedButtonGroup(items = listOf(Label("Day"), Label("Week")), selectedIndex, onItemSelected)
 ```
 
-### [ConnectedButtonGroup · icons](https://trinadhthatakula.github.io/Asgard/#connectedbuttongroup-icons)
+### [ConnectedButtonGroup · icons](https://asgard.trinadhthatakula.com/#connectedbuttongroup-icons)
 
 The same group using the Icon (icon-only) and IconWithLabel item variants instead of plain labels.
 
@@ -836,7 +836,7 @@ ConnectedButtonGroup(items = listOf(
 ), selectedIndex, onItemSelected)
 ```
 
-### [ConnectedButtonGroup · multiple selections](https://trinadhthatakula.github.io/Asgard/#connectedbuttongroup-multiple-selections)
+### [ConnectedButtonGroup · multiple selections](https://asgard.trinadhthatakula.com/#connectedbuttongroup-multiple-selections)
 
 Independent toggles with primary-color selection. This example keeps at least one type selected.
 
@@ -846,7 +846,7 @@ ConnectedButtonGroup(items = items, selectedIndices = selected, onSelectionChang
 
 ## Lists
 
-### [AsgardListRow](https://trinadhthatakula.github.io/Asgard/#asgardlistrow)
+### [AsgardListRow](https://asgard.trinadhthatakula.com/#asgardlistrow)
 
 A generic list item: leading icon, title/subtitle, optional trailing slot.
 
@@ -857,7 +857,7 @@ AsgardListRow(title = "Wi-Fi", subtitle = "Home network",
 
 ## Monetization
 
-### [AsgardLockedOverlay](https://trinadhthatakula.github.io/Asgard/#asgardlockedoverlay)
+### [AsgardLockedOverlay](https://asgard.trinadhthatakula.com/#asgardlockedoverlay)
 
 Gates content behind a blurred overlay while locked.
 
@@ -865,7 +865,7 @@ Gates content behind a blurred overlay while locked.
 AsgardLockedOverlay(locked, overlay = { AsgardProBadge() }) { /* content */ }
 ```
 
-### [AsgardProBadge](https://trinadhthatakula.github.io/Asgard/#asgardprobadge)
+### [AsgardProBadge](https://asgard.trinadhthatakula.com/#asgardprobadge)
 
 A PRO/premium marker pill preset over AsgardBadge.
 
@@ -873,7 +873,7 @@ A PRO/premium marker pill preset over AsgardBadge.
 AsgardProBadge(icon = Icons.Rounded.Lock)
 ```
 
-### [AsgardUpgradeCard](https://trinadhthatakula.github.io/Asgard/#asgardupgradecard)
+### [AsgardUpgradeCard](https://asgard.trinadhthatakula.com/#asgardupgradecard)
 
 A promotional card with a title, description, and CTA button.
 
@@ -883,7 +883,7 @@ AsgardUpgradeCard(title = "Go Pro", description = "…", cta = "Upgrade") {}
 
 ## Navigation
 
-### [AsgardNavigationBar](https://trinadhthatakula.github.io/Asgard/#asgardnavigationbar)
+### [AsgardNavigationBar](https://asgard.trinadhthatakula.com/#asgardnavigationbar)
 
 An expressive bottom navigation bar — the selected item expands to reveal its label.
 
@@ -891,7 +891,7 @@ An expressive bottom navigation bar — the selected item expands to reveal its 
 AsgardNavigationBar(items, selectedIndex, onSelect = { … })
 ```
 
-### [AsgardNavigationRail](https://trinadhthatakula.github.io/Asgard/#asgardnavigationrail)
+### [AsgardNavigationRail](https://asgard.trinadhthatakula.com/#asgardnavigationrail)
 
 An expressive vertical navigation rail (the side-nav counterpart to the bar).
 
@@ -899,7 +899,7 @@ An expressive vertical navigation rail (the side-nav counterpart to the bar).
 AsgardNavigationRail(items, selectedIndex, onSelect = { … })
 ```
 
-### [Navigation variations](https://trinadhthatakula.github.io/Asgard/#navigation-variations)
+### [Navigation variations](https://asgard.trinadhthatakula.com/#navigation-variations)
 
 Combine container placement, destination appearance, labels and shapes. Routes stay in the app.
 
@@ -915,7 +915,7 @@ AsgardNavigationBar(items, selectedIndex, onSelect,
 
 ## Onboarding
 
-### [AsgardFeatureRow](https://trinadhthatakula.github.io/Asgard/#asgardfeaturerow)
+### [AsgardFeatureRow](https://asgard.trinadhthatakula.com/#asgardfeaturerow)
 
 An icon badge beside a title and description — for benefit lists.
 
@@ -923,7 +923,7 @@ An icon badge beside a title and description — for benefit lists.
 AsgardFeatureRow(icon = Icons.Rounded.Bolt, title = "Fast", description = "…")
 ```
 
-### [AsgardOnboardingScaffold](https://trinadhthatakula.github.io/Asgard/#asgardonboardingscaffold)
+### [AsgardOnboardingScaffold](https://asgard.trinadhthatakula.com/#asgardonboardingscaffold)
 
 A page scaffold: title, subtitle, body, and a bottom actions row.
 
@@ -933,7 +933,7 @@ AsgardOnboardingScaffold(title = "Welcome", subtitle = "…") { /* body */ }
 
 ## Progress
 
-### [AsgardProgressRing](https://trinadhthatakula.github.io/Asgard/#asgardprogressring)
+### [AsgardProgressRing](https://asgard.trinadhthatakula.com/#asgardprogressring)
 
 A circular progress/gauge ring with a centered content slot.
 
@@ -943,7 +943,7 @@ AsgardProgressRing(progress = progress, animate = true) { Text("66%") }
 
 ## Settings
 
-### [AsgardSectionCard](https://trinadhthatakula.github.io/Asgard/#asgardsectioncard)
+### [AsgardSectionCard](https://asgard.trinadhthatakula.com/#asgardsectioncard)
 
 A titled tonal container that groups related rows.
 
@@ -951,7 +951,7 @@ A titled tonal container that groups related rows.
 AsgardSectionCard(title = "General") { /* rows */ }
 ```
 
-### [AsgardSettingRow](https://trinadhthatakula.github.io/Asgard/#asgardsettingrow)
+### [AsgardSettingRow](https://asgard.trinadhthatakula.com/#asgardsettingrow)
 
 A labeled row with an optional trailing value or custom slot.
 
@@ -959,7 +959,7 @@ A labeled row with an optional trailing value or custom slot.
 AsgardSettingRow(title = "Version", value = "1.90.3")
 ```
 
-### [AsgardSettingToggleRow](https://trinadhthatakula.github.io/Asgard/#asgardsettingtogglerow)
+### [AsgardSettingToggleRow](https://asgard.trinadhthatakula.com/#asgardsettingtogglerow)
 
 A settings row with a trailing switch (tapping the row toggles it).
 
@@ -968,7 +968,7 @@ var on by remember { mutableStateOf(true) }
 AsgardSettingToggleRow("Wi-Fi only", on) { on = it }
 ```
 
-### [AsgardStepperRow](https://trinadhthatakula.github.io/Asgard/#asgardstepperrow)
+### [AsgardStepperRow](https://asgard.trinadhthatakula.com/#asgardstepperrow)
 
 A labeled numeric stepper with min/max bounds.
 
@@ -978,7 +978,7 @@ AsgardStepperRow("Servings", value, Icons.Rounded.Remove, Icons.Rounded.Add, …
 
 ## Structure
 
-### [AsgardActionSheet](https://trinadhthatakula.github.io/Asgard/#asgardactionsheet)
+### [AsgardActionSheet](https://asgard.trinadhthatakula.com/#asgardactionsheet)
 
 A scrollable message with fixed, wrapping footer actions.
 
@@ -988,7 +988,7 @@ AsgardActionSheet(onDismissRequest, title = "Action sheet",
 ) { Text(message) }
 ```
 
-### [AsgardHeader](https://trinadhthatakula.github.io/Asgard/#asgardheader)
+### [AsgardHeader](https://asgard.trinadhthatakula.com/#asgardheader)
 
 The signature screen header: a bold primary-tinted title, optional leading icon, trailing actions.
 
@@ -996,7 +996,7 @@ The signature screen header: a bold primary-tinted title, optional leading icon,
 AsgardHeader(title = "Clusters", icon = Icons.Rounded.Star)
 ```
 
-### [AsgardLazyScrollbar](https://trinadhthatakula.github.io/Asgard/#asgardlazyscrollbar)
+### [AsgardLazyScrollbar](https://asgard.trinadhthatakula.com/#asgardlazyscrollbar)
 
 Portable list/grid thumb dragging. The host reserves a 48dp end gutter.
 
@@ -1009,7 +1009,7 @@ Box(Modifier.height(320.dp)) {
 }
 ```
 
-### [AsgardSheet](https://trinadhthatakula.github.io/Asgard/#asgardsheet)
+### [AsgardSheet](https://asgard.trinadhthatakula.com/#asgardsheet)
 
 A modal sheet with a caller-owned header and body.
 
