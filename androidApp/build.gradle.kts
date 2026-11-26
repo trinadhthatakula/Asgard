@@ -22,15 +22,17 @@ android {
     }
     buildFeatures { compose = true }
     buildTypes {
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+        }
         create("benchmark") {
             initWith(getByName("release"))
             isDebuggable = false
-            isMinifyEnabled = true
-            isShrinkResources = true
             applicationIdSuffix = ".benchmark"
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += "release"
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
         }
     }
     lint { warningsAsErrors = true }

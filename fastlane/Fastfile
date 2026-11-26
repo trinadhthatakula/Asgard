@@ -6,6 +6,12 @@ listing_dir = File.join(gallery_root, "fastlane/metadata/android")
 bundle_dir = File.join(gallery_root, "androidApp/build/outputs/bundle/release")
 
 platform :android do
+  before_all do
+    if ENV["SUPPLY_JSON_KEY"].to_s != ""
+      ENV["SUPPLY_JSON_KEY"] = File.expand_path(ENV.fetch("SUPPLY_JSON_KEY"), gallery_root)
+    end
+  end
+
   desc "Check the Play listing text, artwork and phone screenshots locally"
   lane :validate_listing do
     require_relative "validate_listing"
@@ -17,12 +23,14 @@ platform :android do
     required = %w[ASGARD_UPLOAD_KEYSTORE ASGARD_UPLOAD_ALIAS ASGARD_UPLOAD_STORE_PASSWORD ASGARD_UPLOAD_KEY_PASSWORD]
     missing = required.select { |name| ENV[name].to_s.empty? }
     UI.user_error!("Set #{missing.join(', ')} to sign the gallery bundle.") unless missing.empty?
+    keystore = File.expand_path(ENV.fetch("ASGARD_UPLOAD_KEYSTORE"), gallery_root)
+    UI.user_error!("Set ASGARD_UPLOAD_KEYSTORE to your upload keystore.") unless File.file?(keystore)
     properties = {}
     properties["galleryVersionCode"] = Integer(options[:version_code]) if options[:version_code]
     gradle(task: ":androidApp:bundleRelease", project_dir: gallery_root, properties: properties)
     unsigned = File.join(bundle_dir, "androidApp-release.aab")
     signed = File.join(bundle_dir, "asgard-gallery-upload.aab")
-    sh("jarsigner", "-keystore", File.expand_path(ENV.fetch("ASGARD_UPLOAD_KEYSTORE")),
+    sh("jarsigner", "-keystore", keystore,
        "-storepass:env", "ASGARD_UPLOAD_STORE_PASSWORD", "-keypass:env", "ASGARD_UPLOAD_KEY_PASSWORD",
        "-signedjar", signed, unsigned, ENV.fetch("ASGARD_UPLOAD_ALIAS"))
     sh("jarsigner", "-verify", signed)

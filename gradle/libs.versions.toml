@@ -1,17 +1,17 @@
 [versions]
 # Bleeding-edge KMP toolchain (matches the verified LedgerX combo; keep latest, no downgrade).
-agp = "9.6.0-alpha03"
+agp = "9.6.0-alpha06"
 kotlin = "2.4.21"
-composeMultiplatform = "1.13.0-alpha02"
-material3Cmp = "1.13.0-alpha02"
+composeMultiplatform = "1.13.0-beta02"
+material3Cmp = "1.13.0-beta02"
 compileSdk = "37"
 compileSdkMinor = "2"
 minSdk = "28"
 vanniktechMavenPublish = "0.37.0"
 haze = "2.1.0"
-kotlinxDatetime = "0.7.1"
+kotlinxDatetime = "0.8.0"
 activityCompose = "1.13.0"
-lifecycle = "2.11.0"
+lifecycle = "2.11.1"
 androidTestRunner = "1.7.0"
 androidTestJunit = "1.3.0"
 
