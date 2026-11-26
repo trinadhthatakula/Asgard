@@ -1,0 +1,53 @@
+version: 2
+updates:
+  # All Gradle modules share the root version catalog and wrapper.
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      # This consumer tests binary compatibility with the published 2.0.1 AAR.
+      - dependency-name: "com.trinadhthatakula:asgard-android"
+    groups:
+      android-gallery:
+        patterns: ["androidx.activity:*", "androidx.lifecycle:*", "androidx.test:*", "androidx.test.ext:*"]
+      main-library:
+        patterns: ["*"]
+        exclude-patterns: ["androidx.activity:*", "androidx.lifecycle:*", "androidx.test:*", "androidx.test.ext:*"]
+      android-gallery-security:
+        applies-to: security-updates
+        patterns: ["androidx.activity:*", "androidx.lifecycle:*", "androidx.test:*", "androidx.test.ext:*"]
+      main-library-security:
+        applies-to: security-updates
+        patterns: ["*"]
+        exclude-patterns: ["androidx.activity:*", "androidx.lifecycle:*", "androidx.test:*", "androidx.test.ext:*"]
+
+  # The web gallery is Kotlin/Wasm. Its independently versioned delivery tools are Pages actions.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      web-gallery:
+        patterns: ["actions/*pages*"]
+      repository-actions:
+        patterns: ["*"]
+        exclude-patterns: ["actions/*pages*"]
+      web-gallery-security:
+        applies-to: security-updates
+        patterns: ["actions/*pages*"]
+      repository-actions-security:
+        applies-to: security-updates
+        patterns: ["*"]
+        exclude-patterns: ["actions/*pages*"]
+
+  - package-ecosystem: bundler
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      android-gallery-fastlane:
+        patterns: ["*"]
+      android-gallery-fastlane-security:
+        applies-to: security-updates
+        patterns: ["*"]
