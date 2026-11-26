@@ -23,7 +23,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import asgard.demo.generated.resources.Res
 import asgard.demo.generated.resources.vatnajokull
@@ -71,7 +77,13 @@ internal fun GalleryHome(onSelect: (ComponentEntry) -> Unit) {
                 Column(Modifier.padding(top = if (wide) 36.dp else 18.dp, bottom = 8.dp)) {
                     Text("Component gallery", Modifier.semantics { heading() },
                         style = if (wide) MaterialTheme.typography.displayLarge else MaterialTheme.typography.displaySmall)
-                    Text("Explore Compose components and charts for Android and the web.",
+                    Text(buildAnnotatedString {
+                        append("Explore Compose components and charts for Android and the web. ")
+                        withLink(LinkAnnotation.Url(
+                            "https://asgard.trinadhthatakula.com/privacy/",
+                            TextLinkStyles(style = SpanStyle(color = colors.primary, textDecoration = TextDecoration.Underline)),
+                        )) { append("Privacy policy") }
+                    },
                         style = MaterialTheme.typography.bodyLarge, color = colors.onSurfaceVariant)
                 }
             }

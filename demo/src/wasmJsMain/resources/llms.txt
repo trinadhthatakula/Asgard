@@ -13,3 +13,4 @@
 - [Glass surfaces report](https://asgard.trinadhthatakula.com/glass-ui-report.html): Read about backdrop rendering and accessibility.
 - [Library source and setup](https://github.com/trinadhthatakula/Asgard): Find Gradle coordinates, supported targets and source code.
 - [Library releases](https://github.com/trinadhthatakula/Asgard/releases): Check the version and release notes before using an API.
+- [Privacy policy](https://asgard.trinadhthatakula.com/privacy/) for the Asgard Gallery Android app and website.

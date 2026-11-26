@@ -31,6 +31,8 @@ The signed file is `androidApp/build/outputs/bundle/release/asgard-gallery-uploa
 
 ## Upload to Play Console
 
+The public privacy policy URL for the Play Console **App content → Privacy policy** field is `https://asgard.trinadhthatakula.com/privacy/`. The gallery also links it from its home screen. [Public policy text](https://github.com/trinadhthatakula/Asgard/blob/main/PRIVACY.md)
+
 For the first release, create the app in Play Console, configure Play App Signing, complete the required app declarations and upload the first signed bundle. Grant a Google Play Android Developer API service account access to this app. Place its JSON credentials at `fastlane/keys/play-service-account.json` or set `SUPPLY_JSON_KEY` in the local file to their location.
 
 - `bundle exec fastlane android upload_listing` uploads the listing text, icon, feature graphic and phone screenshots. Supply replaces the remote images in the supplied categories.

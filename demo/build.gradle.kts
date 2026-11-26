@@ -100,3 +100,11 @@ val generateGalleryBuildInfo = tasks.register<GenerateGalleryBuildInfo>("generat
 kotlin.sourceSets.getByName("commonMain").kotlin.srcDir(galleryInfoDirectory)
 tasks.named("compileKotlinWasmJs") { dependsOn(generateGalleryBuildInfo) }
 tasks.named("compileAndroidMain") { dependsOn(generateGalleryBuildInfo) }
+
+// GitHub and the standalone Play policy page display the same maintained text.
+val galleryPrivacyPolicy = providers.fileContents(rootProject.layout.projectDirectory.file("PRIVACY.md")).asText
+tasks.named<ProcessResources>("wasmJsProcessResources") {
+    val policy = galleryPrivacyPolicy.get()
+    inputs.property("privacyPolicy", policy)
+    filesMatching("privacy/index.html") { expand(mapOf("policy" to policy)) }
+}
