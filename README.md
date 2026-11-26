@@ -38,9 +38,10 @@ palette or font.
 ## ▶ Live gallery
 
 **[trinadhthatakula.github.io/Asgard](https://trinadhthatakula.github.io/Asgard/)** — browse every
-component and chart live, drag the interactive knobs, and flip **light/dark** and the **seed color**
-to watch each one inherit the theme. The gallery is itself built from Asgard, running in the browser
-via Compose Multiplatform (wasm).
+component and chart in a searchable index, then open its live preview and Kotlin example. The
+Android and web galleries use Thor’s Asgard light and dark palettes, Outfit for headings and body
+text, and Fira Code for labels and code. Use **Theme** to try another accent, text scale or layout
+direction.
 
 ## 2.2.0 opt-in frosted glass
 

@@ -7,7 +7,7 @@ internal interface GalleryPlatform {
     fun onThemeChanged(dark: Boolean) {}
     fun copyToClipboard(text: String, onResult: (Boolean) -> Unit)
     fun readEntry(): String?
-    fun selectEntry(id: String)
+    fun selectEntry(id: String?)
     fun observeEntry(onChanged: (String?) -> Unit): () -> Unit
 }
 

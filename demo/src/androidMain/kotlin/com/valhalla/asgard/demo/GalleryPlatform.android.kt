@@ -20,11 +20,11 @@ internal actual fun rememberGalleryPlatform(): GalleryPlatform {
 
 private class AndroidGalleryPlatform(private val context: Context) : GalleryPlatform {
     private val preferences = context.getSharedPreferences("gallery", Context.MODE_PRIVATE)
-    private val history = mutableStateListOf<String>()
+    private val history = mutableStateListOf<String?>()
     private val listeners = mutableSetOf<(String?) -> Unit>()
     val canGoBack get() = history.size > 1
 
-    init { history.add(preferences.getString("entry", null) ?: "asgardheader") }
+    init { history.add(preferences.getString("entry", null)) }
 
     override fun onThemeChanged(dark: Boolean) {
         val activity = generateSequence(context) { (it as? ContextWrapper)?.baseContext }
@@ -45,7 +45,7 @@ private class AndroidGalleryPlatform(private val context: Context) : GalleryPlat
     }
 
     override fun readEntry(): String? = history.lastOrNull()
-    override fun selectEntry(id: String) {
+    override fun selectEntry(id: String?) {
         if (history.lastOrNull() != id) history.add(id)
         changed()
     }
