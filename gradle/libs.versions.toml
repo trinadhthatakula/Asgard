@@ -2,8 +2,8 @@
 # Bleeding-edge KMP toolchain (matches the verified LedgerX combo; keep latest, no downgrade).
 agp = "9.6.0-alpha06"
 kotlin = "2.4.21"
-composeMultiplatform = "1.13.0-beta02"
-material3Cmp = "1.13.0-beta02"
+composeMultiplatform = "1.13.0-rc01"
+material3Cmp = "1.13.0-rc01"
 compileSdk = "37"
 compileSdkMinor = "2"
 minSdk = "28"
