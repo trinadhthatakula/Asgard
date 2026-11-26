@@ -27,7 +27,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import asgard.demo.generated.resources.Res
+import asgard.demo.generated.resources.bifrost
 import com.valhalla.asgard.components.*
+import org.jetbrains.compose.resources.painterResource
 
 private val entriesById = asgardCatalog.associateBy { it.id }
 
@@ -141,7 +144,7 @@ private fun GalleryBar(onHome: () -> Unit, onBrowse: () -> Unit, onTheme: () -> 
                     .heightIn(min = 48.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Surface(color = colors.primaryContainer, contentColor = colors.onPrimaryContainer, shape = MaterialTheme.shapes.small) {
-                        Icon(Icons.Rounded.Bolt, null, Modifier.padding(5.dp).size(23.dp))
+                        Icon(painterResource(Res.drawable.bifrost), null, Modifier.padding(5.dp).size(23.dp))
                     }
                     Text("Asgard", style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }

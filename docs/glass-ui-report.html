@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f8f6f0">
+  <link rel="icon" type="image/svg+xml" href="bifrost.svg">
   <title>Opt-in glass for Asgard · Engineering report</title>
   <style>
     /* Embedded type and satellite imagery keep this report usable offline. */
@@ -26,7 +27,7 @@
     .wrap { width: min(1420px, 100%); margin: auto; padding-inline: clamp(20px,5.5vw,84px); }
     .mast { display: flex; align-items: center; gap: 18px; min-height: 74px; border-bottom: 1px solid var(--line); }
     .brand { display: flex; align-items: center; gap: 10px; font-size: 25px; font-weight: 600; letter-spacing: -.075em; }
-    .mark { width: 28px; height: 25px; background: var(--ink); clip-path: polygon(48% 0,100% 100%,72% 100%,47% 48%,33% 77%,51% 77%,62% 100%,0 100%); }
+    .mark { width: 28px; height: 28px; fill: currentColor; }
     .mast .label { padding-left: 18px; border-left: 1px solid var(--line); }
     .mast time { margin-left: auto; color: var(--muted); font-size: 13px; }
     .label { color: var(--muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .13em; }
@@ -168,7 +169,10 @@
   <a class="skip" href="#recommendation">Skip to report</a>
   <div class="wrap">
     <header class="mast">
-      <span class="brand"><span class="mark" aria-hidden="true"></span>Asgard</span>
+      <span class="brand"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M4 62 C18 62 24 50 32 36 C41 20 51 12 65 12 C83 12 96 26 96 46 L96 73 L83 73 L83 46 C83 33 76 25 65 25 C55 25 49 31 42 43 C32 61 23 75 4 75 Z" />
+        <path d="M8 82 C26 81 36 68 47 48 C54 36 59 32 66 32 C73 32 77 38 77 47 L77 82 L64 82 L64 49 C64 46 62 47 60 51 C47 74 36 90 16 94 Z" />
+      </svg>Asgard</span>
       <span class="label">Engineering report</span>
       <time datetime="2026-11-22">22 Nov 2026</time>
     </header>
