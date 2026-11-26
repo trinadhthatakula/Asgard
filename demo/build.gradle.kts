@@ -50,7 +50,6 @@ kotlin {
 }
 
 // Identify the source behind a preview without claiming that an untagged API is published.
-val galleryVersion = providers.gradleProperty("VERSION_NAME").orElse("development")
 val galleryRevision = providers.exec {
     commandLine("git", "describe", "--always", "--dirty")
 }.standardOutput.asText.map { it.trim() }
@@ -60,7 +59,8 @@ val galleryExactTag = providers.exec {
 }.standardOutput.asText.map { it.trim() }
 val galleryInfoDirectory = layout.buildDirectory.dir("generated/galleryInfo")
 abstract class GenerateGalleryBuildInfo : DefaultTask() {
-    @get:org.gradle.api.tasks.Input abstract val sourceVersion: org.gradle.api.provider.Property<String>
+    @get:org.gradle.api.tasks.Input abstract val libraryVersion: org.gradle.api.provider.Property<String>
+    @get:org.gradle.api.tasks.Input abstract val galleryVersionName: org.gradle.api.provider.Property<String>
     @get:org.gradle.api.tasks.Input abstract val sourceRevision: org.gradle.api.provider.Property<String>
     @get:org.gradle.api.tasks.Input abstract val sourceTag: org.gradle.api.provider.Property<String>
     @get:InputFile @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -73,7 +73,7 @@ abstract class GenerateGalleryBuildInfo : DefaultTask() {
             .replace("$", "\\$").replace("\n", "\\n") + "\""
         val target = outputDirectory.get().file("com/valhalla/asgard/demo/GalleryBuildInfo.kt").asFile
         target.parentFile.mkdirs()
-        val version = sourceVersion.get()
+        val version = libraryVersion.get()
         val revision = sourceRevision.get()
         val released = sourceTag.get() == "v$version" && !revision.endsWith("-dirty")
         // The installed skill and both galleries use the same component ratings.
@@ -86,7 +86,8 @@ abstract class GenerateGalleryBuildInfo : DefaultTask() {
         target.writeText("""
             package com.valhalla.asgard.demo
             internal object GalleryBuildInfo {
-                const val version = ${quoted(version)}
+                const val galleryVersionName = ${quoted(galleryVersionName.get())}
+                const val libraryVersion = ${quoted(version)}
                 const val revision = ${quoted(revision)}
                 const val released = $released
             }
@@ -95,7 +96,8 @@ abstract class GenerateGalleryBuildInfo : DefaultTask() {
     }
 }
 val generateGalleryBuildInfo = tasks.register<GenerateGalleryBuildInfo>("generateGalleryBuildInfo") {
-    sourceVersion.set(galleryVersion)
+    libraryVersion.set(providers.gradleProperty("VERSION_NAME"))
+    galleryVersionName.set(providers.gradleProperty("galleryVersionName"))
     sourceRevision.set(galleryRevision)
     sourceTag.set(galleryExactTag)
     glassGuide.set(rootProject.layout.projectDirectory.file(".claude/skills/asgard-ui/references/glass.md"))

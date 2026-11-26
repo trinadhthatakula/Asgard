@@ -121,10 +121,10 @@ fun GalleryApp(initialEntry: String? = null) {
                     AsgardSettingToggleRow("Right-to-left layout", rtl, { rtlOverride = it }, modifier = Modifier.fillMaxWidth())
                     AsgardLabeledSlider("Text scale", textScale, { textScale = it }, valueRange = 1f..2f, steps = 1, valueLabel = "${textScale}×")
                     HorizontalDivider(Modifier.padding(vertical = 12.dp))
-                    Text("${if (GalleryBuildInfo.released) "Release" else "Development source"} · ${GalleryBuildInfo.version} · ${GalleryBuildInfo.revision}",
+                    Text("Gallery ${GalleryBuildInfo.galleryVersionName} · ${GalleryBuildInfo.revision}",
                         style = MaterialTheme.typography.labelMedium)
-                    Text(if (GalleryBuildInfo.released) "com.trinadhthatakula:asgard:${GalleryBuildInfo.version}"
-                        else "New APIs require this source build or a matching SNAPSHOT.",
+                    Text(if (GalleryBuildInfo.released) "Released library · com.trinadhthatakula:asgard:${GalleryBuildInfo.libraryVersion}"
+                        else "Library ${GalleryBuildInfo.libraryVersion} development source. New APIs require this build or a matching SNAPSHOT.",
                         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
