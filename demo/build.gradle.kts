@@ -1,3 +1,7 @@
+import java.security.MessageDigest
+import java.util.HexFormat
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKmpLibrary)
@@ -107,4 +111,17 @@ tasks.named<ProcessResources>("wasmJsProcessResources") {
     val policy = galleryPrivacyPolicy.get()
     inputs.property("privacyPolicy", policy)
     filesMatching("privacy/index.html") { expand(mapOf("policy" to policy)) }
+}
+
+// A cached entry script can request Wasm files from a previous Pages deployment.
+tasks.named<Sync>("wasmJsBrowserDistribution") {
+    val bundle = tasks.named<KotlinWebpack>("wasmJsBrowserProductionWebpack").flatMap { it.mainOutputFile }
+    val digest = providers.fileContents(bundle).asBytes.map {
+        HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(it))
+    }
+    inputs.property("galleryBundleDigest", digest)
+    filesMatching("index.html") {
+        val versionedScript = "demo.js?v=${digest.get()}"
+        filter { line -> line.replace("demo.js?v=development", versionedScript) }
+    }
 }
