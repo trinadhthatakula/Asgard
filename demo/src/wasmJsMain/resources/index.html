@@ -10,10 +10,52 @@
     <link rel="privacy-policy" href="privacy/">
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
     <title>Asgard · Component gallery</title>
-    <style>html, body { margin: 0; height: 100%; background: #f8faf3; }@media (prefers-color-scheme: dark) { html, body { background: #000; } }</style>
+    <style>
+        :root { color-scheme: light dark; font: 100%/1.5 system-ui, sans-serif; }
+        html, body, #gallery { margin: 0; width: 100%; height: 100%; }
+        body, #startup { background: #f8faf3; color: #1b211c; }
+        #startup { position: fixed; inset: 0; z-index: 1; overflow: auto; padding: clamp(1.25rem, 6vw, 5rem); }
+        #startup h1 { margin: 0; }
+        #startup a { color: #275e3d; }
+        #retry {
+            min-height: 44px; padding: .5rem 1rem; margin-bottom: 1rem; border: 1px solid currentColor;
+            border-radius: 1.5rem; background: transparent; color: inherit; font: inherit; cursor: pointer;
+        }
+        #startup nav { display: flex; flex-wrap: wrap; gap: 1rem; }
+        @media (prefers-color-scheme: dark) {
+            body, #startup { background: #000; color: #e1e7dd; }
+            #startup a { color: #a5d9b1; }
+        }
+    </style>
 </head>
 <body>
-<noscript><p>Explore the <a href="llms-full.txt">Asgard component catalog and Kotlin examples</a> or read the <a href="llms.txt">Asgard UI skill guide</a>. <a href="privacy/">Privacy policy</a></p></noscript>
-<script src="demo.js"></script>
+<main id="startup">
+    <h1>Asgard Gallery</h1>
+    <p id="startup-status" role="status">Enable JavaScript to use the interactive gallery.</p>
+    <button id="retry" type="button" hidden>Retry loading</button>
+    <nav aria-label="Gallery links">
+        <a href="llms-full.txt">Component catalog and Kotlin examples</a>
+        <a href="llms.txt">Asgard UI skill guide</a>
+        <a href="privacy/">Privacy policy</a>
+    </nav>
+</main>
+<div id="gallery"></div>
+<script>
+    document.getElementById("startup-status").textContent = "Loading the interactive gallery…";
+    function showStartupError() {
+        const message = document.getElementById("startup-status");
+        if (!message) return;
+        message.textContent = "The interactive gallery could not start. Retry or open the text catalog below.";
+        document.getElementById("retry").hidden = false;
+    }
+    window.addEventListener("error", showStartupError);
+    window.addEventListener("unhandledrejection", showStartupError);
+    document.getElementById("retry").addEventListener("click", () => {
+        const url = new URL(location.href);
+        url.searchParams.set("reload", Date.now().toString());
+        location.replace(url);
+    });
+</script>
+<script src="demo.js?v=development" onerror="showStartupError()"></script>
 </body>
 </html>
