@@ -1,0 +1,29 @@
+Asgard Gallery is a hands-on catalog of Jetpack Compose UI components for Android. Explore 54 live examples, change their settings and copy the Kotlin code behind a component. If you are building a Material 3 app, reviewing a design or learning Compose, you can try an interaction on your phone before deciding how to use it in your own layout.
+
+Find a component
+Search the index by component name or category. Start with a navigation bar, a picker or a chart, then open its live preview. The landing page also takes you straight to glass surfaces, stacked bars and a progress ring. Use Android Back to return to your filtered list and try the next result.
+
+Explore Material 3 navigation
+Switch a navigation bar between docked and floating layouts. Compare an expanding selection with segmented destinations, change when labels appear and see how the same destinations look in a navigation rail. Try connected button groups to compare single selection, multiple selections and different indicator shapes.
+
+Build a feel for Compose charts
+Adjust the number of points or the amplitude of a line chart. Turn smoothing, area fill or a second series on and off to see how the plot changes. Compare categories in a stacked bar chart, follow a time interval on a timeline or tap a day in a calendar heatmap. Legends let you see how a chart communicates which color belongs to each series.
+
+Experiment with frosted glass
+Move a glacier image beneath a floating toolbar and navigation bar. Toggle the glass surfaces independently, then try reduced transparency to compare the result. Other examples have a glass preview switch with a compatibility score and guidance for that component. Use the live sample to check whether text, selection and actions are easy to read over the background.
+
+Try everyday Android UI patterns
+Open a bottom sheet, search a country picker or step through a dialog. Try setting rows, switches, sliders and steppers. Explore avatar initials, fallback icons, badges and stat tiles. Change a progress ring, compare loading and empty states, or drag a scrollbar in a list or grid. Each example gives you a small, focused way to explore a decision that comes up when building an Android screen.
+
+Compare stat tiles with a status dot, an icon badge or an animated numeral. Tap the steps tile to change the count and watch how the digits move. These small variations help you decide which information needs a label and which values are easy to follow at a glance.
+
+Preview themes and text
+See how components pick up the surrounding Material theme. The Asgard palette pairs Outfit headings and body text with Fira Code labels and Kotlin snippets. Switch between light and AMOLED dark mode or try another accent palette. Increase the text scale and turn on right-to-left layout to inspect labels, spacing and navigation in the same example.
+
+Take a Kotlin example with you
+The minimal example below each preview shows how to call the component. Select part of the snippet or tap Copy to put the example on your clipboard. A chart example shows how data is passed in, while a navigation example shows where selection and callbacks belong. Use these as starting points when integrating the Asgard Compose library into your own project.
+
+For developers and designers
+During a design review, pass the phone around so everyone can try the same control. For a dashboard, compare a stat tile, a ring and a chart to decide how much detail an individual value needs. For a form, try a segmented control and a picker to see how each handles a short or long set of choices. For a settings screen, increase text size before deciding how much room to leave around a switch.
+
+The Android app and the web gallery share the same component catalog. Browse on a large screen to use the searchable sidebar, then open the same component on a phone to try touch interactions. The catalog covers reusable Compose building blocks, with short descriptions, working previews and example code together in one place.

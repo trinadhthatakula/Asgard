@@ -74,6 +74,7 @@ Run the permanent `:androidApp` module (`com.valhalla.asgard.app`) in Android St
 with `./gradlew :androidApp:installDebug`. It shares the web gallery's catalog and includes reusable
 device tests. See [Android gallery and tests](docs/android-gallery.md) for build-free reruns of the
 installed test APKs and the independently compiled published-version compatibility fixture.
+The [Fastlane guide](fastlane/README.md) covers the gallery’s Google Play listing, artwork and signed app bundle.
 
 ## 📦 Install
 
