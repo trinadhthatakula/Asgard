@@ -16,7 +16,7 @@ android {
         applicationId = "com.valhalla.asgard.app"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.compileSdk.get().toInt()
-        versionCode = 1
+        versionCode = providers.gradleProperty("galleryVersionCode").map(String::toInt).orElse(1).get()
         versionName = providers.gradleProperty("VERSION_NAME").get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

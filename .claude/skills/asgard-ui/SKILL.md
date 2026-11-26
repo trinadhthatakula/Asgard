@@ -54,7 +54,7 @@ the same position.
   state lifetime and accessibility labels to the host; the examples are starting points.
 
 The repository's [component expansion guide](https://github.com/trinadhthatakula/Asgard/blob/v2.2.0/docs/component-expansion.md)
-and [gallery](https://trinadhthatakula.github.io/Asgard/) give further examples. If a signature or
+and [gallery](https://asgard.trinadhthatakula.com/) give further examples. If a signature or
 version is uncertain, inspect the source for the **version actually used by the app**, rather than
 assuming the current main branch matches it.
 

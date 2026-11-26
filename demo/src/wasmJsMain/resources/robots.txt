@@ -1,0 +1,7 @@
+# Asgard Gallery. All search, AI retrieval and link-preview crawlers are welcome.
+User-agent: *
+Allow: /
+
+Sitemap: https://asgard.trinadhthatakula.com/sitemap.xml
+# Agent guide: https://asgard.trinadhthatakula.com/llms.txt
+# Full reference: https://asgard.trinadhthatakula.com/llms-full.txt

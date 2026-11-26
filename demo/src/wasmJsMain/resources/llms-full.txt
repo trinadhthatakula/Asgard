@@ -1,0 +1,1018 @@
+# Asgard Gallery — full agent reference
+
+Use the `asgard-ui` skill for Asgard integration. Read the maintained skill at https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/SKILL.md and check the consuming project's pinned version.
+
+# Asgard UI integration
+
+Asgard supplies Compose components that use the host's Material theme. The app owns its routes,
+selection, persistence, permissions, localized strings, icons, images and business rules. Use
+`MaterialTheme` or `MaterialExpressiveTheme`, and pass theme colors and shapes when customizing.
+
+## Version and setup
+
+This skill is verified against **Asgard 2.2.0**. Respect the consuming project's pinned version;
+check the corresponding library sources or release notes before using a newer API. Asgard 2.1.0
+introduced the expanded components and configurable navigation; 2.1.1 includes motion and
+rendering fixes. Version 2.2.0 adds the optional glass artifact and per-component previews.
+
+For a new integration, add Maven Central and use the KMP umbrella coordinate:
+
+```kotlin
+// Android module dependencies, or KMP commonMain.dependencies:
+implementation("com.trinadhthatakula:asgard:2.2.0")
+```
+
+The umbrella resolves `asgard-android` or `asgard-wasm-js` automatically. Version 2.2.0's Android
+artifact requires **compile SDK 37.2**, supports `minSdk` 28, and targets JVM 21; align the host's
+Android Gradle Plugin, SDK and Compose versions before changing them. The library targets Android
+and wasmJs; do not assume it supplies iOS or desktop variants. A plugin hosted by an app that already
+provides Asgard may need `compileOnly` and must match the host's version.
+
+Compose UI, foundation, Material 3 and kotlinx-datetime types are exposed by the library. Supply
+icons and image-loading content from the host. Public APIs can expose experimental Material types:
+opt in at the call site when the types or theme used by that recipe require it; do not assume a
+library-internal opt-in applies to consumer code. Use named arguments; `modifier` is not always in
+the same position.
+
+## Choose the right API
+
+- For per-component frosted glass in 2.2.0+, consult the [glass recipes and component compatibility scores](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/references/glass.md). Both galleries expose the same scores and a per-entry preview switch.
+- **Navigation or connected choices:** read [navigation and selection](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/references/navigation.md).
+  It covers the configuration overloads, floating placement, multiselect, state and shape choices.
+- **Sheets, pickers, rows, actions, avatars, status or loading:** read the complete
+  [component index and contracts](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/references/components.md).
+- **Line, bar, timeline, heatmap or legend:** read [charts](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/references/charts.md).
+- For complete Kotlin examples with imports, state and callbacks, read
+  [navigation examples](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/examples/NavigationExamples.kt) or [component examples](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/examples/ComponentExamples.kt).
+  These files are compiled as common code by the skill examples module on Android and Wasm. Adapt text,
+  state lifetime and accessibility labels to the host; the examples are starting points.
+
+The repository's [component expansion guide](https://github.com/trinadhthatakula/Asgard/blob/v2.2.0/docs/component-expansion.md)
+and [gallery](https://asgard.trinadhthatakula.com/) give further examples. If a signature or
+version is uncertain, inspect the source for the **version actually used by the app**, rather than
+assuming the current main branch matches it.
+
+## Integration checks
+
+Use caller-owned, stable state and keys. Bound lazy content and reserve space for overlays and
+scrollbars; apply each system inset once. Provide localized accessibility labels for interactive
+icons and controls. Verify relevant small/large-screen and font-scale behavior, including selection
+and dismissal. Run the consuming project's build and focused tests; for KMP changes check every
+supported target used by the host.
+
+# Charts (2.2.0)
+
+Import from `com.valhalla.asgard.charts`. Supply localized formatters and accessibility text as
+needed; choose theme colors at the call site and give charts bounded dimensions.
+
+- `AsgardLineChart` draws `AsgardLineSeries` of `AsgardChartPoint`; `AsgardLineSmoothing` chooses
+  straight or cubic lines. Provide `yValueFormatter` and optional x labels.
+- `AsgardStackedBarChart` renders `AsgardBarStack` values with caller-supplied segment colors.
+- `AsgardTimelineBar` renders `AsgardTimelineSegment` values within an explicit time window.
+- `AsgardChartLegend` and `AsgardLegendItem` render `AsgardLegendEntry` with
+  `AsgardLegendSwatch` choices. `AsgardPulseRing` is decorative, not a progress indicator.
+- `AsgardCalendarHeatmap` uses `AsgardHeatmapEntry` and kotlinx-datetime `LocalDate` values.
+  `asgardHeatmapCells` returns `AsgardHeatmapCell` values for an inclusive, week-padded range.
+  Duplicates sum; missing differs from zero. Inputs must be finite and nonnegative, and ranges are
+  limited to ten years. Interactive cells reserve at least 48 dp. Provide localized day/cell labels.
+
+See the heatmap example in [ComponentExamples.kt](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/examples/ComponentExamples.kt).
+
+# Component index and contracts (2.2.0)
+
+Import from `com.valhalla.asgard.components`, except navigation and charts in their respective
+packages. The source KDoc has complete parameters; these descriptions help choose an API.
+
+## Structure and content
+
+- `AsgardHeader`: screen heading with optional back navigation, icon, leading and actions slots.
+- `AsgardSectionCard`: groups content under a title.
+- `AsgardListRow`: title/subtitle/caption with optional icon, click and trailing content.
+- `AsgardFeatureRow`: onboarding feature icon and explanatory text.
+- `AsgardOnboardingScaffold`: onboarding page with title, content and actions.
+- `AsgardAvatar`: caller-supplied image slot over initials or an icon fallback. A clickable avatar
+  requires a nonblank `contentDescription`; a null description is decorative. No image loader is
+  bundled. Size must be positive.
+
+## Inputs and actions
+
+- `ConnectedButtonGroup`, `ConnectedButtonGroupItem` and `ConnectedButtonGroupShapes`: single- or
+  multiselect connected controls; see [navigation](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/references/navigation.md).
+- `AsgardSearchBar`, `AsgardLabeledSlider`, `AsgardStepperRow`: caller-controlled inputs.
+- `AsgardTonalIconButton` and `AsgardActionItem`: icon button and labeled action tile.
+- `AsgardActionToolbar` displays `AsgardToolbarAction` items with an optional fixed leading slot.
+  Action IDs must be unique. The host supplies localized labels, availability and permissions.
+- `AsgardPicker` renders caller-filtered `AsgardPickerSection` items with query, selection and
+  callbacks controlled by the host. Give it bounded height and unique section IDs and item keys
+  within each section. Items can recur in different sections. The app owns filtering, history and
+  whether selection dismisses it. `AsgardPickerSheet` hosts a picker in a modal sheet.
+
+## Sheets and lists
+
+- `AsgardSheet` offers bounded modal header/body/footer slots; `AsgardActionSheet` provides a title
+  and wrapping action footer. Sheet visibility and `SheetState` belong to the caller. Body scrolling
+  is on by default; set `scrollBody = false` for a bounded lazy list. The sheet owns its content
+  insets unless the host passes zero. `rememberAsgardSheetDismiss` hides before invoking removal;
+  a cancelled hide does not call the callback.
+- `AsgardLazyScrollbar` overlays a 48 dp-wide target beside a vertical lazy list or grid. Use
+  `rememberAsgardScrollbarState` for `LazyListState` or `LazyGridState`, or implement
+  `AsgardScrollbarState` and `AsgardScrollbarMetrics`. Reserve the end gutter in the content;
+  the scrollbar does not resize the list. `AsgardScrollbarVisibility` selects always-visible or
+  while-scrolling behavior. Localize its label and visible range.
+
+## Data, feedback and settings
+
+- `AsgardStatCard`, `AsgardStatTile` and `AsgardAnimatedNumeral`: large and compact metrics or
+  animated numbers. `AsgardStatCard` uses `iconTint` in 2.x, not the 1.x `iconColor`.
+- `AsgardBadge` and `StatusChip`: small filled/outlined or status labels.
+- `AsgardProgressRing`: progress gauge with a centered content slot.
+- `AsgardBanner`, `AsgardEmptyState`, `AsgardLoadingState`, `AsgardShimmer` and
+  `AsgardDialogScaffold`: feedback, empty/loading, skeleton and confirmation UI.
+- `AsgardSettingRow` and `AsgardSettingToggleRow`: preference rows with caller-controlled values.
+- `AsgardProBadge`, `AsgardUpgradeCard` and `AsgardLockedOverlay`: optional gating presentation;
+  the host owns entitlement and purchase decisions. A locked overlay hides underlying semantics
+  and intercepts input; blur may not be available on all platforms.
+
+`AsgardDefaults` resolves shared defaults from the theme. `Modifier.expressivePress` and
+`Modifier.animateExpressiveResize` expose motion helpers. See [component examples](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/examples/ComponentExamples.kt)
+for complete recipes; inspect the corresponding version's source for all optional parameters.
+
+## Opt-in glass in 2.2.0
+
+Asgard 2.2.0 adds an `AsgardContainer` overload to the action toolbar and configured
+navigation bar. Apps using the optional `:asgard-glass` module can register their backdrop with
+`rememberAsgardGlassSource` and `Modifier.asgardGlassSource`, then pass `source.frosted()` to
+individual instances. Use `Modifier.asgardGlass` on arbitrary Compose components or `AsgardGlassSurface` for slot content. See [glass compatibility](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/references/glass.md) for each component's rating. Use matching versions of core and the add-on.
+
+# Glass UI in Asgard 2.2.0
+
+Add `implementation("com.trinadhthatakula:asgard-glass:2.2.0")` from Maven Central to your Android or KMP common dependencies. The add-on brings in matching Asgard core. Core-only apps retain their existing Material controls. Within a screen, remember one `AsgardGlassSource`, mark the background subtree with `Modifier.asgardGlassSource(source)`, and draw the chosen controls as siblings above it. Keep overlays outside the captured subtree.
+
+```kotlin
+import com.valhalla.asgard.glass.asgardGlass
+import com.valhalla.asgard.glass.asgardGlassSource
+import com.valhalla.asgard.glass.rememberAsgardGlassSource
+
+val source = rememberAsgardGlassSource(enabled = glassTitle && !reduceTransparency)
+Box {
+    PhotoFeed(Modifier.fillMaxSize().asgardGlassSource(source))
+    Text(
+        text = title,
+        modifier = Modifier.asgardGlass(source, enabled = glassTitle, shape = MaterialTheme.shapes.medium).padding(12.dp),
+        color = MaterialTheme.colorScheme.onSurface,
+    )
+}
+```
+
+`Modifier.asgardGlass` supplies a shaped background to any modifier-taking composable. Put layout margins before it and inner padding after it. Passing `enabled = false` to the modifier preserves the original modifier chain. Pass a disabled **source** to retain a solid themed fill for reduced transparency. For a filled Material button or card, give its own container a transparent color while glass is selected and an explicit matching content color. Keep checked, disabled, pressed and error states distinguishable. For content without a modifier slot, use `AsgardGlassSurface`; an opaque child still needs a transparent fill or a background slot. Fully opaque imagery can use a glass caption or frame.
+
+A filled Asgard card already supplies theme colors for its text. Clear just its fill when selected. Here `Photo` is caller-provided image content.
+
+```kotlin
+val shape = MaterialTheme.shapes.large
+val fill = MaterialTheme.colorScheme.surfaceContainer
+val source = rememberAsgardGlassSource(enabled = glassCard && !reduceTransparency)
+Box {
+    Photo(Modifier.matchParentSize().asgardGlassSource(source))
+    AsgardStatCard(
+        label = "Voltage", value = "5.00", unit = "V",
+        modifier = Modifier.asgardGlass(source, enabled = glassCard, shape = shape, containerColor = fill),
+        shape = shape,
+        containerColor = if (glassCard) Color.Transparent else fill,
+        onClick = openVoltageDetails,
+    )
+}
+```
+
+Use `source.frosted()` with the toolbar or configured navigation bar for their exact inner bounds. Android hardware-accelerated windows on API 33+ and browser Wasm support frost. Older Android versions use the solid fallback. Wasm also follows the browser's reduced-transparency preference.
+
+## Compatibility ratings
+
+These are Asgard's design and integration ratings for individual instances. **5** is a natural container with a direct integration. **4** is a good fit with explicit color, shape or state handling. **3** is situational because of density, imagery or interaction. **2** favors a surrounding surface or an in-window content slot. **1** reserves glass for a supporting surface because the component itself communicates through a visual effect. Ratings are independent of device performance. In the Android test app or browser gallery, choose **Browse → component → Preview glass**. Each entry starts with glass off and remembers its choice when you visit another entry and return. For modal components, turn on the switch and then open the sheet or dialog.
+
+| Component | Compatibility | Integration guidance |
+| --- | --- | --- |
+| `AsgardActionItem` | 4/5 | Frost the action tile and keep its icon and caption legible through the press animation. |
+| `AsgardActionSheet` | 2/5 | Put the source and frosted message inside the sheet window. Keep footer actions readable. |
+| `AsgardActionToolbar` | 5/5 | Use the container overload to share one backdrop across the toolbar actions. |
+| `AsgardAnimatedNumeral` | 3/5 | Draw a glass plate behind the numeral so its changing digits stay sharp. |
+| `AsgardAvatar` | 3/5 | Frost an initials or icon fill. An opaque photograph can use a glass frame. |
+| `AsgardBadge` | 4/5 | Match the pill shape, clear the badge fill and preserve the outline and text color. |
+| `AsgardBanner` | 4/5 | Use the banner shape and semantic tint. A custom gradient must leave the backdrop visible. |
+| `AsgardCalendarHeatmap` | 2/5 | Use one plate under the grid and retain distinct colors for missing, zero and selected dates. |
+| `AsgardChartLegend` | 4/5 | Frost the legend container once and keep all series swatches opaque. |
+| `AsgardDialogScaffold` | 2/5 | Use an in-window source for the dialog body and preserve the modal scrim. |
+| `AsgardEmptyState` | 4/5 | Use a bounded surface behind the empty-state icon and message. |
+| `AsgardFeatureRow` | 4/5 | Apply frost beneath the row and keep the feature icon badge distinct. |
+| `AsgardGlassSurface` | 5/5 | Pass the shared source and place custom content inside this shaped surface. |
+| `AsgardHeader` | 5/5 | Frost a pinned header over scrolling content and retain the host's title and action colors. |
+| `AsgardLabeledSlider` | 3/5 | Frost the group behind the slider while retaining the track, thumb and value colors. |
+| `AsgardLazyScrollbar` | 2/5 | Use a plate for the scroll area and preserve the thumb contrast and drag target. |
+| `AsgardLegendItem` | 4/5 | Place the label and swatch together on one small plate. |
+| `AsgardLineChart` | 2/5 | Use a single chart plate and keep plotted lines, axes and data labels sharp. |
+| `AsgardListRow` | 3/5 | Select individual rows or one shared list container. Measure fast scrolling with repeated effects. |
+| `AsgardLoadingState` | 3/5 | Frost the caption and spinner container, leaving the progress indicator distinct. |
+| `AsgardLockedOverlay` | 1/5 | Preserve the lock scrim and input interception. Put optional frost on the supporting content. |
+| `AsgardNavigationBar` | 5/5 | Use the configured bar's container slot so the floating margin stays clear. |
+| `AsgardNavigationRail` | 4/5 | Match the rail bounds and clear its fill. Retain the selected destination indicator. |
+| `AsgardOnboardingScaffold` | 3/5 | Keep the onboarding surface bounded and check long text over the brightest background. |
+| `AsgardPicker` | 3/5 | Place one surface behind the picker and keep its search, item labels and selection readable. |
+| `AsgardPickerSheet` | 2/5 | Place the backdrop and picker together inside the sheet body. |
+| `AsgardProBadge` | 4/5 | Retain the premium tint and its matching foreground on a pill-shaped surface. |
+| `AsgardProgressRing` | 2/5 | Keep the ring stroke and progress label sharp over a supporting plate. |
+| `AsgardPulseRing` | 2/5 | Leave the animated pulse in the foreground and use frost on its supporting surface. |
+| `AsgardSearchBar` | 4/5 | Keep the field outline, cursor, placeholder and error state legible over the fill. |
+| `AsgardSectionCard` | 5/5 | Frost the card once, clear its internal fill and share the background across its rows. |
+| `AsgardSettingRow` | 4/5 | Use a bounded row surface and retain contrast for both the label and trailing value. |
+| `AsgardSettingToggleRow` | 4/5 | Keep the switch track, thumb and checked state independent of the row background. |
+| `AsgardSheet` | 2/5 | Put a bounded source inside the sheet and frost the selected content slot. |
+| `AsgardShimmer` | 1/5 | Preserve the skeleton animation. Use glass only for its supporting surface. |
+| `AsgardStackedBarChart` | 2/5 | Draw one plate beneath the plot and preserve segment colors and axis labels. |
+| `AsgardStatCard` | 5/5 | Match the card shape, make the card fill transparent and retain label and value colors. |
+| `AsgardStatTile` | 5/5 | Frost an individual tile while keeping the number, icon and status dot sharp. |
+| `AsgardStepperRow` | 4/5 | Use one surface behind the value and controls and retain their disabled states. |
+| `AsgardTimelineBar` | 2/5 | Use a supporting plate and preserve the segment boundaries and time encoding. |
+| `AsgardTonalIconButton` | 4/5 | Match the button shape and clear its active fill while keeping a contrasting icon. |
+| `AsgardUpgradeCard` | 4/5 | Keep the call-to-action colors explicit when replacing the promotional card fill. |
+| `ConnectedButtonGroup` | 3/5 | Frost the group once and retain opaque checked indicators and distinct disabled segments. |
+| `StatusChip` | 4/5 | Use a pill-shaped background and retain the status label and foreground color. |
+
+# Navigation and selection (2.2.0)
+
+Use `com.valhalla.asgard.navigation` for `AsgardNavItem`, `AsgardNavigationBar` and
+`AsgardNavigationRail`. Both retain the legacy simple overload and offer an overload accepting
+`AsgardNavigationConfiguration`. The caller owns the selected index and navigation/back stack.
+
+## Configuration
+
+`AsgardNavigationConfiguration` independently selects `AsgardNavigationPlacement` (`Docked`,
+`Floating`), `AsgardNavigationAppearance` (`Expanding`, `Segmented`, `Standard`),
+`AsgardNavigationLabels` (`Selected`, `Always`, `Hidden`, `SelectedCaptionWhenNeeded`),
+`showIcons`, container/indicator shapes, maximum width, padding, spacing, floating margin,
+elevation and `AsgardNavigationInsets` (`None`, `NavigationBars`, `SafeDrawing`). Nonpositive
+width and negative spacing, margin or elevation are rejected.
+
+**Floating is a surface treatment, not an overlay.** The host chooses where to place the bar.
+For a true overlay, place it above scrolling content and reserve its measured height for list tails,
+actions and scrollbars; coordinate keyboard/system insets with the host rather than adding them
+twice. For a docked bar, a `Scaffold` bottom slot is appropriate. The rail's configuration overload
+also supports header and footer. Empty bars render nothing; invalid selected indices highlight no
+item. Text-only navigation keeps names visible; narrow layouts can scroll or use captions.
+
+See [NavigationExamples.kt](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/examples/NavigationExamples.kt) for a measured floating overlay.
+
+## Connected buttons
+
+`ConnectedButtonGroup` accepts `ConnectedButtonGroupItem.Label`, `.Icon` and `.IconWithLabel`.
+Items must be nonempty. `selectedIndex`/`onItemSelected` is single-select;
+`selectedIndices`/`onSelectionChanged` is caller-controlled multiselect. An empty set is allowed;
+reject it in the callback only if the product requires at least one choice. Out-of-range indices
+are ignored; callbacks receive a new set. Item and group `enabled` flags combine.
+
+The optional shape overload takes `ConnectedButtonGroupShapes`: `Expressive`, `FixedConnected`,
+`Uniform(shape)` or `Custom(leading, middle, trailing, standalone)`. Shape behavior is separate
+from colors; default checked colors are the theme's primary/onPrimary. `Custom` exposes Material
+`ToggleButtonShapes`, which can require an experimental Material opt-in at the call site.
+See the multiselect example in [NavigationExamples.kt](https://raw.githubusercontent.com/trinadhthatakula/Asgard/main/.claude/skills/asgard-ui/examples/NavigationExamples.kt).
+
+## ComponentExamples
+
+```kotlin
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
+package com.valhalla.asgard.skill.examples
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import com.valhalla.asgard.charts.AsgardCalendarHeatmap
+import com.valhalla.asgard.charts.AsgardHeatmapEntry
+import com.valhalla.asgard.components.AsgardActionSheet
+import com.valhalla.asgard.components.AsgardActionToolbar
+import com.valhalla.asgard.components.AsgardAvatar
+import com.valhalla.asgard.components.AsgardLazyScrollbar
+import com.valhalla.asgard.components.AsgardPicker
+import com.valhalla.asgard.components.AsgardPickerSection
+import com.valhalla.asgard.components.AsgardPickerSheet
+import com.valhalla.asgard.components.AsgardSheet
+import com.valhalla.asgard.components.AsgardToolbarAction
+import com.valhalla.asgard.components.rememberAsgardScrollbarState
+import com.valhalla.asgard.components.rememberAsgardSheetDismiss
+import kotlinx.datetime.LocalDate
+
+/** Compose only while open. The host filters choices and decides what selection means. */
+@Composable
+fun PickerSheetExample(choices: List<String>, selected: String?, onSelected: (String) -> Unit, onDismissed: () -> Unit) {
+    var query by remember { mutableStateOf("") }
+    val filtered = remember(choices, query) { choices.distinct().filter { it.contains(query, ignoreCase = true) } }
+    val sheetState = rememberBottomSheetState(SheetValue.Hidden, enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded))
+    val dismiss = rememberAsgardSheetDismiss(sheetState, onDismissed)
+    AsgardPickerSheet(onDismissRequest = onDismissed, title = "Choose an item", sheetState = sheetState) {
+        AsgardPicker(
+            sections = listOf(AsgardPickerSection(id = "all", title = null, items = filtered)),
+            query = query,
+            onQueryChange = { query = it },
+            itemKey = { it },
+            itemLabel = { it },
+            isSelected = { it == selected },
+            onSelect = { onSelected(it); dismiss() },
+            modifier = Modifier.fillMaxWidth().height(320.dp),
+            searchPlaceholder = "Search items",
+            emptyLabel = "No items",
+            clearLabel = "Clear",
+        )
+    }
+}
+
+/** Caller removes the sheet after its animated hide. Localize all visible text in an app. */
+@Composable
+fun SheetExample(onDismissed: () -> Unit) {
+    val sheetState = rememberBottomSheetState(SheetValue.Hidden, enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded))
+    val dismiss = rememberAsgardSheetDismiss(sheetState, onDismissed)
+    AsgardSheet(
+        onDismissRequest = onDismissed,
+        sheetState = sheetState,
+        header = { Text("Options") },
+        footer = { TextButton(onClick = dismiss) { Text("Done") } },
+    ) { Text("Sheet content") }
+}
+
+@Composable
+fun ActionSheetExample(onDismissed: () -> Unit) {
+    val sheetState = rememberBottomSheetState(SheetValue.Hidden, enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded))
+    val dismiss = rememberAsgardSheetDismiss(sheetState, onDismissed)
+    AsgardActionSheet(
+        onDismissRequest = onDismissed,
+        title = "Confirm",
+        sheetState = sheetState,
+        actions = { TextButton(onClick = dismiss) { Text("Close") } },
+    ) { Text("Review the action before continuing.") }
+}
+
+/** The scrollbar is an overlay; reserve its 48 dp target within the list host. */
+@Composable
+fun ScrollbarExample(rows: List<String>) {
+    val listState = rememberLazyListState()
+    Box(Modifier.fillMaxWidth().height(320.dp)) {
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(end = 48.dp), state = listState) {
+            items(rows) { row -> Text(row) }
+        }
+        AsgardLazyScrollbar(
+            state = rememberAsgardScrollbarState(listState),
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+            label = "Scroll items",
+            rangeLabel = { first, last -> "Items ${first + 1} to ${last + 1}" },
+        )
+    }
+}
+
+@Composable
+fun ToolbarExample(icon: ImageVector, onShare: () -> Unit) {
+    AsgardActionToolbar(
+        actions = listOf(AsgardToolbarAction(id = "share", label = "Share", icon = icon, onClick = onShare)),
+        leading = { Text("1 selected") },
+    )
+}
+
+@Composable
+fun AvatarExample(onOpenProfile: () -> Unit) {
+    AsgardAvatar(initials = "TT", contentDescription = "Open profile", onClick = onOpenProfile)
+}
+
+@Composable
+fun CalendarExample(entries: List<AsgardHeatmapEntry>, selected: LocalDate?, onSelected: (LocalDate) -> Unit) {
+    AsgardCalendarHeatmap(
+        entries = entries,
+        start = LocalDate(2026, 11, 1),
+        endInclusive = LocalDate(2026, 11, 30),
+        selectedDate = selected,
+        onDateSelected = onSelected,
+        cellLabel = { date, value -> "$date: ${value ?: "No data"}" },
+    )
+}
+```
+
+## NavigationExamples
+
+```kotlin
+package com.valhalla.asgard.skill.examples
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import com.valhalla.asgard.components.ConnectedButtonGroup
+import com.valhalla.asgard.components.ConnectedButtonGroupItem
+import com.valhalla.asgard.components.ConnectedButtonGroupShapes
+import com.valhalla.asgard.navigation.AsgardNavItem
+import com.valhalla.asgard.navigation.AsgardNavigationAppearance
+import com.valhalla.asgard.navigation.AsgardNavigationBar
+import com.valhalla.asgard.navigation.AsgardNavigationConfiguration
+import com.valhalla.asgard.navigation.AsgardNavigationInsets
+import com.valhalla.asgard.navigation.AsgardNavigationLabels
+import com.valhalla.asgard.navigation.AsgardNavigationPlacement
+
+/** The host owns the set and may reject an empty selection. Localize labels in a real app. */
+@Composable
+fun ConnectedChoicesExample() {
+    var selected by remember { mutableStateOf(setOf(0)) }
+    ConnectedButtonGroup(
+        items = listOf(ConnectedButtonGroupItem.Label("User"), ConnectedButtonGroupItem.Label("System")),
+        selectedIndices = selected,
+        onSelectionChanged = { next -> if (next.isNotEmpty()) selected = next },
+        shapes = ConnectedButtonGroupShapes.FixedConnected,
+        modifier = Modifier.fillMaxWidth(),
+        contentDescription = "App sources",
+    )
+}
+
+/** The bar floats because the host overlays it. Its measured height keeps the list tail reachable. */
+@Composable
+fun FloatingNavigationExample(
+    destinations: List<AsgardNavItem>,
+    selectedIndex: Int,
+    onSelect: (Int) -> Unit,
+    rows: List<String>,
+) {
+    var barHeightPx by remember { mutableIntStateOf(0) }
+    val bottomClearance = with(LocalDensity.current) { barHeightPx.toDp() }
+    Box(Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = bottomClearance),
+        ) { items(rows) { row -> Text(row) } }
+        AsgardNavigationBar(
+            items = destinations,
+            selectedIndex = selectedIndex,
+            onSelect = onSelect,
+            configuration = AsgardNavigationConfiguration(
+                placement = AsgardNavigationPlacement.Floating,
+                appearance = AsgardNavigationAppearance.Segmented,
+                labels = AsgardNavigationLabels.Selected,
+                insets = AsgardNavigationInsets.NavigationBars,
+            ),
+            modifier = Modifier.align(Alignment.BottomCenter).onSizeChanged { barHeightPx = it.height },
+        )
+    }
+}
+```
+
+# Gallery catalog (54 examples)
+
+## Actions
+
+### [AsgardActionItem](https://asgard.trinadhthatakula.com/#asgardactionitem)
+
+A vertical tappable action tile: icon chip over a caption.
+
+```kotlin
+AsgardActionItem(icon = Icons.Rounded.Info, label = "Info", onClick = {})
+```
+
+### [AsgardActionItem · one line](https://asgard.trinadhthatakula.com/#asgardactionitem-one-line)
+
+An action tile capped at a single label line (labelMaxLines = 1) so long captions truncate cleanly.
+
+```kotlin
+AsgardActionItem(icon = Icons.Rounded.Notifications,
+    label = "Notification settings", labelMaxLines = 1, onClick = {})
+```
+
+### [AsgardActionToolbar](https://asgard.trinadhthatakula.com/#asgardactiontoolbar)
+
+A scrolling selection/editor toolbar with enabled and selected actions.
+
+```kotlin
+AsgardActionToolbar(actions = actions, showLabels = true,
+    leading = { Text("3 selected") },
+)
+```
+
+## Charts
+
+### [AsgardCalendarHeatmap](https://asgard.trinadhthatakula.com/#asgardcalendarheatmap)
+
+Sample dated entries, missing days and recorded zero. Select a date and add entries to see actual values change.
+
+```kotlin
+AsgardCalendarHeatmap(entries, start, endInclusive,
+    selectedDate = selected, onDateSelected = { selected = it },
+    weekStart = DayOfWeek.MONDAY,
+)
+```
+
+### [AsgardChartLegend](https://asgard.trinadhthatakula.com/#asgardchartlegend)
+
+The wrapping swatch + label key shared by every Asgard chart. Toggle square/dot swatches.
+
+```kotlin
+AsgardChartLegend(entries = listOf(AsgardLegendEntry("Petrol", primary), AsgardLegendEntry("Diesel", secondary)))
+```
+
+### [AsgardLegendItem](https://asgard.trinadhthatakula.com/#asgardlegenditem)
+
+A single series label with a colored swatch.
+
+```kotlin
+AsgardLegendItem(label = "Temperature", color = MaterialTheme.colorScheme.primary)
+```
+
+### [AsgardLineChart](https://asgard.trinadhthatakula.com/#asgardlinechart)
+
+A multi-series smoothed line + area chart. Adjust the knobs below to see it react live.
+
+```kotlin
+AsgardLineChart(
+    series = listOf(AsgardLineSeries(points, color = colorScheme.primary)),
+    yValueFormatter = { it.roundToInt().toString() },
+    modifier = Modifier.fillMaxWidth().height(200.dp),
+)
+```
+
+### [AsgardPulseRing](https://asgard.trinadhthatakula.com/#asgardpulsering)
+
+A decorative attention pulse behind any content. Change the speed or stop it.
+
+```kotlin
+AsgardPulseRing(color = colorScheme.tertiary) { Icon(Icons.Rounded.Star, null) }
+```
+
+### [AsgardStackedBarChart](https://asgard.trinadhthatakula.com/#asgardstackedbarchart)
+
+N-segment stacked bars with a shared scale. Change the bar count and dim the last (partial) bar.
+
+```kotlin
+AsgardStackedBarChart(
+    bars = days.map { AsgardBarStack(listOf(it.active, it.idle), dimmed = it.partial) },
+    segmentColors = listOf(colorScheme.primary, colorScheme.tertiary),
+)
+```
+
+### [AsgardTimelineBar](https://asgard.trinadhthatakula.com/#asgardtimelinebar)
+
+Colored interval spans across a time window (screen states, sessions, schedules). Drag to move the split.
+
+```kotlin
+AsgardTimelineBar(segments, windowStartMillis = 0, windowEndMillis = 100)
+```
+
+## Chips & badges
+
+### [AsgardBadge](https://asgard.trinadhthatakula.com/#asgardbadge)
+
+A neutral label pill with an optional icon; filled or outlined.
+
+```kotlin
+AsgardBadge(text = "NEW", icon = Icons.Rounded.Star, outlined = false)
+```
+
+### [StatusChip](https://asgard.trinadhthatakula.com/#statuschip)
+
+A compact, pill-shaped status label that inherits the theme.
+
+```kotlin
+StatusChip(text = "Frozen")
+```
+
+## Data display
+
+### [AsgardAnimatedNumeral](https://asgard.trinadhthatakula.com/#asgardanimatednumeral)
+
+Numeric text that slides on change (odometer style).
+
+```kotlin
+var n by remember { mutableStateOf(0) }
+AsgardAnimatedNumeral(n.toString())
+```
+
+### [AsgardStatCard](https://asgard.trinadhthatakula.com/#asgardstatcard)
+
+Vertical metric card: an icon + label header over a large value with an optional unit suffix.
+
+```kotlin
+AsgardStatCard(label = "Voltage", value = "5.00", unit = "V",
+    icon = Icons.Rounded.Bolt)
+```
+
+### [AsgardStatCard · bento](https://asgard.trinadhthatakula.com/#asgardstatcard-bento)
+
+A compact bento cell: the icon sits inline with the label, a tight unit suffix, clickable with a border.
+
+```kotlin
+AsgardStatCard(label = "Battery", value = "95", unit = "%",
+    unitSeparator = "", icon = Icons.Rounded.Bolt,
+    iconInlineWithLabel = true, onClick = {},
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))
+```
+
+### [AsgardStatTile](https://asgard.trinadhthatakula.com/#asgardstattile)
+
+Compact metric tile: a label over an emphasized value, optional icon.
+
+```kotlin
+AsgardStatTile(label = "Uptime", value = "12h 30m", icon = Icons.Rounded.Bolt)
+```
+
+### [AsgardStatTile · animated](https://asgard.trinadhthatakula.com/#asgardstattile-animated)
+
+A value-first tile that counts up on change, with an inline secondary label and a border; tap to add.
+
+```kotlin
+var n by remember { mutableStateOf(0) }
+AsgardStatTile(label = "Steps today", value = n.toString(),
+    secondaryValue = "steps", animateValue = true, valueFirst = true,
+    onClick = { n += 250 },
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))
+```
+
+### [AsgardStatTile · icon badge](https://asgard.trinadhthatakula.com/#asgardstattile-icon-badge)
+
+A stat tile whose icon sits inside a filled circular badge instead of a bare glyph.
+
+```kotlin
+AsgardStatTile(label = "Downloads", value = "1,204",
+    icon = Icons.Rounded.Bolt, iconTint = Color.White,
+    iconContainerColor = Color(0xFF6750A4))
+```
+
+### [AsgardStatTile · status dot](https://asgard.trinadhthatakula.com/#asgardstattile-status-dot)
+
+A stat tile with a colored status dot beside the label — for live health/state read-outs.
+
+```kotlin
+AsgardStatTile(label = "Server", value = "Online",
+    statusDotColor = Color(0xFF22C55E))
+```
+
+## Display
+
+### [AsgardAvatar](https://asgard.trinadhthatakula.com/#asgardavatar)
+
+Image content, initials and icon fallback without requiring an image loader.
+
+```kotlin
+AsgardAvatar(initials = "TT", contentDescription = "Profile",
+    shape = MaterialTheme.shapes.large,
+    image = { /* caller image loader content */ },
+)
+```
+
+### [Glass surfaces](https://asgard.trinadhthatakula.com/#glass-surfaces)
+
+Scroll the glacier beneath the controls. Preview glass on the region label or try it on either bar.
+
+```kotlin
+val source = rememberAsgardGlassSource(enabled = !reduceTransparency)
+Box {
+    Feed(Modifier.fillMaxSize().asgardGlassSource(source))
+    AsgardGlassSurface(source, enabled = glassLabel) { Text(region) }
+    AsgardActionToolbar(actions, container = source.frosted(glassToolbar))
+    AsgardNavigationBar(
+        tabs, selected, onSelect, floatingConfiguration,
+        container = source.frosted(glassNavigation),
+        modifier = Modifier.align(Alignment.BottomCenter),
+    )
+}
+```
+
+## Feedback
+
+### [AsgardBanner](https://asgard.trinadhthatakula.com/#asgardbanner)
+
+A tonal callout card: icon + title + description + optional action.
+
+```kotlin
+AsgardBanner(title = "No connection", description = "Check your network.",
+    icon = Icons.Rounded.Warning) { TextButton(onClick = {}) { Text("Retry") } }
+```
+
+### [AsgardBanner · gradient](https://asgard.trinadhthatakula.com/#asgardbanner-gradient)
+
+A banner with a horizontal-gradient background and a description clamped to two lines.
+
+```kotlin
+AsgardBanner(title = "You're on Pro", description = "…",
+    descriptionMaxLines = 2, icon = Icons.Rounded.Star,
+    containerBrush = Brush.horizontalGradient(
+        listOf(Color(0xFF6750A4), Color(0xFF9A82DB))))
+```
+
+### [AsgardDialogScaffold](https://asgard.trinadhthatakula.com/#asgarddialogscaffold)
+
+A thin confirm/dismiss dialog wrapper over M3 AlertDialog.
+
+```kotlin
+AsgardDialogScaffold(onDismiss, title = "Delete?", confirmText = "Delete", onConfirm)
+```
+
+### [AsgardEmptyState](https://asgard.trinadhthatakula.com/#asgardemptystate)
+
+A centered placeholder for empty screens.
+
+```kotlin
+AsgardEmptyState(text = "No items yet", icon = Icons.Rounded.Inbox)
+```
+
+### [AsgardLoadingState](https://asgard.trinadhthatakula.com/#asgardloadingstate)
+
+A centered spinner with an optional caption.
+
+```kotlin
+AsgardLoadingState(text = "Loading…")
+```
+
+### [AsgardShimmer](https://asgard.trinadhthatakula.com/#asgardshimmer)
+
+A skeleton/shimmer placeholder shown while content loads.
+
+```kotlin
+AsgardShimmer(Modifier.fillMaxWidth().height(24.dp))
+```
+
+## Input
+
+### [AsgardLabeledSlider](https://asgard.trinadhthatakula.com/#asgardlabeledslider)
+
+A labeled slider with a value read-out.
+
+```kotlin
+AsgardLabeledSlider("Volume", value, onValueChange)
+```
+
+### [AsgardPicker](https://asgard.trinadhthatakula.com/#asgardpicker)
+
+Controlled query and sections, with domain filtering and recent-history storage left to the app.
+
+```kotlin
+AsgardPicker(sections, query, onQueryChange,
+    itemKey = { it.id }, itemLabel = { it.label },
+    isSelected = { it.id == selectedId }, onSelect = onSelect,
+    modifier = Modifier.height(320.dp),
+)
+```
+
+### [AsgardPickerSheet](https://asgard.trinadhthatakula.com/#asgardpickersheet)
+
+Search and select a country inside a modal sheet.
+
+```kotlin
+AsgardPickerSheet(onDismissRequest, title = "Choose country") { CountryPicker() }
+```
+
+### [AsgardSearchBar](https://asgard.trinadhthatakula.com/#asgardsearchbar)
+
+A single-line search field with an auto clear button.
+
+```kotlin
+AsgardSearchBar(query, onQueryChange, leadingIcon = Icons.Rounded.Search)
+```
+
+### [AsgardTonalIconButton](https://asgard.trinadhthatakula.com/#asgardtonaliconbutton)
+
+A thin tonal icon button wrapper.
+
+```kotlin
+AsgardTonalIconButton(Icons.Rounded.Favorite, "Like", onClick)
+```
+
+### [Connected button shapes](https://asgard.trinadhthatakula.com/#connected-button-shapes)
+
+Shape changes are independent of primary selection colors, for single and multiple selections.
+
+```kotlin
+ConnectedButtonGroup(items, selectedIndices, onSelectionChanged,
+    shapes = ConnectedButtonGroupShapes.FixedConnected,
+)
+```
+
+### [ConnectedButtonGroup](https://asgard.trinadhthatakula.com/#connectedbuttongroup)
+
+A single-select connected toggle-button group; crash-safe at any system font scale.
+
+```kotlin
+ConnectedButtonGroup(items = listOf(Label("Day"), Label("Week")), selectedIndex, onItemSelected)
+```
+
+### [ConnectedButtonGroup · icons](https://asgard.trinadhthatakula.com/#connectedbuttongroup-icons)
+
+The same group using the Icon (icon-only) and IconWithLabel item variants instead of plain labels.
+
+```kotlin
+ConnectedButtonGroup(items = listOf(
+    ConnectedButtonGroupItem.Icon(Icons.Rounded.Star, "Home"),
+    ConnectedButtonGroupItem.IconWithLabel(Icons.Rounded.Bolt, "Recent", "Recent"),
+), selectedIndex, onItemSelected)
+```
+
+### [ConnectedButtonGroup · multiple selections](https://asgard.trinadhthatakula.com/#connectedbuttongroup-multiple-selections)
+
+Independent toggles with primary-color selection. This example keeps at least one type selected.
+
+```kotlin
+ConnectedButtonGroup(items = items, selectedIndices = selected, onSelectionChanged = { if (it.isNotEmpty()) selected = it })
+```
+
+## Lists
+
+### [AsgardListRow](https://asgard.trinadhthatakula.com/#asgardlistrow)
+
+A generic list item: leading icon, title/subtitle, optional trailing slot.
+
+```kotlin
+AsgardListRow(title = "Wi-Fi", subtitle = "Home network",
+    icon = Icons.Rounded.Wifi, onClick = {})
+```
+
+## Monetization
+
+### [AsgardLockedOverlay](https://asgard.trinadhthatakula.com/#asgardlockedoverlay)
+
+Gates content behind a blurred overlay while locked.
+
+```kotlin
+AsgardLockedOverlay(locked, overlay = { AsgardProBadge() }) { /* content */ }
+```
+
+### [AsgardProBadge](https://asgard.trinadhthatakula.com/#asgardprobadge)
+
+A PRO/premium marker pill preset over AsgardBadge.
+
+```kotlin
+AsgardProBadge(icon = Icons.Rounded.Lock)
+```
+
+### [AsgardUpgradeCard](https://asgard.trinadhthatakula.com/#asgardupgradecard)
+
+A promotional card with a title, description, and CTA button.
+
+```kotlin
+AsgardUpgradeCard(title = "Go Pro", description = "…", cta = "Upgrade") {}
+```
+
+## Navigation
+
+### [AsgardNavigationBar](https://asgard.trinadhthatakula.com/#asgardnavigationbar)
+
+An expressive bottom navigation bar — the selected item expands to reveal its label.
+
+```kotlin
+AsgardNavigationBar(items, selectedIndex, onSelect = { … })
+```
+
+### [AsgardNavigationRail](https://asgard.trinadhthatakula.com/#asgardnavigationrail)
+
+An expressive vertical navigation rail (the side-nav counterpart to the bar).
+
+```kotlin
+AsgardNavigationRail(items, selectedIndex, onSelect = { … })
+```
+
+### [Navigation variations](https://asgard.trinadhthatakula.com/#navigation-variations)
+
+Combine container placement, destination appearance, labels and shapes. Routes stay in the app.
+
+```kotlin
+AsgardNavigationBar(items, selectedIndex, onSelect,
+    configuration = AsgardNavigationConfiguration(
+        placement = AsgardNavigationPlacement.Floating,
+        appearance = AsgardNavigationAppearance.Segmented,
+        labels = AsgardNavigationLabels.Always,
+    ),
+)
+```
+
+## Onboarding
+
+### [AsgardFeatureRow](https://asgard.trinadhthatakula.com/#asgardfeaturerow)
+
+An icon badge beside a title and description — for benefit lists.
+
+```kotlin
+AsgardFeatureRow(icon = Icons.Rounded.Bolt, title = "Fast", description = "…")
+```
+
+### [AsgardOnboardingScaffold](https://asgard.trinadhthatakula.com/#asgardonboardingscaffold)
+
+A page scaffold: title, subtitle, body, and a bottom actions row.
+
+```kotlin
+AsgardOnboardingScaffold(title = "Welcome", subtitle = "…") { /* body */ }
+```
+
+## Progress
+
+### [AsgardProgressRing](https://asgard.trinadhthatakula.com/#asgardprogressring)
+
+A circular progress/gauge ring with a centered content slot.
+
+```kotlin
+AsgardProgressRing(progress = progress, animate = true) { Text("66%") }
+```
+
+## Settings
+
+### [AsgardSectionCard](https://asgard.trinadhthatakula.com/#asgardsectioncard)
+
+A titled tonal container that groups related rows.
+
+```kotlin
+AsgardSectionCard(title = "General") { /* rows */ }
+```
+
+### [AsgardSettingRow](https://asgard.trinadhthatakula.com/#asgardsettingrow)
+
+A labeled row with an optional trailing value or custom slot.
+
+```kotlin
+AsgardSettingRow(title = "Version", value = "1.90.3")
+```
+
+### [AsgardSettingToggleRow](https://asgard.trinadhthatakula.com/#asgardsettingtogglerow)
+
+A settings row with a trailing switch (tapping the row toggles it).
+
+```kotlin
+var on by remember { mutableStateOf(true) }
+AsgardSettingToggleRow("Wi-Fi only", on) { on = it }
+```
+
+### [AsgardStepperRow](https://asgard.trinadhthatakula.com/#asgardstepperrow)
+
+A labeled numeric stepper with min/max bounds.
+
+```kotlin
+AsgardStepperRow("Servings", value, Icons.Rounded.Remove, Icons.Rounded.Add, …)
+```
+
+## Structure
+
+### [AsgardActionSheet](https://asgard.trinadhthatakula.com/#asgardactionsheet)
+
+A scrollable message with fixed, wrapping footer actions.
+
+```kotlin
+AsgardActionSheet(onDismissRequest, title = "Action sheet",
+    actions = { TextButton(onClick = dismiss) { Text("Close") } },
+) { Text(message) }
+```
+
+### [AsgardHeader](https://asgard.trinadhthatakula.com/#asgardheader)
+
+The signature screen header: a bold primary-tinted title, optional leading icon, trailing actions.
+
+```kotlin
+AsgardHeader(title = "Clusters", icon = Icons.Rounded.Star)
+```
+
+### [AsgardLazyScrollbar](https://asgard.trinadhthatakula.com/#asgardlazyscrollbar)
+
+Portable list/grid thumb dragging. The host reserves a 48dp end gutter.
+
+```kotlin
+val state = rememberLazyListState()
+Box(Modifier.height(320.dp)) {
+    LazyColumn(state = state, modifier = Modifier.padding(end = 48.dp)) { /* items */ }
+    AsgardLazyScrollbar(rememberAsgardScrollbarState(state),
+        Modifier.align(Alignment.CenterEnd))
+}
+```
+
+### [AsgardSheet](https://asgard.trinadhthatakula.com/#asgardsheet)
+
+A modal sheet with a caller-owned header and body.
+
+```kotlin
+AsgardSheet(onDismissRequest, header = { Text("Location") }) { Text(region) }
+```

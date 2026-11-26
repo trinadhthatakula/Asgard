@@ -11,7 +11,7 @@ internal actual fun rememberGalleryPlatform(): GalleryPlatform = remember { Brow
 private object BrowserGalleryPlatform : GalleryPlatform {
     override fun copyToClipboard(text: String, onResult: (Boolean) -> Unit) = writeClipboard(text, onResult)
     override fun readEntry(): String? = readHash()
-    override fun selectEntry(id: String) = writeHash(id)
+    override fun selectEntry(id: String?) = writeHash(id.orEmpty())
     override fun observeEntry(onChanged: (String?) -> Unit): () -> Unit = watchHash(onChanged)
 }
 private fun writeClipboard(text: String, onResult: (Boolean) -> Unit): Unit = js("""{

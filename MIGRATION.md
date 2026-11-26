@@ -122,4 +122,4 @@ AsgardLockedOverlay(
 3. If your theme relies on specific corner radii, confirm the theme-driven shapes look right (or set
    `MaterialTheme.shapes`).
 4. Explore the new customization params and charts — see the
-   [live gallery](https://trinadhthatakula.github.io/Asgard/).
+   [live gallery](https://asgard.trinadhthatakula.com/).

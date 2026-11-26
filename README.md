@@ -9,7 +9,7 @@
 [![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?style=flat-square&logo=kotlin&logoColor=white)](https://kotlinlang.org/docs/multiplatform.html)
 ![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20wasmJs-0A7EA4?style=flat-square)
 
-**[▶ Live gallery](https://trinadhthatakula.github.io/Asgard/)** &nbsp;·&nbsp; [Migrating from 1.x → 2.0](MIGRATION.md)
+**[▶ Live gallery](https://asgard.trinadhthatakula.com/)** &nbsp;·&nbsp; [Migrating from 1.x → 2.0](MIGRATION.md)
 
 </div>
 
@@ -37,10 +37,11 @@ palette or font.
 
 ## ▶ Live gallery
 
-**[trinadhthatakula.github.io/Asgard](https://trinadhthatakula.github.io/Asgard/)** — browse every
-component and chart live, drag the interactive knobs, and flip **light/dark** and the **seed color**
-to watch each one inherit the theme. The gallery is itself built from Asgard, running in the browser
-via Compose Multiplatform (wasm).
+**[asgard.trinadhthatakula.com](https://asgard.trinadhthatakula.com/)** — browse every
+component and chart in a searchable index, then open its live preview and Kotlin example. The
+Android and web galleries use Thor’s Asgard light and dark palettes, Outfit for headings and body
+text, and Fira Code for labels and code. Use **Theme** to try another accent, text scale or layout
+direction.
 
 ## 2.2.0 opt-in frosted glass
 
@@ -50,7 +51,7 @@ component. Register the backdrop with `Modifier.asgardGlassSource(source)`. The 
 
 In the Android app or browser gallery, choose **Browse → component → Preview glass** to try the treatment
 and see its compatibility score out of five. [Integration guide](docs/glass-ui.md) ·
-[HTML engineering report](https://trinadhthatakula.github.io/Asgard/glass-ui-report.html) · [All component ratings](.claude/skills/asgard-ui/references/glass.md) · [Release notes](docs/releases/2.2.0.md)
+[HTML engineering report](https://asgard.trinadhthatakula.com/glass-ui-report.html) · [All component ratings](.claude/skills/asgard-ui/references/glass.md) · [Release notes](docs/releases/2.2.0.md)
 
 ## 2.1.1 motion and rendering fixes
 
@@ -73,6 +74,7 @@ Run the permanent `:androidApp` module (`com.valhalla.asgard.app`) in Android St
 with `./gradlew :androidApp:installDebug`. It shares the web gallery's catalog and includes reusable
 device tests. See [Android gallery and tests](docs/android-gallery.md) for build-free reruns of the
 installed test APKs and the independently compiled published-version compatibility fixture.
+The [Fastlane guide](fastlane/README.md) covers the gallery’s Google Play listing, artwork and signed app bundle.
 
 ## 📦 Install
 
@@ -186,7 +188,7 @@ MaterialExpressiveTheme { // or your own MaterialTheme — Asgard follows it
 
 Every component reads color/type/shape from the ambient `MaterialTheme`, takes a `modifier`, and
 exposes flat customization params. Browse them all — live — in the
-**[gallery](https://trinadhthatakula.github.io/Asgard/)**.
+**[gallery](https://asgard.trinadhthatakula.com/)**.
 
 **Structure & navigation**
 | Component | What it is |

@@ -1,0 +1,47 @@
+skip_docs
+default_platform(:android)
+
+gallery_root = File.expand_path("..", __dir__)
+listing_dir = File.join(gallery_root, "fastlane/metadata/android")
+bundle_dir = File.join(gallery_root, "androidApp/build/outputs/bundle/release")
+
+platform :android do
+  desc "Check the Play listing text, artwork and phone screenshots locally"
+  lane :validate_listing do
+    require_relative "validate_listing"
+    validate_gallery_listing(File.join(listing_dir, "en-US"))
+  end
+
+  desc "Build and sign the Android App Bundle using the gallery upload key"
+  lane :build_bundle do |options|
+    required = %w[ASGARD_UPLOAD_KEYSTORE ASGARD_UPLOAD_ALIAS ASGARD_UPLOAD_STORE_PASSWORD ASGARD_UPLOAD_KEY_PASSWORD]
+    missing = required.select { |name| ENV[name].to_s.empty? }
+    UI.user_error!("Set #{missing.join(', ')} to sign the gallery bundle.") unless missing.empty?
+    properties = {}
+    properties["galleryVersionCode"] = Integer(options[:version_code]) if options[:version_code]
+    gradle(task: ":androidApp:bundleRelease", project_dir: gallery_root, properties: properties)
+    unsigned = File.join(bundle_dir, "androidApp-release.aab")
+    signed = File.join(bundle_dir, "asgard-gallery-upload.aab")
+    sh("jarsigner", "-keystore", File.expand_path(ENV.fetch("ASGARD_UPLOAD_KEYSTORE")),
+       "-storepass:env", "ASGARD_UPLOAD_STORE_PASSWORD", "-keypass:env", "ASGARD_UPLOAD_KEY_PASSWORD",
+       "-signedjar", signed, unsigned, ENV.fetch("ASGARD_UPLOAD_ALIAS"))
+    sh("jarsigner", "-verify", signed)
+    signed
+  end
+
+  desc "Update the English Play Store listing for the existing gallery app"
+  lane :upload_listing do
+    validate_listing
+    upload_to_play_store(metadata_path: listing_dir, skip_upload_apk: true,
+                         skip_upload_aab: true, skip_upload_changelogs: true)
+  end
+
+  desc "Upload a signed AAB to Play, defaulting to a draft on the internal track"
+  lane :upload_bundle do |options|
+    signed = options[:aab] ? File.expand_path(options[:aab]) : build_bundle(version_code: options[:version_code])
+    upload_to_play_store(aab: signed, track: options.fetch(:track, "internal"),
+                         release_status: options.fetch(:status, "draft"),
+                         skip_upload_apk: true, skip_upload_metadata: true, skip_upload_changelogs: true,
+                         skip_upload_images: true, skip_upload_screenshots: true)
+  end
+end

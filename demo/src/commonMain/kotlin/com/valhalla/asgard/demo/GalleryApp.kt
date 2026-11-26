@@ -1,188 +1,195 @@
 package com.valhalla.asgard.demo
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.foundation.focusable
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.dp
 import com.valhalla.asgard.components.*
-import kotlinx.coroutines.delay
 
-/** Responsive shell; the same catalog drives sidebar, searchable navigation and URL state. */
+private val entriesById = asgardCatalog.associateBy { it.id }
+
 @Composable
 fun GalleryApp(initialEntry: String? = null) {
     val platform = rememberGalleryPlatform()
     val systemDark = isSystemInDarkTheme()
     val systemRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-    var dark by remember { mutableStateOf(systemDark) }
-    var rtl by remember { mutableStateOf(systemRtl) }
-    var textScale by remember { mutableFloatStateOf(1f) }
-    var seed by remember { mutableStateOf(demoSeeds.first().second) }
-    var selected by remember { mutableStateOf(asgardCatalog.find { it.id == (initialEntry ?: platform.readEntry()) } ?: asgardCatalog.first()) }
-    var browsing by remember { mutableStateOf(false) }
-    var appearance by remember { mutableStateOf(false) }
-    var query by remember { mutableStateOf("") }
-    val detailState = rememberSaveableStateHolder()
-    LaunchedEffect(initialEntry, platform) { initialEntry?.let(platform::selectEntry) }
+    var darkOverride by rememberSaveable { mutableStateOf<Boolean?>(null) }
+    var rtlOverride by rememberSaveable { mutableStateOf<Boolean?>(null) }
+    val dark = darkOverride ?: systemDark
+    val rtl = rtlOverride ?: systemRtl
+    var textScale by rememberSaveable { mutableFloatStateOf(1f) }
+    var paletteName by rememberSaveable { mutableStateOf(GalleryPalette.Asgard.name) }
+    val palette = GalleryPalette.valueOf(paletteName)
+    var selected by remember(platform) { mutableStateOf(entriesById[initialEntry ?: platform.readEntry()]) }
+    var browsing by rememberSaveable { mutableStateOf(false) }
+    var appearance by rememberSaveable { mutableStateOf(false) }
+    val pageState = rememberSaveableStateHolder()
+    fun navigate(entry: ComponentEntry?) {
+        selected = entry
+        platform.selectEntry(entry?.id)
+    }
     DisposableEffect(platform) {
-        val stop = platform.observeEntry { id -> selected = asgardCatalog.find { it.id == id } ?: asgardCatalog.first() }
+        val stop = platform.observeEntry { id -> selected = entriesById[id] }
         onDispose { stop() }
     }
-    fun choose(entry: ComponentEntry) { selected = entry; browsing = false; platform.selectEntry(entry.id) }
+    LaunchedEffect(initialEntry, platform) { initialEntry?.let { navigate(entriesById[it]) } }
     SideEffect { platform.onThemeChanged(dark) }
-    DemoTheme(dark = dark, seed = seed) {
-        GalleryEnvironment(rtl, textScale) {
-        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            BoxWithConstraints(Modifier.fillMaxSize().safeDrawingPadding()) {
-                val compact = maxWidth < 840.dp
-                Column(Modifier.fillMaxSize()) {
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Text("Asgard", Modifier.weight(1f), style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary,
-                            maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        TextButton(onClick = { browsing = true }) { Text("Browse") }
-                        TextButton(onClick = { appearance = true }) { Text("Theme") }
-                    }
-                    Text("${if (GalleryBuildInfo.released) "Release" else "Development source"} · ${GalleryBuildInfo.version} · ${GalleryBuildInfo.revision}",
-                        Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(if (GalleryBuildInfo.released) "com.trinadhthatakula:asgard:${GalleryBuildInfo.version}" else "New APIs require this source build or a matching SNAPSHOT.",
-                        Modifier.padding(horizontal = 16.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall)
-                    HorizontalDivider()
-                    Row(Modifier.weight(1f)) {
-                        if (!compact) {
-                            Column(Modifier.width(240.dp).fillMaxHeight().padding(8.dp)) {
-                                AsgardSearchBar(query, { query = it }, placeholder = "Find component",
-                                    leadingIcon = Icons.Rounded.Search, clearIcon = Icons.Rounded.Close)
-                                LazyColumn(Modifier.weight(1f)) {
-                                    asgardCatalog.filter { it.name.contains(query, true) || it.category.contains(query, true) }
-                                        .groupBy { it.category }.forEach { (category, entries) ->
-                                            item(key = "category:$category") {
-                                                Text(category, Modifier.fillMaxWidth().padding(12.dp).semantics { heading() },
-                                                    style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-                                            }
-                                            items(entries, key = { it.id }) { entry ->
-                                                Text(entry.name, Modifier.fillMaxWidth().selectable(
-                                                    entry == selected, role = Role.Tab, onClick = { choose(entry) },
-                                                ).background(if (entry == selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)
-                                                    .padding(12.dp), style = MaterialTheme.typography.bodyMedium)
-                                            }
-                                        }
-                                }
-                            }
-                            VerticalDivider()
-                        }
-                        detailState.SaveableStateProvider(selected.id) {
-                            DetailPane(selected, Modifier.weight(1f), compact, platform)
-                        }
-                    }
-                }
-                if (browsing) {
-                    val sheetState = rememberBottomSheetState(SheetValue.Hidden, enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded))
-                    val dismiss = rememberAsgardSheetDismiss(sheetState) { browsing = false }
-                    AsgardPickerSheet(onDismissRequest = { browsing = false }, title = "Components", sheetState = sheetState) {
-                        AsgardPicker(
-                            asgardCatalog.filter { it.name.contains(query, true) || it.category.contains(query, true) }
-                                .groupBy { it.category }.map { (category, entries) -> AsgardPickerSection(category, category, entries) },
-                            query, { query = it }, itemKey = { it.id }, itemLabel = { it.name },
-                            isSelected = { it == selected }, onSelect = { entry ->
-                                selected = entry; platform.selectEntry(entry.id); dismiss()
-                            }, modifier = Modifier.fillMaxWidth().height(420.dp),
-                            searchPlaceholder = "Find component", searchIcon = Icons.Rounded.Search, clearIcon = Icons.Rounded.Close,
-                        )
-                    }
-                }
-                if (appearance) {
-                    AsgardSheet(onDismissRequest = { appearance = false }, header = { Text("Appearance", style = MaterialTheme.typography.headlineSmall) }) {
-                        AsgardSettingToggleRow("Dark theme", dark, { dark = it }, modifier = Modifier.fillMaxWidth())
-                        AsgardSettingToggleRow("Right-to-left layout", rtl, { rtl = it }, modifier = Modifier.fillMaxWidth())
-                        AsgardLabeledSlider("Text scale", textScale, { textScale = it }, valueRange = 1f..2f, steps = 1, valueLabel = "${textScale}×")
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            demoSeeds.forEach { (label, color) -> FilterChip(seed == color, { seed = color }, label = { Text(label) }) }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
-}
-
-@Composable
-private fun GalleryEnvironment(rtl: Boolean, textScale: Float, content: @Composable () -> Unit) {
     val density = LocalDensity.current
     CompositionLocalProvider(
         LocalDensity provides Density(density.density, density.fontScale * textScale),
         LocalLayoutDirection provides if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr,
-        content = content,
-    )
-}
-
-@Composable
-private fun DetailPane(entry: ComponentEntry, modifier: Modifier, compact: Boolean, platform: GalleryPlatform) {
-    val focus = remember { FocusRequester() }
-    var glass by rememberSaveable { mutableStateOf(false) }
-    val rating = glassCompatibility.getValue(entry.glassComponent)
-    LaunchedEffect(entry.id) { focus.requestFocus() }
-    Column(modifier.fillMaxHeight().verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp)) {
-        Text(entry.name, Modifier.focusRequester(focus).focusable().semantics { heading() },
-            style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        Text(entry.category, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-        Text(entry.description, Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
-        AsgardSettingToggleRow("Preview glass", glass, { glass = it }, subtitle = "Compatibility ${rating.score}/5")
-        if (glass) Text(rating.guidance, style = MaterialTheme.typography.bodySmall)
-        Box(Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
-            CompositionLocalProvider(LocalPreviewGlass provides glass) { entry.content() }
-        }
-        var copyState by remember(entry.id) { mutableStateOf("Copy") }
-        LaunchedEffect(copyState) { if (copyState != "Copy" && copyState != "Copying…") { delay(2000); copyState = "Copy" } }
-        Surface(color = MaterialTheme.colorScheme.surfaceContainerHighest, shape = MaterialTheme.shapes.medium) {
-            Column(Modifier.fillMaxWidth().padding(12.dp)) {
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text("Minimal example", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
-                    TextButton(enabled = copyState != "Copying…", onClick = {
-                        copyState = "Copying…"
-                        platform.copyToClipboard(entry.code) { success -> copyState = if (success) "Copied" else "Copy failed · retry" }
-                    }) { Text(copyState) }
-                }
-                Text("Preview controls are independent of this example.", style = MaterialTheme.typography.labelSmall)
-                SelectionContainer {
-                    Box(Modifier.fillMaxWidth().heightIn(max = 280.dp).verticalScroll(rememberScrollState()).horizontalScroll(rememberScrollState())) {
-                        Text(entry.code, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall)
+    ) {
+        DemoTheme(dark, palette) {
+            Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+                Column(Modifier.fillMaxSize().safeDrawingPadding()) {
+                    GalleryBar(onHome = { navigate(null) }, onBrowse = { browsing = true }, onTheme = { appearance = true })
+                    BoxWithConstraints(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+                        val entry = selected
+                        if (entry == null) {
+                            pageState.SaveableStateProvider("gallery") { GalleryHome(onSelect = ::navigate) }
+                        } else {
+                            val wide = maxWidth >= 840.dp && maxWidth / LocalDensity.current.fontScale >= 700.dp
+                            Row(Modifier.widthIn(max = 1440.dp).fillMaxSize()) {
+                                if (wide) {
+                                    GallerySidebar(entry, ::navigate)
+                                    VerticalDivider()
+                                }
+                                pageState.SaveableStateProvider(entry.id) {
+                                    DetailPane(entry, platform, compact = !wide, onHome = { navigate(null) })
+                                }
+                            }
+                        }
                     }
                 }
             }
+            if (browsing) {
+                val sheet = rememberBottomSheetState(SheetValue.Hidden, enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded))
+                val dismiss = rememberAsgardSheetDismiss(sheet) { browsing = false }
+                var query by rememberSaveable { mutableStateOf("") }
+                val sections = remember(query) {
+                    catalogMatches(query).groupBy { it.category }.entries.sortedBy { it.key }.map { (category, entries) ->
+                        AsgardPickerSection(category, category, entries)
+                    }
+                }
+                AsgardPickerSheet(onDismissRequest = { browsing = false }, title = "Components", sheetState = sheet) {
+                    AsgardPicker(sections, query, { query = it }, itemKey = { it.id }, itemLabel = { it.name },
+                        isSelected = { it == selected }, onSelect = { navigate(it); dismiss() },
+                        modifier = Modifier.fillMaxWidth().height(440.dp), searchPlaceholder = "Find component",
+                        searchIcon = Icons.Rounded.Search, clearIcon = Icons.Rounded.Close)
+                }
+            }
+            if (appearance) {
+                AsgardSheet(onDismissRequest = { appearance = false }, header = {
+                    Text("Appearance", style = MaterialTheme.typography.headlineMedium)
+                }) {
+                    Text("Accent palette", style = MaterialTheme.typography.titleMedium)
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        GalleryPalette.entries.forEach { option ->
+                            FilterChip(selected = palette == option, onClick = { paletteName = option.name },
+                                leadingIcon = { Spacer(Modifier.size(16.dp).background(option.accent, CircleShape)) },
+                                label = { Text(option.label) })
+                        }
+                    }
+                    AsgardSettingToggleRow("Dark theme", dark, { darkOverride = it }, modifier = Modifier.fillMaxWidth())
+                    AsgardSettingToggleRow("Right-to-left layout", rtl, { rtlOverride = it }, modifier = Modifier.fillMaxWidth())
+                    AsgardLabeledSlider("Text scale", textScale, { textScale = it }, valueRange = 1f..2f, steps = 1, valueLabel = "${textScale}×")
+                    HorizontalDivider(Modifier.padding(vertical = 12.dp))
+                    Text("${if (GalleryBuildInfo.released) "Release" else "Development source"} · ${GalleryBuildInfo.version} · ${GalleryBuildInfo.revision}",
+                        style = MaterialTheme.typography.labelMedium)
+                    Text(if (GalleryBuildInfo.released) "com.trinadhthatakula:asgard:${GalleryBuildInfo.version}"
+                        else "New APIs require this source build or a matching SNAPSHOT.",
+                        style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun GalleryBar(onHome: () -> Unit, onBrowse: () -> Unit, onTheme: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        val small = maxWidth / LocalDensity.current.fontScale < 360.dp
+        Row(Modifier.widthIn(max = 1320.dp).fillMaxWidth().padding(horizontal = if (maxWidth >= 840.dp) 36.dp else 12.dp,
+            vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.clickable(role = Role.Button, onClickLabel = "Open gallery", onClick = onHome)
+                    .heightIn(min = 48.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Surface(color = colors.primaryContainer, contentColor = colors.onPrimaryContainer, shape = MaterialTheme.shapes.small) {
+                        Icon(Icons.Rounded.Bolt, null, Modifier.padding(5.dp).size(23.dp))
+                    }
+                    Text("Asgard", style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+            }
+            BarAction("Browse", Icons.Rounded.Search, small, onBrowse)
+            BarAction("Theme", Icons.Rounded.Tune, small, onTheme)
+        }
+    }
+    HorizontalDivider(color = colors.outlineVariant)
+}
+
+@Composable
+private fun BarAction(label: String, icon: ImageVector, compact: Boolean, onClick: () -> Unit) {
+    if (compact) {
+        IconButton(onClick) { Icon(icon, label) }
+    } else {
+        OutlinedButton(onClick, contentPadding = PaddingValues(horizontal = 12.dp), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
+            Icon(icon, null, Modifier.size(16.dp))
+            Spacer(Modifier.width(6.dp))
+            Text(label)
+        }
+    }
+}
+
+@Composable
+private fun GallerySidebar(selected: ComponentEntry, onSelect: (ComponentEntry) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    var query by rememberSaveable { mutableStateOf("") }
+    val groups = remember(query) { catalogMatches(query).groupBy { it.category }.entries.sortedBy { it.key } }
+    Column(Modifier.width(272.dp).fillMaxHeight().padding(16.dp)) {
+        CatalogSearch(query) { query = it }
+        LazyColumn {
+            groups.forEach { (category, entries) ->
+                item(key = category) {
+                    Text(category, Modifier.padding(start = 12.dp, top = 20.dp, bottom = 6.dp).semantics { heading() },
+                        style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
+                }
+                items(entries, key = { it.id }) { entry ->
+                    val active = selected == entry
+                    Surface(shape = MaterialTheme.shapes.medium,
+                        color = if (active) colors.secondaryContainer else colors.surface,
+                        contentColor = if (active) colors.onSecondaryContainer else colors.onSurface) {
+                        Text(entry.galleryName, Modifier.fillMaxWidth().selectable(active, role = Role.Tab, onClick = { onSelect(entry) })
+                            .padding(horizontal = 12.dp, vertical = 10.dp), style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+            }
+            if (groups.isEmpty()) item { Text("No matching components", Modifier.padding(12.dp)) }
         }
     }
 }

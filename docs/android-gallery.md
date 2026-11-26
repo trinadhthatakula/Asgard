@@ -63,5 +63,5 @@ The multiselect overload was merged after that published version, so it is verif
 by native tests and the nine-entry-point descriptor check against the merged pre-expansion baseline.
 
 The fixture is not a substitute for checking unrelated API surfaces or all consumer toolchains.
-PR CI builds/lints the app and runs the instrumentation suite on an API 35 emulator; local release
-validation additionally uses the available API 37 Magisk emulator.
+PR CI builds and lints the app and compiles the instrumentation APK. Run the device checks
+locally on a connected Android device or emulator.

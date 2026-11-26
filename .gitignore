@@ -10,3 +10,11 @@ captures/
 # Python tooling caches
 __pycache__/
 *.pyc
+
+# Local Play publishing configuration and output
+.bundle/
+fastlane/report.xml
+fastlane/.env*
+fastlane/play-credentials*.json
+*.jks
+*.keystore

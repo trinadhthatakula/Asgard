@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +20,23 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class GalleryDeviceTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentTestActivity>()
+
+    @Test fun indexRestoresCategoryAndSearchAfterOpeningAnExample() {
+        compose.setContent { GalleryApp(initialEntry = "gallery") }
+        compose.onNodeWithText("All categories").performScrollTo().performClick()
+        compose.onNodeWithText("Charts").performClick()
+        compose.onNode(hasSetTextAction()).performTextInput("calendar")
+        compose.onNodeWithText("Calendar Heatmap").performScrollTo().performClick()
+        compose.onNodeWithText("AsgardCalendarHeatmap").assertExists()
+        compose.runOnIdle { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        compose.onNode(hasSetTextAction()).assertTextContains("calendar")
+        compose.onNodeWithText("Calendar Heatmap").assertExists()
+        compose.onNode(hasSetTextAction()).performTextReplacement("AsgardAvatar")
+        compose.onNodeWithText("No matching components").assertExists()
+        compose.onNodeWithText("Clear filters").performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+        compose.onNode(hasScrollToIndexAction()).performScrollToKey("index")
+        compose.onNodeWithText("All categories").assertIsDisplayed()
+    }
 
     @Test fun galleryBrowsesAndSearchesAllNewComponents() {
         compose.setContent { Box(Modifier.fillMaxSize().safeDrawingPadding()) { GalleryApp(initialEntry = "asgardavatar") } }
