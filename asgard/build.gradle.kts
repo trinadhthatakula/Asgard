@@ -55,7 +55,7 @@ kotlin {
         }
         getByName("androidHostTest").dependencies {
             implementation("org.jetbrains.compose.ui:ui-test-junit4:${libs.versions.composeMultiplatform.get()}")
-            implementation("org.robolectric:robolectric:4.17")
+            implementation("org.robolectric:robolectric:4.18.1")
         }
         commonTest.dependencies {
             // Pure-logic unit tests for the extracted chart/progress domain math. They run on the
