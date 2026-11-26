@@ -25,6 +25,7 @@ jobs:
         run: |
           python3 -m unittest -v test_update_dependencies.py tools/test_component_benchmarks.py tools/test_skill_api.py tools/test_sync_asgard_skill.py
           python3 tools/check_skill_api.py
+          python3 tools/update_gallery_reference.py --check
 
       - name: Setup JDK 21
         uses: actions/setup-java@v4
