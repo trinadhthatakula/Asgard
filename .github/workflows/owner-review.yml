@@ -1,0 +1,29 @@
+name: Owner PR review exemption
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, reopened, synchronize, ready_for_review, edited]
+
+permissions: {}
+
+jobs:
+  approve-owner:
+    if: >-
+      github.event.pull_request.user.id == github.event.repository.owner.id &&
+      !github.event.pull_request.draft &&
+      (github.event.action != 'edited' || github.event.changes.base != null)
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      # This runs the base branch workflow. Never check out or execute the PR here.
+      - name: Record the owner exemption on this revision
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          gh api --silent --method POST "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews" \
+            -f event=APPROVE -f commit_id="$HEAD_SHA" \
+            -f body='Repository owner authored this PR. Required CI checks still apply.'

@@ -1,0 +1,66 @@
+name: CodeQL
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: '27 3 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: java-kotlin
+            build: manual
+          - language: actions
+            build: none
+          - language: python
+            build: none
+          - language: ruby
+            build: none
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        if: matrix.language == 'java-kotlin'
+        with:
+          distribution: zulu
+          java-version: '21'
+
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
+        if: matrix.language == 'java-kotlin'
+        with:
+          packages: 'platform-tools platforms;android-37.2'
+
+      - uses: github/codeql-action/init@915412ff23e8b7659517e607487dbeae018f2934 # v4.39.5
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build }}
+          queries: security-extended
+
+      - name: Compile library and gallery Kotlin sources under CodeQL tracing
+        if: matrix.language == 'java-kotlin'
+        run: >-
+          ./gradlew :androidApp:compileDebugKotlin :skill-examples:compileAndroidMain
+          :compatibilityConsumer:compileAndroidMain :androidApp:compileDebugAndroidTestKotlin
+          --no-daemon --no-build-cache --no-configuration-cache
+          -Pkotlin.incremental=false -Pkotlin.compiler.execution.strategy=in-process
+
+      - uses: github/codeql-action/analyze@915412ff23e8b7659517e607487dbeae018f2934 # v4.39.5
+        with:
+          category: /language:${{ matrix.language }}
