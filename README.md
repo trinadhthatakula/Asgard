@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ Asgard
+# <img src="docs/bifrost.svg" width="32" height="32" alt=""> Asgard
 
 **A theme-agnostic Jetpack Compose component library, built on Expressive Material 3.**
 
