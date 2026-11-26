@@ -24,10 +24,10 @@ Place your upload JKS at `fastlane/keys/gallery-upload.jks`, or change `ASGARD_U
 The release build uses R8 with the Android optimized rules and shrinks unused resources.
 
 ```sh
-bundle exec fastlane android build_bundle version_code:1
+bundle exec fastlane android build_bundle
 ```
 
-The signed file is `androidApp/build/outputs/bundle/release/asgard-gallery-upload.aab`. Choose an unused, increasing version code for each subsequent Play upload. The gallery takes its display version from the project's `VERSION_NAME`.
+The signed file is `androidApp/build/outputs/bundle/release/asgard-gallery-upload.aab`. Set the gallery display version in `galleryVersionName` and increase `galleryVersionCode` in the root `gradle.properties` for each Play upload. Gradle and Fastlane use these values by default. The optional Fastlane `version_code` argument overrides the code for one build. `VERSION_NAME` controls the Maven library release.
 
 ## Upload to Play Console
 
@@ -36,7 +36,7 @@ The public privacy policy URL for the Play Console **App content → Privacy pol
 For the first release, create the app in Play Console, configure Play App Signing, complete the required app declarations and upload the first signed bundle. Grant a Google Play Android Developer API service account access to this app. Place its JSON credentials at `fastlane/keys/play-service-account.json` or set `SUPPLY_JSON_KEY` in the local file to their location.
 
 - `bundle exec fastlane android upload_listing` uploads the listing text, icon, feature graphic and phone screenshots. Supply replaces the remote images in the supplied categories.
-- `bundle exec fastlane android upload_bundle version_code:2` builds, signs and uploads a draft to the internal track. To use an existing signed bundle, pass `aab:/absolute/path/to/gallery.aab`.
+- `bundle exec fastlane android upload_bundle` builds, signs and uploads a draft to the internal track. To use an existing signed bundle, pass `aab:/absolute/path/to/gallery.aab`.
 - Set the `track` and `status` lane options when you intend a different release track or rollout status.
 
 [Google Play listing assets](https://support.google.com/googleplay/android-developer/answer/9866151) · [Fastlane supply](https://docs.fastlane.tools/actions/supply/)

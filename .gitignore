@@ -20,3 +20,4 @@ fastlane/keys/
 fastlane/play-credentials*.json
 *.jks
 *.keystore
+/androidApp/release/
